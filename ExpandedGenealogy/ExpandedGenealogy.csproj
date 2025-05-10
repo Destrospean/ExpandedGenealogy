@@ -99,7 +99,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MonoPatcher-main\MonoPatcher\MonoPatcher.csproj">
+    <ProjectReference Include="..\..\MonoPatcher\MonoPatcher\MonoPatcher.csproj">
       <Project>{91460f7b-9c23-4a43-ab52-95eac8d52d93}</Project>
       <Name>MonoPatcher</Name>
       <Private>False</Private>
