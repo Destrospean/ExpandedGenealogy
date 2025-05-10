@@ -46,5 +46,21 @@ namespace Destrospean.Lang
             }
             return Localization.LocalizeString(isFemale, greatNxUncleEntryKey, greats);
         }
+
+        public override string GetOrdinalSuffix(string number)
+        {
+            if (number.Length > 1)
+            {
+                switch (number.Substring(number.Length - 2))
+                {
+                    case "11":
+                        return "11";
+                    case "12":
+                    case "13":
+                        return "12";
+                }
+            }
+            return number.Substring(number.Length - 1);
+        }
     }
 }
