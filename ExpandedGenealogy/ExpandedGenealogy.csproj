@@ -42,16 +42,16 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Dutch.cs" />
-    <Compile Include="Portuguese.cs" />
-    <Compile Include="Spanish.cs" />
-    <Compile Include="Italian.cs" />
-    <Compile Include="French.cs" />
-    <Compile Include="German.cs" />
+    <Compile Include="Languages\Dutch.cs" />
+    <Compile Include="Languages\Portuguese.cs" />
+    <Compile Include="Languages\Spanish.cs" />
+    <Compile Include="Languages\Italian.cs" />
+    <Compile Include="Languages\French.cs" />
+    <Compile Include="Languages\German.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="Russian.cs" />
-    <Compile Include="PlayerLanguage.cs" />
-    <Compile Include="English.cs" />
+    <Compile Include="Languages\Russian.cs" />
+    <Compile Include="Languages\PlayerLanguage.cs" />
+    <Compile Include="Languages\English.cs" />
     <Compile Include="Tuning.cs" />
     <Compile Include="ExpandedGenealogy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
