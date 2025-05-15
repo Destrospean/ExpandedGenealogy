@@ -9,11 +9,11 @@ using Sims3.SimIFace;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BackpackForOccults")]
+[assembly: AssemblyTitle("ExpandedGenealogy")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BackpackForOccults")]
+[assembly: AssemblyProduct("ExpandedGenealogy")]
 [assembly: AssemblyCopyright("Copyright 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
