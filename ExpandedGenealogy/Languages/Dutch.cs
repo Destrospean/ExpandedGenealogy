@@ -99,7 +99,7 @@ namespace Destrospean.Lang
                             {
                                 greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
                             }
-                            return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(degree)), greats, distantRelationInfo.TimesRemoved > 0 ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Grand") : "");
+                            return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, greats);
                         }
                         return "";
                     }
@@ -107,7 +107,7 @@ namespace Destrospean.Lang
                     {
                         degree += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
                     }
-                    return Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", degree, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(degree)));
+                    return Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", degree);
                 }
                 return "";
             }

@@ -18,7 +18,7 @@ namespace Destrospean.Lang
             {
                 return "";
             }
-            string degree = distantRelationInfo.Degree.ToString(), greatNxUncleEntryKey = "Destrospean/Genealogy:GreatNx" + (isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Half" : "") + (distantRelationInfo.ClosestDescendant == sim ? "Uncle" : "Nephew"), nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:{2}{0}CousinNxRemoved{1}ward", isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant == sim ? "Up" : "Down", kShow1stCousinsAsCousins && distantRelationInfo.Degree == 1 ? "" : "Nth");
+            string degree = distantRelationInfo.Degree.ToString(), greatNxUncleEntryKey = "Destrospean/Genealogy:GreatNx" + (isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Half" : "") + (distantRelationInfo.ClosestDescendant == sim ? "Uncle" : "Nephew"), nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:{0}{1}CousinNxRemoved{2}ward", kShow1stCousinsAsCousins && distantRelationInfo.Degree == 1 ? "" : "Nth", isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant == sim ? "Up" : "Down");
             if (distantRelationInfo.Degree > 0)
             {
                 if (distantRelationInfo.Degree <= (uint)kMaxDegreeCousinsToShow)
@@ -54,10 +54,9 @@ namespace Destrospean.Lang
                 switch (number.Substring(number.Length - 2))
                 {
                     case "11":
-                        return "11";
                     case "12":
                     case "13":
-                        return "12";
+                        return "0";
                 }
             }
             return number.Substring(number.Length - 1);
