@@ -67,8 +67,7 @@ namespace Destrospean.Lang
                 greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
             }
             string text = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
-            text = text.Substring(0, 1).ToUpper() + text.Substring(1);
-            return text;
+            return text.Substring(0, 1).ToUpper() + text.Substring(1);
         }
 
         public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)
