@@ -9,14 +9,14 @@ namespace Destrospean.Lang
     {
         public override string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
-            int generationsBetween = GetAncestorInfo(descendant, ancestor).AncestorDistance;
-            if (generationsBetween == 3)
+            int generationalDistance = GetAncestorInfo(descendant, ancestor).GenerationalDistance;
+            if (generationalDistance == 3)
             {
                 return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGGP", isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
-            else if (generationsBetween > 3)
+            else if (generationalDistance > 3)
             {
-                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", (generationsBetween + 1).ToString(), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
+                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", (generationalDistance + 1).ToString(), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
             return "";
         }
@@ -66,14 +66,14 @@ namespace Destrospean.Lang
 
         public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
-            int generationsBetween = GetAncestorInfo(descendant, ancestor).AncestorDistance;
-            if (generationsBetween == 3)
+            int generationalDistance = GetAncestorInfo(descendant, ancestor).GenerationalDistance;
+            if (generationalDistance == 3)
             {
                 return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGGC", isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
-            else if (generationsBetween > 3)
+            else if (generationalDistance > 3)
             {
-                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", (generationsBetween + 1).ToString(), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
+                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", (generationalDistance + 1).ToString(), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
             return "";
         }

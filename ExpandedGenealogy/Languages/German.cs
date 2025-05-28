@@ -21,12 +21,11 @@ namespace Destrospean.Lang
                         return "";
                     }
                     string greats = "";
-                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).AncestorDistance; i++)
+                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
                     {
                         greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
                     }
-                    string text = kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", greats) : Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "NthHalfCousinNxRemovedDownward" : "NthCousinNxRemovedDownward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), greats, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Grand"));
-                    return text.Substring(0, 1).ToUpper() + text.Substring(1);
+                    return kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", greats) : Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "NthHalfCousinNxRemovedDownward" : "NthCousinNxRemovedDownward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), greats, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Grand"));
                 }
             }
             return "";
@@ -87,12 +86,11 @@ namespace Destrospean.Lang
                         return "";
                     }
                     string greats = "";
-                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).AncestorDistance; i++)
+                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
                     {
                         greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
                     }
-                    string text = kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", greats) : Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "NthHalfCousinNxRemovedUpward" : "NthCousinNxRemovedUpward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), greats, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Grand"));
-                    return text.Substring(0, 1).ToUpper() + text.Substring(1);
+                    return kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", greats) : Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "NthHalfCousinNxRemovedUpward" : "NthCousinNxRemovedUpward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), greats, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Grand"));
                 }
             }
             return "";

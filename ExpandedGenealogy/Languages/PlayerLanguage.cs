@@ -7,13 +7,7 @@ namespace Destrospean.Lang
 {
     public abstract class PlayerLanguage
     {
-        public virtual bool HasNthUncles
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public virtual bool HasNthUncles => false;
 
         public string GetAncestorString(Genealogy descendant, Genealogy ancestor)
         {
@@ -23,12 +17,11 @@ namespace Destrospean.Lang
         public virtual string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
             string greats = "";
-            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).AncestorDistance; i++)
+            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).GenerationalDistance; i++)
             {
                 greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
             }
-            string text = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
-            return text.Substring(0, 1).ToUpper() + text.Substring(1);
+            return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
         }
 
         public virtual string GetDescendantOfSiblingString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
@@ -43,12 +36,11 @@ namespace Destrospean.Lang
                         return "";
                     }
                     string greats = "";
-                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).AncestorDistance; i++)
+                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
                     {
                         greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
                     }
-                    string text = Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", greats);
-                    return text.Substring(0, 1).ToUpper() + text.Substring(1);
+                    return Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", greats);
                 }
             }
             return "";
@@ -62,12 +54,11 @@ namespace Destrospean.Lang
         public virtual string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string greats = "";
-            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).AncestorDistance; i++)
+            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).GenerationalDistance; i++)
             {
                 greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
             }
-            string text = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
-            return text.Substring(0, 1).ToUpper() + text.Substring(1);
+            return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
         }
 
         public abstract string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo);
@@ -104,12 +95,11 @@ namespace Destrospean.Lang
                         return "";
                     }
                     string greats = "";
-                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).AncestorDistance; i++)
+                    for (int i = 1; i < GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
                     {
                         greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
                     }
-                    string text = Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", greats);
-                    return text.Substring(0, 1).ToUpper() + text.Substring(1);
+                    return Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", greats);
                 }
             }
             return "";

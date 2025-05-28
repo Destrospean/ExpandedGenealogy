@@ -1,27 +1,68 @@
 ﻿using Sims3.Gameplay.Socializing;
+using System;
 using System.Collections.Generic;
+
+namespace System.Runtime.CompilerServices
+{
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class ExtensionAttribute : Attribute
+    {
+    }
+}
 
 namespace Destrospean
 {
-    public class Common
+    public static class Common
     {
         public class AncestorInfo
         {
-            public int AncestorDistance;
-            public Genealogy ThroughWhichChild;
+            [Obsolete("Please use `GenerationalDistance` as it has a better name.")]
+            public int AncestorDistance => GenerationalDistance;
 
-            public AncestorInfo(int ancestorDistance, Genealogy throughWhichChild)
+            public int GenerationalDistance
             {
-                AncestorDistance = ancestorDistance;
+                get;
+                private set;
+            }
+
+            public Genealogy ThroughWhichChild
+            {
+                get;
+                private set;
+            }
+
+            public AncestorInfo(int generationalDistance, Genealogy throughWhichChild)
+            {
+                GenerationalDistance = generationalDistance;
                 ThroughWhichChild = throughWhichChild;
             }
         }
 
         public class DistantRelationInfo
         {
-            public Genealogy ClosestDescendant;
-            public int Degree, TimesRemoved;
-            public Genealogy[] ThroughWhichChildren;
+            public Genealogy ClosestDescendant
+            {
+                get;
+                private set;
+            }
+
+            public int Degree
+            {
+                get;
+                private set;
+            }
+
+            public Genealogy[] ThroughWhichChildren
+            {
+                get;
+                private set;
+            }
+
+            public int TimesRemoved
+            {
+                get;
+                private set;
+            }
 
             public DistantRelationInfo(int degree, int timesRemoved, Genealogy closestDescendant, Genealogy[] throughWhichChildren)
             {
@@ -42,9 +83,9 @@ namespace Destrospean
                     if (ancestor1 == ancestor2)
                     {
                         AncestorInfo ancestor1Info = GetAncestorInfo(sim1, ancestor1), ancestor2Info = GetAncestorInfo(sim2, ancestor2);
-                        if (ancestor1Info.AncestorDistance <= ancestor2Info.AncestorDistance)
+                        if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                         {
-                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.AncestorDistance, ancestor2Info.AncestorDistance - ancestor1Info.AncestorDistance, sim1, new Genealogy[]
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
                             {
                                 ancestor1Info.ThroughWhichChild,
                                 ancestor2Info.ThroughWhichChild
@@ -52,7 +93,7 @@ namespace Destrospean
                         }
                         else
                         {
-                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.AncestorDistance, ancestor1Info.AncestorDistance - ancestor2Info.AncestorDistance, sim2, new Genealogy[]
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
                             {
                                 ancestor1Info.ThroughWhichChild,
                                 ancestor2Info.ThroughWhichChild
@@ -62,9 +103,9 @@ namespace Destrospean
                     else if (Genealogy.IsSibling(ancestor1, ancestor2))
                     {
                         AncestorInfo ancestor1Info = GetAncestorInfo(sim1, ancestor1), ancestor2Info = GetAncestorInfo(sim2, ancestor2);
-                        if (ancestor1Info.AncestorDistance <= ancestor2Info.AncestorDistance)
+                        if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                         {
-                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.AncestorDistance + 1, ancestor2Info.AncestorDistance - ancestor1Info.AncestorDistance, sim1, new Genealogy[]
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
                             {
                                 ancestor1,
                                 ancestor2
@@ -72,7 +113,7 @@ namespace Destrospean
                         }
                         else
                         {
-                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.AncestorDistance + 1, ancestor1Info.AncestorDistance - ancestor2Info.AncestorDistance, sim2, new Genealogy[]
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
                             {
                                 ancestor1,
                                 ancestor2
@@ -92,6 +133,11 @@ namespace Destrospean
                 }
             }
             return closestDistantRelationInfo;
+        }
+
+        public static string Capitalize(this string text)
+        {
+            return text.Length > 1 ? text.Substring(0, 1).ToUpper() + text.Substring(1) : text.ToUpper();
         }
 
         public static AncestorInfo GetAncestorInfo(Genealogy descendant, Genealogy ancestor)
@@ -120,19 +166,19 @@ namespace Destrospean
                     {
                         tempAncestorInfoAndParentList.Add(new object[]
                         {
-                            new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).AncestorDistance + 1, tempParent),
+                            new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
                             parent
                         });
                     }
                 }
             }
-            int shortestAncestorDistance = int.MaxValue;
+            int shortestGenerationalDistance = int.MaxValue;
             AncestorInfo closestAncestorInfo = null;
             foreach (AncestorInfo ancestorInfo in ancestorInfoList)
             {
-                if (shortestAncestorDistance > ancestorInfo.AncestorDistance)
+                if (shortestGenerationalDistance > ancestorInfo.GenerationalDistance)
                 {
-                    shortestAncestorDistance = ancestorInfo.AncestorDistance;
+                    shortestGenerationalDistance = ancestorInfo.GenerationalDistance;
                     closestAncestorInfo = ancestorInfo;
                 }
             }

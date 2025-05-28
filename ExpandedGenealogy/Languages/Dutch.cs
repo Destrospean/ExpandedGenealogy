@@ -13,13 +13,13 @@ namespace Destrospean.Lang
         {
             string text = "";
             List<string> binaryGroups = new List<string>();
-            int ancestorDistance = GetAncestorInfo(descendant, ancestor).AncestorDistance;
-            while (ancestorDistance > 511)
+            int generationalDistance = GetAncestorInfo(descendant, ancestor).GenerationalDistance;
+            while (generationalDistance > 511)
             {
                 binaryGroups.Insert(0, "111111111");
-                ancestorDistance -= 511;
+                generationalDistance -= 511;
             }
-            binaryGroups.Insert(0, Convert.ToString(ancestorDistance - (binaryGroups.Count == 0 ? 0 : 1), 2));
+            binaryGroups.Insert(0, Convert.ToString(generationalDistance - (binaryGroups.Count == 0 ? 0 : 1), 2));
             while (binaryGroups[0].Length < 9)
             {
                 binaryGroups[0] = "0" + binaryGroups[0];
@@ -56,18 +56,17 @@ namespace Destrospean.Lang
                     text += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun11");
                 }
             }
-            return text.Substring(0, 1).ToUpper() + text.Substring(1);
+            return text;
         }
 
         public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string greats = "";
-            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).AncestorDistance; i++)
+            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).GenerationalDistance; i++)
             {
                 greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
             }
-            string text = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
-            return text.Substring(0, 1).ToUpper() + text.Substring(1);
+            return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
         }
 
         public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)

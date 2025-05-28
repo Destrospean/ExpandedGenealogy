@@ -11,14 +11,14 @@ namespace Destrospean.Lang
 
         public override string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
-            string nthGrandparent = GetAncestorInfo(descendant, ancestor).AncestorDistance.ToString();
-            if (nthGrandparent == "3")
+            string generationalDistance = GetAncestorInfo(descendant, ancestor).GenerationalDistance.ToString();
+            if (generationalDistance == "3")
             {
                 return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGGP", isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
-            else if (int.Parse(nthGrandparent) > 3)
+            else if (int.Parse(generationalDistance) > 3)
             {
-                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", nthGrandparent, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(nthGrandparent)), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
+                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
             return "";
         }
@@ -34,8 +34,8 @@ namespace Destrospean.Lang
                     {
                         return "";
                     }
-                    string descendantTitle, nthGrandchild = GetAncestorInfo(descendantOfSibling, sibling).AncestorDistance.ToString();
-                    switch (nthGrandchild)
+                    string descendantTitle, generationalDistance = GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance.ToString();
+                    switch (generationalDistance)
                     {
                         case "1":
                             descendantTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:Grandchild");
@@ -47,7 +47,7 @@ namespace Destrospean.Lang
                             descendantTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGGC");
                             break;
                         default:
-                            descendantTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", nthGrandchild, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(nthGrandchild)));
+                            descendantTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
                             break;
                     }
                     return kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", descendantTitle.ToLower()) : Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousinNxRemovedDownward" : "Destrospean/Genealogy:NthCousinNxRemovedDownward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), descendantTitle.ToLower());
@@ -58,14 +58,14 @@ namespace Destrospean.Lang
 
         public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
-            string nthGrandchild = GetAncestorInfo(descendant, ancestor).AncestorDistance.ToString();
-            if (nthGrandchild == "3")
+            string generationalDistance = GetAncestorInfo(descendant, ancestor).GenerationalDistance.ToString();
+            if (generationalDistance == "3")
             {
                 return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGGC", isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
-            else if (int.Parse(nthGrandchild) > 3)
+            else if (int.Parse(generationalDistance) > 3)
             {
-                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", nthGrandchild, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(nthGrandchild)), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
+                return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)), isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
             }
             return "";
         }
@@ -104,8 +104,8 @@ namespace Destrospean.Lang
                                     ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGG" + (distantRelationInfo.ClosestDescendant == sim ? "P" : "C"));
                                     break;
                                 default:
-                                    string nthGrandparent = (distantRelationInfo.TimesRemoved - 1).ToString();
-                                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant == sim ? "parent" : "child"), nthGrandparent, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(nthGrandparent)));
+                                    string generationalDistance = (distantRelationInfo.TimesRemoved - 1).ToString();
+                                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant == sim ? "parent" : "child"), generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
                                     break;
                             }
                             return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(degree)), ancestorTitle.ToLower()).Replace("  ", " ");
@@ -134,8 +134,8 @@ namespace Destrospean.Lang
                     ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGG" + (distantRelationInfo.ClosestDescendant == sim ? "P" : "C"));
                     break;
                 default:
-                    string nthGrandparent = (distantRelationInfo.TimesRemoved - 1).ToString();
-                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant == sim ? "parent" : "child"), nthGrandparent, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(nthGrandparent)));
+                    string generationalDistance = (distantRelationInfo.TimesRemoved - 1).ToString();
+                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant == sim ? "parent" : "child"), generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
                     break;
             }
             return kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, greatNxUncleEntryKey, ancestorTitle.ToLower()) : Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), ancestorTitle.ToLower()).Replace("  ", " ");
@@ -152,8 +152,8 @@ namespace Destrospean.Lang
                     {
                         return "";
                     }
-                    string ancestorTitle, nthGrandparent = GetAncestorInfo(descendantOfSibling, sibling).AncestorDistance.ToString();
-                    switch (nthGrandparent)
+                    string ancestorTitle, generationalDistance = GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance.ToString();
+                    switch (generationalDistance)
                     {
                         case "1":
                             ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:Grandparent");
@@ -165,7 +165,7 @@ namespace Destrospean.Lang
                             ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGGP");
                             break;
                         default:
-                            ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", nthGrandparent, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(nthGrandparent)));
+                            ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
                             break;
                     }
                     return kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", ancestorTitle.ToLower()) : Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousinNxRemovedUpward" : "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), ancestorTitle.ToLower());
