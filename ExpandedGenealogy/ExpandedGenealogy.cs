@@ -68,9 +68,9 @@ namespace Destrospean
             {
                 foreach (Genealogy sibling in parent.Siblings)
                 {
-                    if (sibling == uncle || sibling.Spouse == uncle)
+                    if (sibling == uncle || (sibling.Spouse == uncle && sibling.PartnerType == PartnerType.Marriage))
                     {
-                        return Genealogy.IsHalfSibling(parent, uncle);
+                        return Genealogy.IsHalfSibling(parent, sibling);
                     }
                 }
             }
