@@ -175,7 +175,6 @@ namespace Destrospean
                 {
                     return "";
                 }
-                PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang." + Localization.LocalizeString("Destrospean/Genealogy:LanguageCode"))) as PlayerLanguage;
                 if (GameUtils.IsAnyTravelBasedWorld() && GameStates.TravelerIds != null && GameStates.TravelerIds.Contains(self.SimDescriptionId))
                 {
                     MiniSimDescription miniSimDescription = MiniSimDescription.Find(self.SimDescriptionId);
@@ -190,6 +189,7 @@ namespace Destrospean
                         }
                     }
                 }
+                PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang." + Localization.LocalizeString("Destrospean/Genealogy:LanguageCode"))) as PlayerLanguage;
                 string text = "";
                 if (Genealogy.IsParent(other.Genealogy, self.Genealogy))
                 {
