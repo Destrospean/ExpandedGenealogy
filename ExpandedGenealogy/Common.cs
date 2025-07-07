@@ -17,7 +17,13 @@ namespace Destrospean
         public class AncestorInfo
         {
             [Obsolete("Please use `GenerationalDistance` as it has a better name.")]
-            public int AncestorDistance => GenerationalDistance;
+			public int AncestorDistance
+			{
+				get
+				{
+					return GenerationalDistance;
+				}
+			}
 
             public int GenerationalDistance
             {
@@ -156,11 +162,12 @@ namespace Destrospean
             {
                 object[] tempAncestorInfoAndParent = tempAncestorInfoAndParentList[0];
                 tempAncestorInfoAndParentList.RemoveAt(0);
-                if (tempAncestorInfoAndParent[1] == ancestor)
+                Genealogy tempParent = (Genealogy)tempAncestorInfoAndParent[1];
+                if (tempParent == ancestor)
                 {
                     ancestorInfoList.Add((AncestorInfo)tempAncestorInfoAndParent[0]);
                 }
-                else if (tempAncestorInfoAndParent[1] is Genealogy tempParent && tempParent.IsAncestor(ancestor))
+                else if (tempParent.IsAncestor(ancestor))
                 {
                     foreach (Genealogy parent in tempParent.Parents)
                     {

@@ -2,8 +2,8 @@
 using Sims3.Gameplay.Utilities;
 using System;
 using System.Collections.Generic;
-using static Destrospean.Common;
-using static Sims3.Gameplay.Destrospean.ExpandedGenealogy;
+using Destrospean.Common;
+using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.Lang
 {
@@ -13,7 +13,7 @@ namespace Destrospean.Lang
         {
             string text = "";
             List<string> binaryGroups = new List<string>();
-            int generationalDistance = GetAncestorInfo(descendant, ancestor).GenerationalDistance;
+            int generationalDistance = Common.GetAncestorInfo(descendant, ancestor).GenerationalDistance;
             while (generationalDistance > 511)
             {
                 binaryGroups.Insert(0, "111111111");
@@ -62,32 +62,32 @@ namespace Destrospean.Lang
         public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string greats = "";
-            for (int i = 1; i < GetAncestorInfo(descendant, ancestor).GenerationalDistance; i++)
+            for (int i = 1; i < Common.GetAncestorInfo(descendant, ancestor).GenerationalDistance; i++)
             {
                 greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
             }
             return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
         }
 
-        public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)
+        public override string GetDistantRelationString(bool isFemale, Genealogy sim, Common.DistantRelationInfo distantRelationInfo)
         {
             if (distantRelationInfo == null)
             {
                 return "";
             }
             bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0], distantRelationInfo.ThroughWhichChildren[1]);
-            if (isHalfRelative && !kShowHalfRelatives)
+            if (isHalfRelative && !Tuning.kShowHalfRelatives)
             {
                 return "";
             }
-            string degree = "", greatNxUncleEntryKey = "Destrospean/Genealogy:GreatNx" + (isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Half" : "") + (distantRelationInfo.ClosestDescendant == sim ? "Uncle" : "Nephew"), greats = "", nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:Nth{0}CousinNxRemoved{1}ward", isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant == sim ? "Up" : "Down");
+            string degree = "", greatNxUncleEntryKey = "Destrospean/Genealogy:GreatNx" + (isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "") + (distantRelationInfo.ClosestDescendant == sim ? "Uncle" : "Nephew"), greats = "", nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:Nth{0}CousinNxRemoved{1}ward", isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant == sim ? "Up" : "Down");
             if (distantRelationInfo.Degree > 0)
             {
-                if (distantRelationInfo.Degree <= (uint)kMaxDegreeCousinsToShow)
+				if (distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
                 {
                     if (distantRelationInfo.TimesRemoved > 0)
                     {
-                        if (distantRelationInfo.TimesRemoved <= (uint)kMaxTimesRemovedCousinsToShow)
+						if (distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                         {
                             for (int i = 0; i < distantRelationInfo.Degree; i++)
                             {
@@ -105,7 +105,7 @@ namespace Destrospean.Lang
                     {
                         degree += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
                     }
-                    return Localization.LocalizeString(isFemale, isHalfRelative && !kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", degree);
+					return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", degree);
                 }
                 return "";
             }
