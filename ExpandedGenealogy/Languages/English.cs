@@ -1,5 +1,4 @@
-﻿using Destrospean.Common;
-using Sims3.Gameplay.Socializing;
+﻿using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.Utilities;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 

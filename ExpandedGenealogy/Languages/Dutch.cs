@@ -2,7 +2,6 @@
 using Sims3.Gameplay.Utilities;
 using System;
 using System.Collections.Generic;
-using Destrospean.Common;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.Lang
