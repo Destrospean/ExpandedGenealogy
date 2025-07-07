@@ -17,13 +17,13 @@ namespace Destrospean
         public class AncestorInfo
         {
             [Obsolete("Please use `GenerationalDistance` as it has a better name.")]
-			public int AncestorDistance
-			{
-				get
-				{
-					return GenerationalDistance;
-				}
-			}
+            public int AncestorDistance
+            {
+                get
+                {
+                    return GenerationalDistance;
+                }
+            }
 
             public int GenerationalDistance
             {
@@ -92,18 +92,18 @@ namespace Destrospean
                         if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                         {
                             distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
-                            {
-                                ancestor1Info.ThroughWhichChild,
-                                ancestor2Info.ThroughWhichChild
-                            }));
+                                    {
+                                        ancestor1Info.ThroughWhichChild,
+                                        ancestor2Info.ThroughWhichChild
+                                    }));
                         }
                         else
                         {
                             distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
-                            {
-                                ancestor1Info.ThroughWhichChild,
-                                ancestor2Info.ThroughWhichChild
-                            }));
+                                    {
+                                        ancestor1Info.ThroughWhichChild,
+                                        ancestor2Info.ThroughWhichChild
+                                    }));
                         }
                     }
                     else if (Genealogy.IsSibling(ancestor1, ancestor2))
@@ -112,18 +112,18 @@ namespace Destrospean
                         if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                         {
                             distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
-                            {
-                                ancestor1,
-                                ancestor2
-                            }));
+                                    {
+                                        ancestor1,
+                                        ancestor2
+                                    }));
                         }
                         else
                         {
                             distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
-                            {
-                                ancestor1,
-                                ancestor2
-                            }));
+                                    {
+                                        ancestor1,
+                                        ancestor2
+                                    }));
                         }
                     }
                 }
@@ -153,10 +153,10 @@ namespace Destrospean
             foreach (Genealogy parent in descendant.Parents)
             {
                 tempAncestorInfoAndParentList.Add(new object[]
-                {
-                    new AncestorInfo(0, descendant),
-                    parent
-                });
+                    {
+                        new AncestorInfo(0, descendant),
+                        parent
+                    });
             }
             while (tempAncestorInfoAndParentList.Count > 0)
             {
@@ -172,10 +172,10 @@ namespace Destrospean
                     foreach (Genealogy parent in tempParent.Parents)
                     {
                         tempAncestorInfoAndParentList.Add(new object[]
-                        {
-                            new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
-                            parent
-                        });
+                            {
+                                new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
+                                parent
+                            });
                     }
                 }
             }
