@@ -5,7 +5,13 @@ namespace Sims3.Gameplay.Destrospean
     public static class ExpandedGenealogy
     {
         [Tunable]
-        public static bool kAllowRomanceForHalfRelatives;
+        public static bool kAccumulateDistantStepRelatives;
+
+        [Tunable]
+        public static bool kAllowRomanceForDistantHalfRelatives;
+
+        [Tunable]
+        public static bool kAllowRomanceForDistantStepRelatives;
 
         [Tunable]
         public static int kMaxDegreeCousinsToShow;
@@ -26,9 +32,12 @@ namespace Sims3.Gameplay.Destrospean
         public static bool kShow1stCousinsAsCousins;
 
         [Tunable]
-        public static bool kShowHalfRelatives;
+        public static bool kShowDistantHalfRelatives;
 
         [Tunable]
-        public static bool kShowHalfRelativesAsFullRelatives;
+        public static bool kShowDistantHalfRelativesAsFullRelatives;
+
+        [Tunable]
+        public static bool kShowDistantStepRelatives;
     }
 }
