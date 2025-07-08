@@ -268,7 +268,7 @@ namespace Destrospean
                 {
                     ancestorInfoAndAncestorList.Add(tempAncestorInfoAndParent);
                 }
-                else if ((tempParent.IsAncestor(stepAncestor) || tempParent.IsStepAncestor(stepAncestor)))
+                else if (tempParent.IsAncestor(stepAncestor) || tempParent.IsStepAncestor(stepAncestor))
                 {
                     parents = new List<Genealogy>();
                     if (Tuning.kAccumulateDistantStepRelatives || stepDescendant.IsAncestor(tempParent))
