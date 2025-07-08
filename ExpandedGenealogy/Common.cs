@@ -263,11 +263,12 @@ namespace Destrospean
             {
                 object[] tempAncestorInfoAndParent = tempAncestorInfoAndParentList[0];
                 tempAncestorInfoAndParentList.RemoveAt(0);
+                Genealogy tempParent = (Genealogy)tempAncestorInfoAndParent[1];
                 if (tempAncestorInfoAndParent[1] == stepAncestor)
                 {
                     ancestorInfoAndAncestorList.Add(tempAncestorInfoAndParent);
                 }
-                else if (tempAncestorInfoAndParent[1] is Genealogy tempParent && (tempParent.IsAncestor(stepAncestor) || tempParent.IsStepAncestor(stepAncestor)))
+                else if ((tempParent.IsAncestor(stepAncestor) || tempParent.IsStepAncestor(stepAncestor)))
                 {
                     parents = new List<Genealogy>();
                     if (Tuning.kAccumulateDistantStepRelatives || stepDescendant.IsAncestor(tempParent))
@@ -287,7 +288,7 @@ namespace Destrospean
             }
             foreach (object[] ancestorInfoAndAncestor in ancestorInfoAndAncestorList)
             {
-                if (ancestorInfoAndAncestor[1] is Genealogy ancestor && !stepDescendant.IsAncestor(ancestor))
+                if (!stepDescendant.IsAncestor((Genealogy)ancestorInfoAndAncestor[1]))
                 {
                     ancestorInfoList.Add((AncestorInfo)ancestorInfoAndAncestor[0]);
                 }
