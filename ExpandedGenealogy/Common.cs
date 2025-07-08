@@ -163,18 +163,18 @@ namespace Destrospean
                             if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                             {
                                 distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
-                                {
-                                    ancestor1Info.ThroughWhichChild,
-                                    ancestor2Info.ThroughWhichChild
-                                }));
+                                        {
+                                            ancestor1Info.ThroughWhichChild,
+                                            ancestor2Info.ThroughWhichChild
+                                        }));
                             }
                             else
                             {
                                 distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
-                                {
-                                    ancestor1Info.ThroughWhichChild,
-                                    ancestor2Info.ThroughWhichChild
-                                }));
+                                        {
+                                            ancestor1Info.ThroughWhichChild,
+                                            ancestor2Info.ThroughWhichChild
+                                        }));
                             }
                         }
                     }
@@ -278,10 +278,10 @@ namespace Destrospean
                     foreach (Genealogy parent in parents)
                     {
                         tempAncestorInfoAndParentList.Add(new object[]
-                        {
-                            new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
-                            parent,
-                        });
+                            {
+                                new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
+                                parent,
+                            });
                     }
                 }
             }
