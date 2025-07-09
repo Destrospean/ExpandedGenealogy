@@ -79,6 +79,22 @@ namespace Destrospean
         [TypePatch(typeof(Genealogy))]
         public class GenealogyPatch
         {
+            public static bool IsHalfSibling(Genealogy sim1, Genealogy sim2)
+            {
+                int sharedParentCount = 0, totalParentCount = sim1.Parents.Count + sim2.Parents.Count;
+                foreach (Genealogy parent1 in sim1.Parents)
+                {
+                    foreach (Genealogy parent2 in sim2.Parents)
+                    {
+                        if (parent1 == parent2)
+                        {
+                            sharedParentCount++;
+                        }
+                    }
+                }
+                return Genealogy.IsSibling(sim1, sim2) && sharedParentCount * 2 != totalParentCount;
+            }
+
             public static bool IsSiblingInLaw(Genealogy sim1, Genealogy sim2)
             {
                 if (sim1.Spouse != null && sim1.PartnerType == PartnerType.Marriage)
