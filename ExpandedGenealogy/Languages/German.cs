@@ -151,6 +151,23 @@ namespace Destrospean.Lang
                         return Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:GreatNxUncle", greats) : Localization.LocalizeString(isFemale, "NthCousinNxRemovedUpward", "1", Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Grand"), Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
                     }
                 }
+                foreach (Genealogy sibling in siblingOfAncestor.Siblings)
+                {
+                    if (descendantOfSibling.IsAncestor(sibling))
+                    {
+                        bool isHalfRelative = Genealogy.IsHalfSibling(sibling, siblingOfAncestor);
+                        if (isHalfRelative && !Tuning.kShowDistantHalfRelatives)
+                        {
+                            return "";
+                        }
+                        string greats = "";
+                        for (int i = 1; i < Common.GetStepAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
+                        {
+                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
+                        }
+                        return Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowDistantHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfUncle" : "Destrospean/ExpandedGenealogy:GreatNxUncle", greats) : Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowDistantHalfRelativesAsFullRelatives ? "NthHalfCousinNxRemovedUpward" : "NthCousinNxRemovedUpward", "1", Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Grand"), Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
+                    }
+                }
                 return "";
             }
             foreach (Genealogy sibling in siblingOfAncestor.Siblings)
