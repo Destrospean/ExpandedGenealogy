@@ -8,6 +8,9 @@ namespace Sims3.Gameplay.Destrospean
         public static bool kAllowRomanceForHalfRelatives;
 
         [Tunable]
+        public static bool kDebug;
+
+        [Tunable]
         public static int kMaxDegreeCousinsToShow;
 
         [Tunable]

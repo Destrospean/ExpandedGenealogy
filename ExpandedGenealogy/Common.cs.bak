@@ -1,0 +1,435 @@
+﻿using Sims3.Gameplay.Socializing;
+using Sims3.SimIFace;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace System.Runtime.CompilerServices
+{
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class ExtensionAttribute : Attribute
+    {
+    }
+}
+
+namespace Destrospean
+{
+    public static class Common
+    {
+        public enum RelationTypes
+        {
+            Collateral,
+            Lineal
+        }
+
+        public class AncestorInfo
+        {
+            [Obsolete("Please use `GenerationalDistance` as it has a better name.")]
+            public int AncestorDistance
+            {
+                get
+                {
+                    return GenerationalDistance;
+                }
+            }
+
+            public int GenerationalDistance
+            {
+                get;
+                private set;
+            }
+
+            public Genealogy ThroughWhichChild
+            {
+                get;
+                private set;
+            }
+
+            public AncestorInfo(int generationalDistance, Genealogy throughWhichChild)
+            {
+                GenerationalDistance = generationalDistance;
+                ThroughWhichChild = throughWhichChild;
+            }
+        }
+
+        public class CustomRelationAssignment : DistantRelationInfo
+        {
+            public int GenerationalDistance
+            {
+                get
+                {
+                    return TimesRemoved;
+                }
+            }
+
+            public RelationTypes RelationType
+            {
+                get;
+                private set;
+            }
+
+            public Genealogy SimHigherUpFamilyTree
+            {
+                get
+                {
+                    return ClosestDescendant;
+                }
+            }
+
+            public List<Genealogy> SimsWithRelation
+            {
+                get
+                {
+                    return new List<Genealogy>(ThroughWhichChildren);
+                }
+            }
+
+            public CustomRelationAssignment(RelationTypes relationType, int degree, int timesRemoved, Genealogy simHigherUpFamilyTree, Genealogy[] simsWithRelation)
+                : base(degree, timesRemoved, simHigherUpFamilyTree, simsWithRelation)
+            {
+                RelationType = relationType;
+            }
+
+            public CustomRelationAssignment(RelationTypes relationType, int generationalDistance, Genealogy simHigherUpFamilyTree, Genealogy[] simsWithRelation)
+                : base(0, generationalDistance, simHigherUpFamilyTree, simsWithRelation)
+            {
+                RelationType = relationType;
+            }
+        }
+
+        public class DistantRelationInfo
+        {
+            public Genealogy ClosestDescendant
+            {
+                get;
+                private set;
+            }
+
+            public int Degree
+            {
+                get;
+                private set;
+            }
+
+            public Genealogy[] ThroughWhichChildren
+            {
+                get;
+                private set;
+            }
+
+            public int TimesRemoved
+            {
+                get;
+                private set;
+            }
+
+            public DistantRelationInfo(int degree, int timesRemoved, Genealogy closestDescendant, Genealogy[] throughWhichChildren)
+            {
+                ClosestDescendant = closestDescendant;
+                Degree = degree;
+                ThroughWhichChildren = throughWhichChildren;
+                TimesRemoved = timesRemoved;
+            }
+        }
+
+        [PersistableStatic]
+        static List<CustomRelationAssignment> sCustomRelationAssignments = new List<CustomRelationAssignment>();
+
+        public static ReadOnlyCollection<CustomRelationAssignment> CustomRelationAssignments
+        {
+            get
+            {
+                return sCustomRelationAssignments.AsReadOnly();
+            }
+        }
+
+        public static void AddAncestor(this Genealogy descendant, Genealogy ancestor, int generationalDistance = 1)
+        {
+            sCustomRelationAssignments.Add(new CustomRelationAssignment(RelationTypes.Lineal, generationalDistance, ancestor, new Genealogy[]
+                {
+                    ancestor,
+                    descendant
+                }));
+        }
+
+        public static void AddCousin(this Genealogy self, Genealogy other, int degree = 1, int timesRemoved = 0, bool isHigherUpFamilyTree = true)
+        {
+            sCustomRelationAssignments.Add(new CustomRelationAssignment(RelationTypes.Collateral, degree, timesRemoved, isHigherUpFamilyTree ? self : other, new Genealogy[]
+                {
+                    self,
+                    other
+                }));
+        }
+
+        public static void AddDescendant(this Genealogy ancestor, Genealogy descendant, int generationalDistance = 1)
+        {
+            sCustomRelationAssignments.Add(new CustomRelationAssignment(RelationTypes.Lineal, generationalDistance, ancestor, new Genealogy[]
+                {
+                    ancestor,
+                    descendant
+                }));
+        }
+
+        public static void AddDescendantOfSibling(this Genealogy siblingOfAncestor, Genealogy descendantOfSibling, int generationalDistance = 1)
+        {
+            sCustomRelationAssignments.Add(new CustomRelationAssignment(RelationTypes.Collateral, generationalDistance, siblingOfAncestor, new Genealogy[]
+                {
+                    siblingOfAncestor,
+                    descendantOfSibling
+                }));
+        }
+
+        public static void AddSiblingOfAncestor(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor, int generationalDistance = 1)
+        {
+            sCustomRelationAssignments.Add(new CustomRelationAssignment(RelationTypes.Collateral, generationalDistance, siblingOfAncestor, new Genealogy[]
+                {
+                    siblingOfAncestor,
+                    descendantOfSibling
+                }));
+        }
+
+        public static DistantRelationInfo CalculateDistantRelation(Genealogy sim1, Genealogy sim2)
+        {
+            int lowestDegree = int.MaxValue;
+            DistantRelationInfo closestDistantRelationInfo = null;
+            foreach (DistantRelationInfo distantRelationInfo in CalculateDistantRelations(sim1, sim2))
+            {
+                if (lowestDegree > distantRelationInfo.Degree || (lowestDegree == distantRelationInfo.Degree && closestDistantRelationInfo != null && closestDistantRelationInfo.TimesRemoved > distantRelationInfo.TimesRemoved))
+                {
+                    lowestDegree = distantRelationInfo.Degree;
+                    closestDistantRelationInfo = distantRelationInfo;
+                }
+            }
+            return closestDistantRelationInfo;
+        }
+
+        public static List<DistantRelationInfo> CalculateDistantRelations(Genealogy sim1, Genealogy sim2)
+        {
+            List<DistantRelationInfo> distantRelationInfoList = new List<DistantRelationInfo>();
+            foreach (Genealogy ancestor1 in sim1.GetCombinedAncestors())
+            {
+                foreach (Genealogy ancestor2 in sim2.GetCombinedAncestors())
+                {
+                    if (ancestor1 == ancestor2)
+                    {
+                        AncestorInfo ancestor1Info = GetAncestorInfo(sim1, ancestor1), ancestor2Info = GetAncestorInfo(sim2, ancestor2);
+                        if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
+                        {
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
+                                {
+                                    ancestor1Info.ThroughWhichChild,
+                                    ancestor2Info.ThroughWhichChild
+                                }));
+                        }
+                        else
+                        {
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
+                                {
+                                    ancestor1Info.ThroughWhichChild,
+                                    ancestor2Info.ThroughWhichChild
+                                }));
+                        }
+                    }
+                    else if (Genealogy.IsSibling(ancestor1, ancestor2))
+                    {
+                        AncestorInfo ancestor1Info = GetAncestorInfo(sim1, ancestor1), ancestor2Info = GetAncestorInfo(sim2, ancestor2);
+                        if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
+                        {
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, sim1, new Genealogy[]
+                                {
+                                    ancestor1,
+                                    ancestor2
+                                }));
+                        }
+                        else
+                        {
+                            distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, sim2, new Genealogy[]
+                                {
+                                    ancestor1,
+                                    ancestor2
+                                }));
+                        }
+                    }
+                    else
+                    {
+                        foreach (CustomRelationAssignment customRelationAssignment in sCustomRelationAssignments.FindAll(tempCustomRelationAssignment => tempCustomRelationAssignment.RelationType == RelationTypes.Collateral && tempCustomRelationAssignment.SimsWithRelation.Contains(ancestor1) && tempCustomRelationAssignment.SimsWithRelation.Contains(ancestor2)))
+                        {
+                            AncestorInfo ancestor1Info = GetAncestorInfo(sim1, ancestor1), ancestor2Info = GetAncestorInfo(sim2, ancestor2);
+                            if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
+                            {
+                                distantRelationInfoList.Add(new DistantRelationInfo(ancestor1Info.GenerationalDistance + 1 + customRelationAssignment.Degree, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance + customRelationAssignment.TimesRemoved, sim1, new Genealogy[]
+                                    {
+                                        ancestor1,
+                                        ancestor2
+                                    }));
+                            }
+                            else
+                            {
+                                distantRelationInfoList.Add(new DistantRelationInfo(ancestor2Info.GenerationalDistance + 1 + customRelationAssignment.Degree, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance + customRelationAssignment.TimesRemoved, sim2, new Genealogy[]
+                                    {
+                                        ancestor1,
+                                        ancestor2
+                                    }));
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (CustomRelationAssignment customRelationAssignment in CustomRelationAssignments)
+            {
+                if (customRelationAssignment.RelationType == RelationTypes.Collateral && customRelationAssignment.SimsWithRelation.Contains(sim1) && customRelationAssignment.SimsWithRelation.Contains(sim2))
+                {
+                    distantRelationInfoList.Add(customRelationAssignment);
+                }
+            }
+            return distantRelationInfoList;
+        }
+
+        public static string Capitalize(this string text)
+        {
+            return text.Length > 1 ? text.Substring(0, 1).ToUpper() + text.Substring(1) : text.ToUpper();
+        }
+
+        public static void ClearRelationsWith(this Genealogy self, Genealogy other)
+        {
+            sCustomRelationAssignments.RemoveAll(customRelationAssignment => customRelationAssignment.SimsWithRelation.Contains(self) && customRelationAssignment.SimsWithRelation.Contains(other));
+        }
+
+        public static List<CustomRelationAssignment> GetAncestorAssignments(this Genealogy self)
+        {
+            List<CustomRelationAssignment> ancestorAssignments = new List<CustomRelationAssignment>(), tempAncestorAssignments = new List<CustomRelationAssignment>();
+            foreach (CustomRelationAssignment customRelationAssignment in CustomRelationAssignments)
+            {
+                if (customRelationAssignment.RelationType == RelationTypes.Lineal && customRelationAssignment.SimsWithRelation.Contains(self) && customRelationAssignment.SimHigherUpFamilyTree != self)
+                {
+                    tempAncestorAssignments.Add(customRelationAssignment);
+                }
+            }
+            tempAncestorAssignments.AddRange(self.GetAccumulatedAncestorAssignments());
+            while (tempAncestorAssignments.Count > 0)
+            {
+                CustomRelationAssignment tempAncestorAssignment = tempAncestorAssignments[0];
+                tempAncestorAssignments.RemoveAt(0);
+                ancestorAssignments.Add(tempAncestorAssignment);
+                foreach (CustomRelationAssignment customRelationAssignment in CustomRelationAssignments)
+                {
+                    if (customRelationAssignment.RelationType == RelationTypes.Lineal && customRelationAssignment.SimsWithRelation.Contains(tempAncestorAssignment.SimHigherUpFamilyTree) && customRelationAssignment.SimHigherUpFamilyTree != tempAncestorAssignment.SimHigherUpFamilyTree)
+                    {
+                        tempAncestorAssignments.Add(new CustomRelationAssignment(customRelationAssignment.RelationType, customRelationAssignment.GenerationalDistance + tempAncestorAssignment.GenerationalDistance, customRelationAssignment.SimHigherUpFamilyTree, customRelationAssignment.SimsWithRelation.ToArray()));
+                    }
+                }
+                foreach (CustomRelationAssignment ancestorAssignment in tempAncestorAssignment.SimHigherUpFamilyTree.GetAccumulatedAncestorAssignments())
+                {
+                    tempAncestorAssignments.Add(new CustomRelationAssignment(ancestorAssignment.RelationType, ancestorAssignment.GenerationalDistance + tempAncestorAssignment.GenerationalDistance, ancestorAssignment.SimHigherUpFamilyTree, ancestorAssignment.SimsWithRelation.ToArray()));
+                }
+            }
+            return ancestorAssignments;
+        }
+
+        public static List<CustomRelationAssignment> GetAccumulatedAncestorAssignments(this Genealogy self)
+        {
+            List<CustomRelationAssignment> ancestorAssignments = new List<CustomRelationAssignment>();
+            List<object[]> ancestorInfoAndParentList = new List<object[]>(), tempAncestorInfoAndParentList = new List<object[]>();
+            foreach (Genealogy parent in self.Parents)
+            {
+                tempAncestorInfoAndParentList.Add(new object[]
+                    {
+                        new AncestorInfo(0, self),
+                        parent
+                    });
+            }
+            while (tempAncestorInfoAndParentList.Count > 0)
+            {
+                object[] tempAncestorInfoAndParent = tempAncestorInfoAndParentList[0];
+                tempAncestorInfoAndParentList.RemoveAt(0);
+                Genealogy tempParent = (Genealogy)tempAncestorInfoAndParent[1];
+                ancestorInfoAndParentList.Add(tempAncestorInfoAndParent);
+                foreach (Genealogy parent in tempParent.Parents)
+                {
+                    tempAncestorInfoAndParentList.Add(new object[]
+                        {
+                            new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
+                            parent
+                        });
+                }
+            }
+            foreach (object[] ancestorInfoAndParent in ancestorInfoAndParentList)
+            {
+                AncestorInfo ancestorInfo = (AncestorInfo)ancestorInfoAndParent[0];
+                Genealogy parent = (Genealogy)ancestorInfoAndParent[1];
+                ancestorAssignments.Add(new CustomRelationAssignment(RelationTypes.Lineal, ancestorInfo.GenerationalDistance, parent, new Genealogy[]
+                    {
+                        parent,
+                        ancestorInfo.ThroughWhichChild
+                    }));
+            }
+            return ancestorAssignments;
+        }
+
+        public static AncestorInfo GetAncestorInfo(Genealogy descendant, Genealogy ancestor, bool skipCombinedAncestors = false)
+        {
+            List<AncestorInfo> ancestorInfoList = new List<AncestorInfo>();
+            List<object[]> tempAncestorInfoAndParentList = new List<object[]>();
+            foreach (Genealogy parent in descendant.Parents)
+            {
+                tempAncestorInfoAndParentList.Add(new object[]
+                    {
+                        new AncestorInfo(0, descendant),
+                        parent
+                    });
+            }
+            while (tempAncestorInfoAndParentList.Count > 0)
+            {
+                object[] tempAncestorInfoAndParent = tempAncestorInfoAndParentList[0];
+                tempAncestorInfoAndParentList.RemoveAt(0);
+                Genealogy tempParent = (Genealogy)tempAncestorInfoAndParent[1];
+                if (tempParent == ancestor)
+                {
+                    ancestorInfoList.Add((AncestorInfo)tempAncestorInfoAndParent[0]);
+                }
+                else if (tempParent.IsAncestor(ancestor))
+                {
+                    foreach (Genealogy parent in tempParent.Parents)
+                    {
+                        tempAncestorInfoAndParentList.Add(new object[]
+                            {
+                                new AncestorInfo(((AncestorInfo)tempAncestorInfoAndParent[0]).GenerationalDistance + 1, tempParent),
+                                parent
+                            });
+                    }
+                }
+            }
+            if (!skipCombinedAncestors)
+            {
+                foreach (CustomRelationAssignment ancestorAssignment in descendant.GetAncestorAssignments())
+                {
+                    if (ancestorAssignment.SimHigherUpFamilyTree == ancestor)
+                    {
+                        ancestorInfoList.Add(new AncestorInfo(ancestorAssignment.GenerationalDistance, ancestorAssignment.SimsWithRelation.Find(sim => sim != ancestor)));
+                    }
+                }
+            }
+            int shortestGenerationalDistance = int.MaxValue;
+            AncestorInfo closestAncestorInfo = null;
+            foreach (AncestorInfo ancestorInfo in ancestorInfoList)
+            {
+                if (shortestGenerationalDistance > ancestorInfo.GenerationalDistance)
+                {
+                    shortestGenerationalDistance = ancestorInfo.GenerationalDistance;
+                    closestAncestorInfo = ancestorInfo;
+                }
+            }
+            return closestAncestorInfo;
+        }
+
+        public static List<Genealogy> GetCombinedAncestors(this Genealogy self)
+        {
+            List<Genealogy> combinedAncestors = new List<Genealogy>(self.Ancestors);
+            foreach (CustomRelationAssignment ancestorAssignment in self.GetAncestorAssignments())
+            {
+                combinedAncestors.Add(ancestorAssignment.SimHigherUpFamilyTree);
+            }
+            return combinedAncestors;
+        }
+    }
+}
