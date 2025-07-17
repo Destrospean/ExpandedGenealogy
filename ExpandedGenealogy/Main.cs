@@ -3,13 +3,13 @@ using Sims3.Gameplay.Abstracts;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.CAS;
+using Sims3.Gameplay.Core;
 using Sims3.Gameplay.EventSystem;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using System;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
-using Sims3.Gameplay.Core;
 
 namespace Destrospean.ExpandedGenealogy
 {

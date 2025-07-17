@@ -1,7 +1,7 @@
 ﻿using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.CAS;
-using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Core;
+using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Socializing;
 using Sims3.SimIFace;
 using Sims3.SimIFace.CustomContent;
@@ -435,7 +435,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             int lowestDegree = int.MaxValue;
             DistantRelationInfo closestDistantRelationInfo = null;
-            foreach (DistantRelationInfo distantRelationInfo in CalculateDistantRelations(self, other))
+            foreach (DistantRelationInfo distantRelationInfo in self.CalculateDistantRelations(other))
             {
                 if (lowestDegree > distantRelationInfo.Degree || (lowestDegree == distantRelationInfo.Degree && closestDistantRelationInfo != null && closestDistantRelationInfo.TimesRemoved > distantRelationInfo.TimesRemoved))
                 {
@@ -451,7 +451,7 @@ namespace Destrospean.ExpandedGenealogy
             List<DistantRelationInfo> cachedDistantRelationInfoList, distantRelationInfoList = new List<DistantRelationInfo>();
             if (self.IsAncestor(other) || other.IsAncestor(self))
             {
-                return new List<DistantRelationInfo>();
+                return distantRelationInfoList;
             }
             if (self.CachedDistantRelationInfoLists.TryGetValue(other, out cachedDistantRelationInfoList))
             {
