@@ -180,10 +180,6 @@ namespace Destrospean.ExpandedGenealogy
                 Genealogy self = (Genealogy)(this as object);
                 DistantRelationInfo distantRelationInfo = other.GetGenealogyPlaceholder().CalculateDistantRelation(self.GetGenealogyPlaceholder());
                 bool isHalfRelative = distantRelationInfo == null ? false : Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
-                /* Check if there is a distant relation, and if so, then check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
-                 * and/or the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
-                 * the latter of which matters depending on whether romantic interactions between half-relatives are allowed
-                 */
                 if (self.GetAncestorInfo(other) != null || other.GetAncestorInfo(self) != null)
                 {
                     return true;
@@ -202,6 +198,10 @@ namespace Destrospean.ExpandedGenealogy
                         return true;
                     }
                 }
+                /* Check if there is a distant relation, and if so, then check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
+                 * and/or the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
+                 * the latter of which matters depending on whether romantic interactions between half-relatives are allowed
+                 */
                 if (distantRelationInfo != null && distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                 {
                     return true;
@@ -346,17 +346,16 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:HalfUncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthHalfCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
                 }
-                else if (Genealogy.IsFatherSideUncle(other.Genealogy, self.Genealogy) && Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
-                {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
-                }
-                else if (Genealogy.IsMotherSideUncle(other.Genealogy, self.Genealogy) && Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
-                {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:UncleMothersSide") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
-                }
                 else if (Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    if (Genealogy.IsMotherSideUncle(other.Genealogy, self.Genealogy))
+                    {
+                        text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:UncleMothersSide") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    }
+                    else
+                    {
+                        text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    }
                 }
                 else if (IsHalfNephew(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
@@ -414,7 +413,7 @@ namespace Destrospean.ExpandedGenealogy
                         text = playerLanguage.GetDescendantString(other.IsFemale, self.Genealogy, other.Genealogy.Spouse, true);
                     }
                 }
-                else if (PlayerLanguage.TryGetDistantRelationString(self, other, playerLanguage, out text))
+                else if (playerLanguage.TryGetDistantRelationString(self, other, out text))
                 {
                 }
                 if (FutureDescendantService.IsAncestorOf(other, self))
