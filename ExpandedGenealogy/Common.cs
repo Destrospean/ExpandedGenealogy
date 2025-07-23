@@ -613,11 +613,14 @@ namespace Destrospean.ExpandedGenealogy
             {
                 return false;
             }
-            foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
+            foreach (Household household in Household.sHouseholdList)
             {
-                if (sim.SimDescription.SimDescriptionId == simDescriptionId)
+                foreach (SimDescription simDescription in household.AllSimDescriptions)
                 {
-                    return false;
+                    if (simDescription.SimDescriptionId == simDescriptionId)
+                    {
+                        return false;
+                    }
                 }
             }
             if (Bin.Singleton != null)
@@ -651,9 +654,12 @@ namespace Destrospean.ExpandedGenealogy
             {
                 miniSimDescription.Genealogy.GetGenealogyPlaceholder();
             }
-            foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
+            foreach (Household household in Household.sHouseholdList)
             {
-                sim.SimDescription.Genealogy.GetGenealogyPlaceholder();
+                foreach (SimDescription simDescription in household.AllSimDescriptions)
+                {
+                    simDescription.Genealogy.GetGenealogyPlaceholder();
+                }
             }
             if (Bin.Singleton != null)
             {
