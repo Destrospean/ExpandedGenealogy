@@ -1,5 +1,4 @@
-﻿using Sims3.Gameplay.Actors;
-using Sims3.Gameplay.CAS;
+﻿using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Socializing;
