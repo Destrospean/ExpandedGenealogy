@@ -8,7 +8,16 @@ namespace Sims3.Gameplay.Destrospean
         public static bool kAllowRomanceForHalfRelatives;
 
         [Tunable]
-        public static bool kDebug;
+        public static bool kAllowRomanceForStepRelatives;
+
+        [Tunable]
+        public static bool kDenyRomanceWithAncestors;
+
+        [Tunable]
+        public static bool kDenyRomanceWithSiblings;
+
+        [Tunable]
+        public static bool kDenyRomanceWithSiblingsOfAncestors;
 
         [Tunable]
         public static int kMaxDegreeCousinsToShow;
@@ -18,6 +27,9 @@ namespace Sims3.Gameplay.Destrospean
 
         [Tunable]
         public static int kMinDegreeCousinsToAllowRomance;
+
+        [Tunable]
+        public static float kMinRelationshipCoefficientToDenyRomance;
 
         [Tunable]
         public static int kMinTimesRemovedCousinsToAllowRomance;

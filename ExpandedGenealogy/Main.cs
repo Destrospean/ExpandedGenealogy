@@ -8,6 +8,7 @@ using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using System;
+using System.Reflection;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.ExpandedGenealogy
@@ -23,6 +24,11 @@ namespace Destrospean.ExpandedGenealogy
             sSimAddedListener = null;
             World.sOnWorldLoadFinishedEventHandler += OnWorldLoadFinished;
             World.sOnWorldQuitEventHandler += OnWorldQuit;
+            Type nraasWoohooerType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
+            if (nraasWoohooerType != null)
+            {
+                MonoPatcher.ReplaceMethod(nraasWoohooerType.GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static), Type.GetType("Destrospean.ExpandedGenealogy.Replacements").GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static));
+            }
         }
 
         public class DEBUG_AddCousin : ImmediateInteraction<Sim, Sim>
@@ -48,7 +54,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled || Tuning.kDebug) && actor != target && !isAutonomous;
+                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
                 }
             }
 
@@ -82,7 +88,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled || Tuning.kDebug) && actor != target && !isAutonomous;
+                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
                 }
             }
 
@@ -116,7 +122,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled || Tuning.kDebug) && actor != target && !isAutonomous;
+                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
                 }
             }
 
@@ -150,7 +156,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled || Tuning.kDebug) && actor != target && !isAutonomous;
+                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
                 }
             }
 
@@ -184,7 +190,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled || Tuning.kDebug) && actor != target && !isAutonomous;
+                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
                 }
             }
 
@@ -218,7 +224,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled || Tuning.kDebug) && actor != target && !isAutonomous;
+                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
                 }
             }
 

@@ -470,8 +470,10 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1Info.ThroughWhichChild,
                                     ancestor2Info.ThroughWhichChild
                                 });
-                            distantRelationInfoList.Add(distantRelationInfo);
-
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            {
+                                distantRelationInfoList.Add(distantRelationInfo);
+                            }
                         }
                         else
                         {
@@ -480,7 +482,10 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1Info.ThroughWhichChild,
                                     ancestor2Info.ThroughWhichChild
                                 });
-                            distantRelationInfoList.Add(distantRelationInfo);
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            {
+                                distantRelationInfoList.Add(distantRelationInfo);
+                            }
                         }
                     }
                     else if (ancestor1.IsSibling(ancestor2))
@@ -493,7 +498,10 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1,
                                     ancestor2
                                 });
-                            distantRelationInfoList.Add(distantRelationInfo);
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            {
+                                distantRelationInfoList.Add(distantRelationInfo);
+                            }
                         }
                         else
                         {
@@ -502,7 +510,10 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1,
                                     ancestor2
                                 });
-                            distantRelationInfoList.Add(distantRelationInfo);
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            {
+                                distantRelationInfoList.Add(distantRelationInfo);
+                            }
                         }
                     }
                 }
@@ -541,7 +552,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static AncestorInfo GetAncestorInfo(this GenealogyPlaceholder descendant, GenealogyPlaceholder ancestor)
         {
-            AncestorInfo cachedAncestorInfo;
+            AncestorInfo cachedAncestorInfo, closestAncestorInfo = null;
             if (descendant.CachedAncestorInfo.TryGetValue(ancestor, out cachedAncestorInfo))
             {
                 return cachedAncestorInfo;
@@ -578,7 +589,6 @@ namespace Destrospean.ExpandedGenealogy
                 }
             }
             int shortestGenerationalDistance = int.MaxValue;
-            AncestorInfo closestAncestorInfo = null;
             foreach (AncestorInfo ancestorInfo in ancestorInfoList)
             {
                 if (shortestGenerationalDistance > ancestorInfo.GenerationalDistance)
@@ -644,6 +654,21 @@ namespace Destrospean.ExpandedGenealogy
                 }
             }
             return true;
+        }
+
+        public static bool IsUniqueIn(this DistantRelationInfo self, List<DistantRelationInfo> list)
+        {
+            return !list.Exists(distantRelationInfo =>
+                {
+                    foreach (GenealogyPlaceholder child in distantRelationInfo.ThroughWhichChildren)
+                    {
+                        if (!(new List<GenealogyPlaceholder>(self.ThroughWhichChildren)).Contains(child))
+                        {
+                            return false;
+                        }
+                    }
+                    return distantRelationInfo.ClosestDescendant == self.ClosestDescendant && distantRelationInfo.Degree == self.Degree && distantRelationInfo.TimesRemoved == self.TimesRemoved;
+                });
         }
 
         public static void RebuildRelationAssignments()
