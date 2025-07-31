@@ -401,7 +401,7 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
                 PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/Genealogy:LanguageCode"))) as PlayerLanguage;
-                string text = "";
+                string text;
                 if (Genealogy.IsParent(other.Genealogy, self.Genealogy))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Parent");
