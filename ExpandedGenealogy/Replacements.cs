@@ -56,7 +56,7 @@ namespace Destrospean.ExpandedGenealogy
             {
                 foreach (Genealogy sibling in sim1.Spouse.Siblings)
                 {
-                    if (sibling == sim2 || (sibling.Spouse == sim2 && sibling.PartnerType == PartnerType.Marriage))
+                    if (sibling == sim2 || sibling.Spouse == sim2 && sibling.PartnerType == PartnerType.Marriage)
                     {
                         return Genealogy.IsHalfSibling(sim1.Spouse, sibling);
                     }
@@ -66,7 +66,7 @@ namespace Destrospean.ExpandedGenealogy
             {
                 foreach (Genealogy sibling in sim2.Spouse.Siblings)
                 {
-                    if (sibling == sim1 || (sibling.Spouse == sim1 && sibling.PartnerType == PartnerType.Marriage))
+                    if (sibling == sim1 || sibling.Spouse == sim1 && sibling.PartnerType == PartnerType.Marriage)
                     {
                         return Genealogy.IsHalfSibling(sim2.Spouse, sibling);
                     }
