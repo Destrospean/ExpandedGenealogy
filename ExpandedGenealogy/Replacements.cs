@@ -181,9 +181,9 @@ namespace Destrospean.ExpandedGenealogy
                     bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
                     relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
                     /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
-                    * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
-                    * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
-                    */
+                     * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
+                     * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
+                     */
                     if (distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                     {
                         return true;
