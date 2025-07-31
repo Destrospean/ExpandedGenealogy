@@ -54,7 +54,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
+                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
                 }
             }
 
@@ -88,7 +88,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
+                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
                 }
             }
 
@@ -122,7 +122,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
+                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
                 }
             }
 
@@ -156,7 +156,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
+                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
                 }
             }
 
@@ -190,7 +190,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
+                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
                 }
             }
 
@@ -224,7 +224,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return (Cheats.sTestingCheatsEnabled) && actor != target && !isAutonomous;
+                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
                 }
             }
 
