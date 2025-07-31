@@ -662,7 +662,7 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     foreach (GenealogyPlaceholder child in distantRelationInfo.ThroughWhichChildren)
                     {
-                        if (!(new List<GenealogyPlaceholder>(self.ThroughWhichChildren)).Contains(child))
+                        if (!new List<GenealogyPlaceholder>(self.ThroughWhichChildren).Contains(child))
                         {
                             return false;
                         }
