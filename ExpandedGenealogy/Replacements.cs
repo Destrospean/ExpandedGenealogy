@@ -10,92 +10,12 @@ using Sims3.SimIFace.CustomContent;
 using Sims3.UI.CAS;
 using Sims3.UI.Controller;
 using System;
-using System.Text.RegularExpressions;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.ExpandedGenealogy
 {
     public class Replacements
     {
-        public static bool AreTooCloselyRelatedForRomance(Genealogy sim1, Genealogy sim2)
-        {
-            float relationshipCoefficient = 0f;
-            // Check if one of the Sims is an ancestor of the other
-            AncestorInfo ancestorInfo = sim1.GetAncestorInfo(sim2);
-            if (ancestorInfo == null)
-            {
-                ancestorInfo = sim2.GetAncestorInfo(sim1);
-            }
-            if (ancestorInfo != null)
-            {
-                relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
-                if (Tuning.kDenyRomanceWithAncestors)
-                {
-                    return true;
-                }
-            }
-            if (Genealogy.IsSibling(sim1, sim2))
-            {
-                bool isHalfSibling = Genealogy.IsHalfSibling(sim1, sim2);
-                relationshipCoefficient += isHalfSibling ? .25f : .5f;
-                if (Tuning.kDenyRomanceWithSiblings && !(isHalfSibling && Tuning.kAllowRomanceForHalfRelatives))
-                {
-                    return true;
-                }
-            }
-            // Check if Sim 1 is a descendant of one of Sim 2's siblings
-            foreach (GenealogyPlaceholder sibling in sim2.GetGenealogyPlaceholder().Siblings)
-            {
-                AncestorInfo tempAncestorInfo = sim1.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                if (tempAncestorInfo != null)
-                {
-                    relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(sim2, sibling.Genealogy) ? 3 : 2));
-                    if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
-                    {
-                        return true;
-                    }
-                }
-            }
-            // Check if Sim 1 is a sibling of one of Sim 2's ancestors
-            foreach (GenealogyPlaceholder sibling in sim1.GetGenealogyPlaceholder().Siblings)
-            {
-                AncestorInfo tempAncestorInfo = sim2.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                if (tempAncestorInfo != null)
-                {
-                    relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(sim1, sibling.Genealogy) ? 3 : 2));
-                    if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
-                    {
-                        return true;
-                    }
-                }
-            }
-            foreach (DistantRelationInfo distantRelationInfo in sim2.GetGenealogyPlaceholder().CalculateDistantRelations(sim1.GetGenealogyPlaceholder()))
-            {
-                if (distantRelationInfo.Degree == 0)
-                {
-                    continue;
-                }
-                bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
-                relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
-                /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
-                 * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
-                 * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
-                 */
-                if (distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
-                {
-                    return true;
-                }
-            }
-            /* Check if the coefficient of relationship for the two Sims is higher the minimum to disallow it.
-             * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
-             */
-            if (relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f)
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static bool IsCloselyRelated(SimDescription sim1, SimDescription sim2, bool thoroughCheck)
         {
             if (sim1 == sim2)
@@ -201,7 +121,82 @@ namespace Destrospean.ExpandedGenealogy
 
             public bool IsBloodRelated(Genealogy other)
             {
-                return AreTooCloselyRelatedForRomance((Genealogy)(this as object), other);
+                Genealogy self = (Genealogy)(this as object);
+                float relationshipCoefficient = 0f;
+                // Check if one of the Sims is an ancestor of the other
+                AncestorInfo ancestorInfo = self.GetAncestorInfo(other);
+                if (ancestorInfo == null)
+                {
+                    ancestorInfo = other.GetAncestorInfo(self);
+                }
+                if (ancestorInfo != null)
+                {
+                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
+                    if (Tuning.kDenyRomanceWithAncestors)
+                    {
+                        return true;
+                    }
+                }
+                if (Genealogy.IsSibling(self, other))
+                {
+                    bool isHalfSibling = Genealogy.IsHalfSibling(self, other);
+                    relationshipCoefficient += isHalfSibling ? .25f : .5f;
+                    if (Tuning.kDenyRomanceWithSiblings && !(isHalfSibling && Tuning.kAllowRomanceForHalfRelatives))
+                    {
+                        return true;
+                    }
+                }
+                // Check if Sim 1 is a descendant of one of Sim 2's siblings
+                foreach (GenealogyPlaceholder sibling in other.GetGenealogyPlaceholder().Siblings)
+                {
+                    AncestorInfo tempAncestorInfo = self.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (tempAncestorInfo != null)
+                    {
+                        relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(other, sibling.Genealogy) ? 3 : 2));
+                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                // Check if Sim 1 is a sibling of one of Sim 2's ancestors
+                foreach (GenealogyPlaceholder sibling in self.GetGenealogyPlaceholder().Siblings)
+                {
+                    AncestorInfo tempAncestorInfo = other.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (tempAncestorInfo != null)
+                    {
+                        relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(self, sibling.Genealogy) ? 3 : 2));
+                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                foreach (DistantRelationInfo distantRelationInfo in other.GetGenealogyPlaceholder().CalculateDistantRelations(self.GetGenealogyPlaceholder()))
+                {
+                    if (distantRelationInfo.Degree == 0)
+                    {
+                        continue;
+                    }
+                    bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
+                    relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
+                    /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
+                    * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
+                    * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
+                    */
+                    if (distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
+                    {
+                        return true;
+                    }
+                }
+                /* Check if the coefficient of relationship for the two Sims is higher the minimum to disallow it.
+                * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
+                */
+                if (relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f)
+                {
+                    return true;
+                }
+                return false;
             }
 
             public static bool IsCousin(Genealogy sim1, Genealogy sim2)
