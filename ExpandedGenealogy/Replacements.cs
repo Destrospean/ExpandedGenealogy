@@ -192,11 +192,7 @@ namespace Destrospean.ExpandedGenealogy
                 /* Check if the coefficient of relationship for the two Sims is higher the minimum to disallow it.
                 * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
                 */
-                if (relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f)
-                {
-                    return true;
-                }
-                return false;
+                return relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f;
             }
 
             public static bool IsCousin(Genealogy sim1, Genealogy sim2)
