@@ -97,23 +97,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static bool IsCloselyRelated(SimDescription sim1, SimDescription sim2, bool thoroughCheck)
         {
-            if (sim1 == null || sim2 == null)
-            {
-                return false;
-            }
-            if (sim1 == sim2)
-            {
-                return true;
-            }
-            if (!IsEquivalentSpecies(sim1, sim2))
-            {
-                return false;
-            }
-            if (sim1.IsRobot)
-            {
-                return false;
-            }
-            if (sim2.IsRobot)
+            if (sim1 == null || sim2 == null || sim1 == sim2 || !(sim1.Species == sim2.Species || sim1.IsADogSpecies && sim2.IsADogSpecies) || sim1.IsRobot || sim2.IsRobot)
             {
                 return false;
             }
@@ -124,23 +108,6 @@ namespace Destrospean.ExpandedGenealogy
             if (!sim1.Genealogy.IsBloodRelated(sim2.Genealogy))
             {
                 return sim1.Genealogy.IsStepRelated(sim2.Genealogy);
-            }
-            return true;
-        }
-
-        public static bool IsEquivalentSpecies(IMiniSimDescription sim1, IMiniSimDescription sim2)
-        {
-            if (sim1 == null || sim2 == null)
-            {
-                return false;
-            }
-            if (sim1.Species != sim2.Species)
-            {
-                if (sim1.IsADogSpecies)
-                {
-                    return sim2.IsADogSpecies;
-                }
-                return false;
             }
             return true;
         }
