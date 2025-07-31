@@ -381,10 +381,11 @@ namespace Destrospean.ExpandedGenealogy
         {
             public string GetMyFamilialDescriptionFor(SimDescription other)
             {
+                string text = "";
                 SimDescription self = (SimDescription)(this as object);
                 if (other.Genealogy == self.Genealogy)
                 {
-                    return "";
+                    return text;
                 }
                 if (GameUtils.IsAnyTravelBasedWorld() && GameStates.TravelerIds != null && GameStates.TravelerIds.Contains(self.SimDescriptionId))
                 {
@@ -401,7 +402,6 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
                 PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/Genealogy:LanguageCode"))) as PlayerLanguage;
-                string text;
                 if (Genealogy.IsParent(other.Genealogy, self.Genealogy))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Parent");
