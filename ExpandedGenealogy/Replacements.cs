@@ -239,7 +239,7 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     return false;
                 }
-                int sharedParentCount = 0, totalParentCount = sim1.Parents.Count + sim2.Parents.Count;
+                int sharedParentCount = 0;
                 foreach (Genealogy parent1 in sim1.Parents)
                 {
                     foreach (Genealogy parent2 in sim2.Parents)
@@ -250,7 +250,7 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     }
                 }
-                return Genealogy.IsSibling(sim1, sim2) && sharedParentCount * 2 != totalParentCount;
+                return Genealogy.IsSibling(sim1, sim2) && sharedParentCount * 2 != sim1.Parents.Count + sim2.Parents.Count;
             }
 
             public static bool IsSiblingInLaw(Genealogy sim1, Genealogy sim2)
