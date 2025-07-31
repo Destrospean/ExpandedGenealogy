@@ -9,7 +9,6 @@ using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using System;
 using System.Reflection;
-using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.ExpandedGenealogy
 {
