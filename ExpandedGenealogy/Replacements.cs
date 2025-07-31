@@ -81,7 +81,8 @@ namespace Destrospean.ExpandedGenealogy
             {
                 foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
                 {
-                    if (nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling) != null)
+                    AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
                     {
                         return Genealogy.IsHalfSibling(uncle, sibling.Genealogy);
                     }
@@ -91,7 +92,8 @@ namespace Destrospean.ExpandedGenealogy
             {
                 foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
                 {
-                    if (nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling) != null)
+                    AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
                     {
                         return Genealogy.IsHalfSibling(uncle.Spouse, sibling.Genealogy);
                     }
@@ -321,7 +323,8 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
                     {
-                        if (nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling) != null)
+                        AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                        if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
                         {
                             return true;
                         }
@@ -331,7 +334,8 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
                     {
-                        if (nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling) != null)
+                        AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                        if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
                         {
                             return true;
                         }
