@@ -190,8 +190,8 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
                 /* Check if the coefficient of relationship for the two Sims is higher the minimum to disallow it.
-                * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
-                */
+                 * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
+                 */
                 return relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f;
             }
 
