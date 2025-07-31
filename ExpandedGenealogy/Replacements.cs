@@ -10,6 +10,7 @@ using Sims3.SimIFace.CustomContent;
 using Sims3.UI.CAS;
 using Sims3.UI.Controller;
 using System;
+using System.Text.RegularExpressions;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.ExpandedGenealogy
@@ -109,11 +110,7 @@ namespace Destrospean.ExpandedGenealogy
             {
                 return true;
             }
-            if (!sim1.Genealogy.IsBloodRelated(sim2.Genealogy))
-            {
-                return sim1.Genealogy.IsStepRelated(sim2.Genealogy);
-            }
-            return true;
+            return sim1.Genealogy.IsBloodRelated(sim2.Genealogy) || sim1.Genealogy.IsStepRelated(sim2.Genealogy);
         }
 
         public static bool IsHalfCousin(Genealogy sim1, Genealogy sim2)
