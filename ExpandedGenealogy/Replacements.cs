@@ -77,20 +77,27 @@ namespace Destrospean.ExpandedGenealogy
 
         public static bool IsHalfUncle(Genealogy uncle, Genealogy nephew)
         {
-            foreach (DistantRelationInfo distantRelationInfo in uncle.GetGenealogyPlaceholder().CalculateDistantRelations(nephew.GetGenealogyPlaceholder()))
+            foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
             {
-                if (distantRelationInfo.Degree == 0 && distantRelationInfo.TimesRemoved == 1 && distantRelationInfo.ClosestDescendant.Genealogy == uncle)
+                foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
                 {
-                    return Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
+
+                    AncestorInfo tempAncestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (tempAncestorInfo != null)
+                    {
+                        return Genealogy.IsHalfSibling(uncle, sibling.Genealogy);
+                    }
                 }
             }
             if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
             {
-                foreach (DistantRelationInfo distantRelationInfo in uncle.Spouse.GetGenealogyPlaceholder().CalculateDistantRelations(nephew.GetGenealogyPlaceholder()))
+                foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
                 {
-                    if (distantRelationInfo.Degree == 0 && distantRelationInfo.TimesRemoved == 1 && distantRelationInfo.ClosestDescendant.Genealogy == uncle.Spouse)
+                    Genealogy.IsHalfSibling(uncle.Spouse, sibling.Genealogy);
+                    AncestorInfo tempAncestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (tempAncestorInfo != null)
                     {
-                        return Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
+                        return Genealogy.IsHalfSibling(uncle.Spouse, sibling.Genealogy);
                     }
                 }
             }
@@ -314,18 +321,24 @@ namespace Destrospean.ExpandedGenealogy
 
             public static bool IsUncle(Genealogy uncle, Genealogy nephew)
             {
-                foreach (DistantRelationInfo distantRelationInfo in uncle.GetGenealogyPlaceholder().CalculateDistantRelations(nephew.GetGenealogyPlaceholder()))
+                foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
                 {
-                    if (distantRelationInfo.Degree == 0 && distantRelationInfo.TimesRemoved == 1 && distantRelationInfo.ClosestDescendant.Genealogy == uncle)
+                    foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
                     {
-                        return true;
+                        AncestorInfo tempAncestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                        if (tempAncestorInfo != null)
+                        {
+                            return true;
+                        }
                     }
                 }
                 if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
                 {
-                    foreach (DistantRelationInfo distantRelationInfo in uncle.Spouse.GetGenealogyPlaceholder().CalculateDistantRelations(nephew.GetGenealogyPlaceholder()))
+                    foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
                     {
-                        if (distantRelationInfo.Degree == 0 && distantRelationInfo.TimesRemoved == 1 && distantRelationInfo.ClosestDescendant.Genealogy == uncle.Spouse)
+                        Genealogy.IsHalfSibling(uncle.Spouse, sibling.Genealogy);
+                        AncestorInfo tempAncestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                        if (tempAncestorInfo != null)
                         {
                             return true;
                         }
