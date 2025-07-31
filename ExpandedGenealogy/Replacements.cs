@@ -97,13 +97,17 @@ namespace Destrospean.ExpandedGenealogy
 
         public static bool IsCloselyRelated(SimDescription sim1, SimDescription sim2, bool thoroughCheck)
         {
-            if (sim1 == sim2 || (FutureDescendantService.IsAncestorOf(sim1, sim2) || FutureDescendantService.IsAncestorOf(sim2, sim1)) && Tuning.kDenyRomanceWithAncestors)
+            if (sim1 == sim2)
             {
                 return true;
             }
             if (sim1 == null || sim2 == null || !(sim1.Species == sim2.Species || sim1.IsADogSpecies && sim2.IsADogSpecies) || sim1.IsRobot || sim2.IsRobot)
             {
                 return false;
+            }
+            if ((FutureDescendantService.IsAncestorOf(sim1, sim2) || FutureDescendantService.IsAncestorOf(sim2, sim1)) && Tuning.kDenyRomanceWithAncestors)
+            {
+                return true;
             }
             if (!sim1.Genealogy.IsBloodRelated(sim2.Genealogy))
             {
