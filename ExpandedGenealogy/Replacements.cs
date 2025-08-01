@@ -2,7 +2,6 @@
 using MonoPatcherLib;
 using Sims3.Gameplay;
 using Sims3.Gameplay.CAS;
-using Sims3.Gameplay.Objects.Beds;
 using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.TimeTravel;
 using Sims3.Gameplay.Utilities;
