@@ -6,6 +6,7 @@ using Sims3.SimIFace;
 using Sims3.SimIFace.CustomContent;
 using System;
 using System.Collections.Generic;
+using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace System.Runtime.CompilerServices
 {
@@ -432,14 +433,15 @@ namespace Destrospean.ExpandedGenealogy
 
         public static DistantRelationInfo CalculateDistantRelation(this GenealogyPlaceholder self, GenealogyPlaceholder other)
         {
-            int lowestDegree = int.MaxValue;
             DistantRelationInfo closestDistantRelationInfo = null;
+            int highestRelationshipCoefficientPower = int.MinValue;
             foreach (DistantRelationInfo distantRelationInfo in self.CalculateDistantRelations(other))
             {
-                if (lowestDegree > distantRelationInfo.Degree || (lowestDegree == distantRelationInfo.Degree && closestDistantRelationInfo != null && closestDistantRelationInfo.TimesRemoved > distantRelationInfo.TimesRemoved))
+                int relationshipCoefficientPower = -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy) ? 2 : 1);
+                if (relationshipCoefficientPower > highestRelationshipCoefficientPower || relationshipCoefficientPower == highestRelationshipCoefficientPower && closestDistantRelationInfo != null && (closestDistantRelationInfo.Degree > distantRelationInfo.Degree || closestDistantRelationInfo.Degree == distantRelationInfo.Degree && closestDistantRelationInfo.TimesRemoved > distantRelationInfo.TimesRemoved))
                 {
-                    lowestDegree = distantRelationInfo.Degree;
                     closestDistantRelationInfo = distantRelationInfo;
+                    highestRelationshipCoefficientPower = relationshipCoefficientPower;
                 }
             }
             return closestDistantRelationInfo;
@@ -470,7 +472,7 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1Info.ThroughWhichChild,
                                     ancestor2Info.ThroughWhichChild
                                 });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                             {
                                 distantRelationInfoList.Add(distantRelationInfo);
                             }
@@ -482,7 +484,7 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1Info.ThroughWhichChild,
                                     ancestor2Info.ThroughWhichChild
                                 });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                             {
                                 distantRelationInfoList.Add(distantRelationInfo);
                             }
@@ -498,7 +500,7 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1,
                                     ancestor2
                                 });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                             {
                                 distantRelationInfoList.Add(distantRelationInfo);
                             }
@@ -510,7 +512,7 @@ namespace Destrospean.ExpandedGenealogy
                                     ancestor1,
                                     ancestor2
                                 });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList))
+                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                             {
                                 distantRelationInfoList.Add(distantRelationInfo);
                             }
@@ -610,6 +612,55 @@ namespace Destrospean.ExpandedGenealogy
                 sGenealogyPlaceholders.Add(id, genealogyPlaceholder);
             }
             return sGenealogyPlaceholders[id];
+        }
+
+        public static Dictionary<string, object> GetSiblingOfAncestorInfoDictionary(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
+        {
+            List<int[]> genDistsAndHalfRelPairs = new List<int[]>();
+            foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
+            {
+                AncestorInfo ancestorInfo = descendantOfSibling.GetAncestorInfo(sibling.Genealogy);
+                if (ancestorInfo != null)
+                {
+                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling.Genealogy, siblingOfAncestor);
+                    if (isHalfRelative && !Tuning.kShowHalfRelatives)
+                    {
+                        continue;
+                    }
+                    genDistsAndHalfRelPairs.Add(new int[]
+                        {
+                            ancestorInfo.GenerationalDistance,
+                            isHalfRelative ? 1 : 0
+                        });
+                }
+            }
+            if (genDistsAndHalfRelPairs.Count == 0)
+            {
+                return null;
+            }
+            int[] lowestGenDistAndHalfRelPair = new int[]
+                {
+                    int.MinValue,
+                    int.MaxValue
+                };
+            foreach (int[] genDistAndHalfRelPair in genDistsAndHalfRelPairs)
+            {
+                if (lowestGenDistAndHalfRelPair[0] > genDistAndHalfRelPair[0] || lowestGenDistAndHalfRelPair[0] == genDistAndHalfRelPair[0] && lowestGenDistAndHalfRelPair[1] > genDistAndHalfRelPair[1])
+                {
+                    lowestGenDistAndHalfRelPair = genDistAndHalfRelPair;
+                }
+            }
+            return new Dictionary<string, object>
+            {
+                {
+                    "Generational Distance",
+                    lowestGenDistAndHalfRelPair[0]
+                },
+                {
+                    "Is Half Relative",
+                    lowestGenDistAndHalfRelPair[1] == 1
+                },
+            };
         }
 
         public static bool IsSimDescriptionIdUnique(ulong simDescriptionId)
