@@ -98,7 +98,15 @@ namespace Destrospean.ExpandedGenealogy
 
         public static bool IsHalfUncle(Genealogy uncle, Genealogy nephew)
         {
-            if (IsHalfCousin(uncle, nephew, 0, 1, uncle) || uncle.Spouse != null && IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
+            if (IsHalfCousin(uncle, nephew, 0, 1, uncle))
+            {
+                return true;
+            }
+            else if (IsCousin(uncle, nephew, 0, 1, uncle))
+            {
+                return false;
+            }
+            else if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage && IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
             {
                 return true;
             }
@@ -360,7 +368,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public static bool IsUncle(Genealogy uncle, Genealogy nephew)
             {
-                if (Replacements.IsCousin(uncle, nephew, 0, 1, uncle) || uncle.Spouse != null && Replacements.IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
+                if (Replacements.IsCousin(uncle, nephew, 0, 1, uncle) || uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage && Replacements.IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
                 {
                     return true;
                 }
