@@ -1,8 +1,11 @@
-﻿using Sims3.Gameplay.Socializing;
+﻿using Destrospean.ExpandedGenealogy;
+using Sims3.Gameplay.CAS;
+using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.Utilities;
+using Sims3.UI.CAS;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
-namespace Destrospean.Lang
+namespace Destrospean.Lang.ExpandedGenealogy
 {
     public abstract class PlayerLanguage
     {
@@ -30,7 +33,7 @@ namespace Destrospean.Lang
         public virtual string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw = false, bool isStepRelative = false)
         {
             string greats = "";
-            for (int i = 1; i < (isStepRelative ? Common.GetStepAncestorInfo(descendant, ancestor) : Common.GetAncestorInfo(descendant, ancestor)).GenerationalDistance; i++)
+            for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
             {
                 greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
             }
@@ -39,63 +42,21 @@ namespace Destrospean.Lang
 
         public virtual string GetDescendantOfSiblingString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling, bool isStepRelative = false)
         {
-            if (isStepRelative)
+            foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
             {
-                foreach (Genealogy stepSibling in siblingOfAncestor.GetStepSiblings())
+                if (descendantOfSibling.GetGenealogyPlaceholder().IsAncestor(sibling))
                 {
-                    if (descendantOfSibling.IsAncestor(stepSibling))
-                    {
-                        string greats = "";
-                        for (int i = 1; i < Common.GetAncestorInfo(descendantOfSibling, stepSibling).GenerationalDistance; i++)
-                        {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
-                        }
-                        return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:GreatNxNephew", greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
-                    }
-                    if (Tuning.kAccumulateDistantStepRelatives && descendantOfSibling.IsStepAncestor(stepSibling))
-                    {
-                        string greats = "";
-                        for (int i = 1; i < Common.GetStepAncestorInfo(descendantOfSibling, stepSibling).GenerationalDistance; i++)
-                        {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
-                        }
-                        return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:GreatNxNephew", greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
-                    }
-                }
-                foreach (Genealogy sibling in siblingOfAncestor.Siblings)
-                {
-                    if (descendantOfSibling.IsStepAncestor(sibling))
-                    {
-                        bool isHalfRelative = Genealogy.IsHalfSibling(sibling, siblingOfAncestor);
-                        if (isHalfRelative && !Tuning.kShowDistantHalfRelatives)
-                        {
-                            return "";
-                        }
-                        string greats = "";
-                        for (int i = 1; i < Common.GetStepAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
-                        {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
-                        }
-                        return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowDistantHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfNephew" : "Destrospean/ExpandedGenealogy:GreatNxNephew", greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
-                    }
-                }
-                return "";
-            }
-            foreach (Genealogy sibling in siblingOfAncestor.Siblings)
-            {
-                if (descendantOfSibling.IsAncestor(sibling))
-                {
-                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling, siblingOfAncestor);
-                    if (isHalfRelative && !Tuning.kShowDistantHalfRelatives)
+                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling.Genealogy, siblingOfAncestor);
+                    if (isHalfRelative && !Tuning.kShowHalfRelatives)
                     {
                         return "";
                     }
                     string greats = "";
-                    for (int i = 1; i < Common.GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
+                    for (int i = 1; i < descendantOfSibling.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance; i++)
                     {
                         greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
                     }
-                    return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowDistantHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfNephew" : "Destrospean/ExpandedGenealogy:GreatNxNephew", greats, "");
+                    return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfNephew" : "Destrospean/ExpandedGenealogy:GreatNxNephew", greats, "");
                 }
             }
             return "";
@@ -109,18 +70,18 @@ namespace Destrospean.Lang
         public virtual string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw = false, bool isStepRelative = false)
         {
             string greats = "";
-            for (int i = 1; i < (isStepRelative ? Common.GetStepAncestorInfo(descendant, ancestor) : Common.GetAncestorInfo(descendant, ancestor)).GenerationalDistance; i++)
+            for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
             {
                 greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
             }
             return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:GreatNxGrandchild", greats, isInLaw || (isStepRelative && InLawsAndStepRelativesShareTerminology) ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:InLaw") : "", isStepRelative && !InLawsAndStepRelativesShareTerminology ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step") : "");
         }
 
-        public abstract string GetDistantRelationString(bool isFemale, Genealogy sim, Common.DistantRelationInfo distantRelationInfo, bool isStepRelative = false);
+        public abstract string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo);
 
-        public string GetDistantRelationString(Genealogy sim, Common.DistantRelationInfo distantRelationInfo, bool isStepRelative = false)
+        public string GetDistantRelationString(Genealogy sim, DistantRelationInfo distantRelationInfo)
         {
-            return GetDistantRelationString(sim.SimDescription.IsFemale, sim, distantRelationInfo, isStepRelative);
+            return GetDistantRelationString(sim.SimDescription.IsFemale, sim, distantRelationInfo);
         }
 
         public virtual string GetOrdinalSuffix(string number)
@@ -140,66 +101,86 @@ namespace Destrospean.Lang
 
         public virtual string GetSiblingOfAncestorString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor, bool isStepRelative = false)
         {
-            if (isStepRelative)
+            foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
             {
-                foreach (Genealogy stepSibling in siblingOfAncestor.GetStepSiblings())
+                if (descendantOfSibling.GetGenealogyPlaceholder().IsAncestor(sibling))
                 {
-                    if (descendantOfSibling.IsAncestor(stepSibling))
-                    {
-                        string greats = "";
-                        for (int i = 1; i < Common.GetAncestorInfo(descendantOfSibling, stepSibling).GenerationalDistance; i++)
-                        {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
-                        }
-                        return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:GreatNxUncle", greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
-                    }
-                    if (Tuning.kAccumulateDistantStepRelatives && descendantOfSibling.IsStepAncestor(stepSibling))
-                    {
-                        string greats = "";
-                        for (int i = 1; i < Common.GetStepAncestorInfo(descendantOfSibling, stepSibling).GenerationalDistance; i++)
-                        {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
-                        }
-                        return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:GreatNxUncle", greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
-                    }
-                }
-                foreach (Genealogy sibling in siblingOfAncestor.Siblings)
-                {
-                    if (descendantOfSibling.IsStepAncestor(sibling))
-                    {
-                        bool isHalfRelative = Genealogy.IsHalfSibling(sibling, siblingOfAncestor);
-                        if (isHalfRelative && !Tuning.kShowDistantHalfRelatives)
-                        {
-                            return "";
-                        }
-                        string greats = "";
-                        for (int i = 1; i < Common.GetStepAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
-                        {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
-                        }
-                        return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowDistantHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfUncle" : "Destrospean/ExpandedGenealogy:GreatNxUncle", greats, Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Step"));
-                    }
-                }
-                return "";
-            }
-            foreach (Genealogy sibling in siblingOfAncestor.Siblings)
-            {
-                if (descendantOfSibling.IsAncestor(sibling))
-                {
-                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling, siblingOfAncestor);
-                    if (isHalfRelative && !Tuning.kShowDistantHalfRelatives)
+                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling.Genealogy, siblingOfAncestor);
+                    if (isHalfRelative && !Tuning.kShowHalfRelatives)
                     {
                         return "";
                     }
                     string greats = "";
-                    for (int i = 1; i < Common.GetAncestorInfo(descendantOfSibling, sibling).GenerationalDistance; i++)
+                    for (int i = 1; i < descendantOfSibling.GetAncestorInfo(sibling.Genealogy).GenerationalDistance; i++)
                     {
                         greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy:Great");
                     }
-                    return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowDistantHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfUncle" : "Destrospean/ExpandedGenealogy:GreatNxUncle", greats, "");
+                    return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy:GreatNxHalfUncle" : "Destrospean/ExpandedGenealogy:GreatNxUncle", greats, "");
                 }
             }
             return "";
+        }
+
+        public bool TryGetDistantRelationString(SimDescription sim1, SimDescription sim2, out string result)
+        {
+            string text = "";
+            DistantRelationInfo distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
+            if (distantRelationInfo == null)
+            {
+                // Check if the target is married to someone other than the selected Sim
+                if (sim2.Genealogy.Spouse != null && sim2.Genealogy.Spouse != sim1.Genealogy && sim2.Genealogy.PartnerType == PartnerType.Marriage)
+                {
+                    distantRelationInfo = sim2.Genealogy.Spouse.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
+                }
+                if (distantRelationInfo == null)
+                {
+                    // Check if the selected Sim is married to someone other than the target
+                    if (sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
+                    {
+                        distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.Spouse.GetGenealogyPlaceholder());
+                    }
+                    // Check if the selected Sim is married to a sibling of one of the target's ancestors
+                    if (distantRelationInfo != null && distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant.Genealogy == sim1.Genealogy.Spouse)
+                    {
+                        text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
+                    }
+                }
+                // Check if the target is married to a sibling of one of the selected Sim's ancestors
+                else if (distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant.Genealogy == sim2.Genealogy.Spouse)
+                {
+                    text = GetDistantRelationString(sim2.IsFemale, sim2.Genealogy.Spouse, distantRelationInfo);
+                }
+            }
+            else
+            {
+                /* Get a relation name that is valid if the target is a collateral descendant or type of cousin
+                 * of the selected Sim or if the selected Sim is a collateral descendant of the target
+                 */
+                text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
+            }
+            // This if-statement block is necessary for when the selected Sim and the target do not share an ancestor in the game but each has an ancestor who is a sibling of the other.
+            if (distantRelationInfo == null)
+            {
+                // Get a relation name that is valid if the target is a sibling of one of the selected Sim's ancestors
+                text = GetSiblingOfAncestorString(sim2.IsFemale, sim1.Genealogy, sim2.Genealogy);
+                if (string.IsNullOrEmpty(text) && sim2.Genealogy.Spouse != null && sim1.Genealogy != sim2.Genealogy.Spouse && sim2.Genealogy.PartnerType == PartnerType.Marriage)
+                {
+                    // Get a relation name that is valid if the target is married to a sibling of one of the selected Sim's ancestors
+                    text = GetSiblingOfAncestorString(sim2.IsFemale, sim1.Genealogy, sim2.Genealogy.Spouse);
+                }
+                if (string.IsNullOrEmpty(text))
+                {
+                    // Get a relation name that is valid if the selected Sim is a sibling of one of the target's ancestors
+                    text = GetDescendantOfSiblingString(sim2.IsFemale, sim1.Genealogy, sim2.Genealogy);
+                }
+                if (string.IsNullOrEmpty(text) && sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
+                {
+                    // Get a relation name that is valid if the selected Sim is married to a sibling of one of the target's ancestors
+                    text = GetDescendantOfSiblingString(sim2.IsFemale, sim1.Genealogy.Spouse, sim2.Genealogy);
+                }
+            }
+            result = text;
+            return !string.IsNullOrEmpty(result);
         }
     }
 }

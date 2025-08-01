@@ -17,6 +17,7 @@ using Sims3.SimIFace;
 [assembly: AssemblyCopyright("Copyright 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: PersistableStatic]
 [assembly: Tunable]
 
 // This sets the default COM visibility of types in the assembly to invisible.

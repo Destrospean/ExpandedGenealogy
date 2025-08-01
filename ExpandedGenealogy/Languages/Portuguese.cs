@@ -1,13 +1,6 @@
-﻿namespace Destrospean.Lang
+﻿﻿namespace Destrospean.Lang.ExpandedGenealogy
 {
     public class POR : SPA
     {
-        public override bool InLawsAndStepRelativesShareTerminology
-        {
-            get
-            {
-                return true;
-            }
-        }
     }
 }

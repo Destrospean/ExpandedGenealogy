@@ -1,4 +1,4 @@
-﻿using Destrospean.Lang;
+﻿using Destrospean.Lang.ExpandedGenealogy;
 using MonoPatcherLib;
 using Sims3.Gameplay;
 using Sims3.Gameplay.CAS;
@@ -6,26 +6,40 @@ using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.TimeTravel;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
+using Sims3.SimIFace.CustomContent;
 using Sims3.UI.CAS;
 using Sims3.UI.Controller;
 using System;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
-namespace Destrospean
+namespace Destrospean.ExpandedGenealogy
 {
-    [Plugin]
-    public class ExpandedGenealogy
+    public class Replacements
     {
+        public static bool IsCloselyRelated(SimDescription sim1, SimDescription sim2, bool thoroughCheck)
+        {
+            if (sim1 == sim2)
+            {
+                return true;
+            }
+            if (sim1 == null || sim2 == null || !(sim1.Species == sim2.Species || sim1.IsADogSpecies && sim2.IsADogSpecies) || sim1.IsRobot || sim2.IsRobot)
+            {
+                return false;
+            }
+            if ((FutureDescendantService.IsAncestorOf(sim1, sim2) || FutureDescendantService.IsAncestorOf(sim2, sim1)) && Tuning.kDenyRomanceWithAncestors)
+            {
+                return true;
+            }
+            return sim1.Genealogy.IsBloodRelated(sim2.Genealogy) || sim1.Genealogy.IsStepRelated(sim2.Genealogy);
+        }
+
         public static bool IsHalfCousin(Genealogy sim1, Genealogy sim2)
         {
-            foreach (Genealogy parent1 in sim1.Parents)
+            foreach (DistantRelationInfo distantRelationInfo in sim1.GetGenealogyPlaceholder().CalculateDistantRelations(sim2.GetGenealogyPlaceholder()))
             {
-                foreach (Genealogy parent2 in sim2.Parents)
+                if (distantRelationInfo.Degree == 1 && distantRelationInfo.TimesRemoved == 0)
                 {
-                    if (Genealogy.IsHalfSibling(parent1, parent2))
-                    {
-                        return true;
-                    }
+                    return Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
                 }
             }
             return false;
@@ -42,7 +56,7 @@ namespace Destrospean
             {
                 foreach (Genealogy sibling in sim1.Spouse.Siblings)
                 {
-                    if (sibling == sim2 || (sibling.Spouse == sim2 && sibling.PartnerType == PartnerType.Marriage))
+                    if (sibling == sim2 || sibling.Spouse == sim2 && sibling.PartnerType == PartnerType.Marriage)
                     {
                         return Genealogy.IsHalfSibling(sim1.Spouse, sibling);
                     }
@@ -52,7 +66,7 @@ namespace Destrospean
             {
                 foreach (Genealogy sibling in sim2.Spouse.Siblings)
                 {
-                    if (sibling == sim1 || (sibling.Spouse == sim1 && sibling.PartnerType == PartnerType.Marriage))
+                    if (sibling == sim1 || sibling.Spouse == sim1 && sibling.PartnerType == PartnerType.Marriage)
                     {
                         return Genealogy.IsHalfSibling(sim2.Spouse, sibling);
                     }
@@ -63,13 +77,25 @@ namespace Destrospean
 
         public static bool IsHalfUncle(Genealogy uncle, Genealogy nephew)
         {
-            foreach (Genealogy parent in nephew.Parents)
+            foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
             {
-                foreach (Genealogy sibling in parent.Siblings)
+                foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
                 {
-                    if (sibling == uncle || (sibling.Spouse == uncle && sibling.PartnerType == PartnerType.Marriage))
+                    AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
                     {
-                        return Genealogy.IsHalfSibling(parent, sibling);
+                        return Genealogy.IsHalfSibling(uncle, sibling.Genealogy);
+                    }
+                }
+            }
+            if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
+            {
+                foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
+                {
+                    AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
+                    {
+                        return Genealogy.IsHalfSibling(uncle.Spouse, sibling.Genealogy);
                     }
                 }
             }
@@ -80,28 +106,28 @@ namespace Destrospean
         {
             foreach (Genealogy parent in sim1.Parents)
             {
-                foreach (Genealogy stepParent in sim2.GetStepParents())
+                foreach (GenealogyPlaceholder stepParent in sim2.GetStepParents())
                 {
-                    if (Genealogy.IsSibling(parent, stepParent) || (Tuning.kAccumulateDistantStepRelatives && Genealogy.IsStepSibling(parent, stepParent) && parent != stepParent))
+                    if (Genealogy.IsSibling(parent, stepParent.Genealogy) || (Tuning.kAccumulateStepRelatives && Genealogy.IsStepSibling(parent, stepParent.Genealogy) && parent != stepParent.Genealogy))
                     {
                         return true;
                     }
                 }
             }
-            foreach (Genealogy stepParent1 in sim1.GetStepParents())
+            foreach (GenealogyPlaceholder stepParent1 in sim1.GetStepParents())
             {
                 foreach (Genealogy parent in sim2.Parents)
                 {
-                    if (Genealogy.IsSibling(stepParent1, parent) || (Tuning.kAccumulateDistantStepRelatives && Genealogy.IsStepSibling(stepParent1, parent) && stepParent1 != parent))
+                    if (Genealogy.IsSibling(stepParent1.Genealogy, parent) || (Tuning.kAccumulateStepRelatives && Genealogy.IsStepSibling(stepParent1.Genealogy, parent) && stepParent1.Genealogy != parent))
                     {
                         return true;
                     }
                 }
-                if (Tuning.kAccumulateDistantStepRelatives)
+                if (Tuning.kAccumulateStepRelatives)
                 {
-                    foreach (Genealogy stepParent2 in sim2.GetStepParents())
+                    foreach (GenealogyPlaceholder stepParent2 in sim2.GetStepParents())
                     {
-                        if (Genealogy.IsSibling(stepParent1, stepParent2) || (Genealogy.IsStepSibling(stepParent1, stepParent2) && stepParent1 != stepParent2))
+                        if (Genealogy.IsSibling(stepParent1.Genealogy, stepParent2.Genealogy) || (Genealogy.IsStepSibling(stepParent1.Genealogy, stepParent2.Genealogy) && stepParent1 != stepParent2))
                         {
                             return true;
                         }
@@ -118,7 +144,7 @@ namespace Destrospean
 
         public static bool IsStepGrandparent(Genealogy stepGrandparent, Genealogy stepGrandchild)
         {
-            Common.AncestorInfo stepAncestorInfo = Common.GetStepAncestorInfo(stepGrandchild, stepGrandparent);
+            AncestorInfo stepAncestorInfo = Common.GetStepAncestorInfo(stepGrandchild.GetGenealogyPlaceholder(), stepGrandparent.GetGenealogyPlaceholder());
             return stepAncestorInfo != null && stepAncestorInfo.GenerationalDistance == 1;
         }
 
@@ -129,7 +155,7 @@ namespace Destrospean
 
         public static bool IsStepGreatGrandparent(Genealogy stepGreatGrandparent, Genealogy stepGreatGrandchild)
         {
-            Common.AncestorInfo stepAncestorInfo = Common.GetStepAncestorInfo(stepGreatGrandchild, stepGreatGrandparent);
+            AncestorInfo stepAncestorInfo = Common.GetStepAncestorInfo(stepGreatGrandchild.GetGenealogyPlaceholder(), stepGreatGrandparent.GetGenealogyPlaceholder());
             return stepAncestorInfo != null && stepAncestorInfo.GenerationalDistance == 2;
         }
 
@@ -137,28 +163,28 @@ namespace Destrospean
         {
             foreach (Genealogy parent in sim1.Parents)
             {
-                foreach (Genealogy stepParent in sim2.GetStepParents())
+                foreach (GenealogyPlaceholder stepParent in sim2.GetStepParents())
                 {
-                    if (Genealogy.IsHalfSibling(parent, stepParent))
+                    if (Genealogy.IsHalfSibling(parent, stepParent.Genealogy))
                     {
                         return true;
                     }
                 }
             }
-            foreach (Genealogy stepParent1 in sim1.GetStepParents())
+            foreach (GenealogyPlaceholder stepParent1 in sim1.GetStepParents())
             {
                 foreach (Genealogy parent in sim2.Parents)
                 {
-                    if (Genealogy.IsHalfSibling(stepParent1, parent))
+                    if (Genealogy.IsHalfSibling(stepParent1.Genealogy, parent))
                     {
                         return true;
                     }
                 }
-                if (Tuning.kAccumulateDistantStepRelatives)
+                if (Tuning.kAccumulateStepRelatives)
                 {
-                    foreach (Genealogy stepParent2 in sim2.GetStepParents())
+                    foreach (GenealogyPlaceholder stepParent2 in sim2.GetStepParents())
                     {
-                        if (Genealogy.IsHalfSibling(stepParent1, stepParent2))
+                        if (Genealogy.IsHalfSibling(stepParent1.Genealogy, stepParent2.Genealogy))
                         {
                             return true;
                         }
@@ -175,13 +201,13 @@ namespace Destrospean
 
         public static bool IsStepHalfUncle(Genealogy stepUncle, Genealogy stepNephew)
         {
-            foreach (Genealogy stepParent in stepNephew.GetStepParents())
+            foreach (GenealogyPlaceholder stepParent in stepNephew.GetStepParents())
             {
-                foreach (Genealogy sibling in stepParent.Siblings)
+                foreach (GenealogyPlaceholder sibling in stepParent.Siblings)
                 {
-                    if (sibling == stepUncle || (sibling.Spouse == stepUncle && sibling.PartnerType == PartnerType.Marriage))
+                    if (sibling.Genealogy == stepUncle || (sibling.Genealogy.Spouse == stepUncle && sibling.Genealogy.PartnerType == PartnerType.Marriage))
                     {
-                        return Genealogy.IsHalfSibling(stepParent, sibling);
+                        return Genealogy.IsHalfSibling(stepParent.Genealogy, sibling.Genealogy);
                     }
                 }
             }
@@ -230,18 +256,18 @@ namespace Destrospean
                     }
                 }
             }
-            foreach (Genealogy stepParent in stepNephew.GetStepParents())
+            foreach (GenealogyPlaceholder stepParent in stepNephew.GetStepParents())
             {
-                foreach (Genealogy sibling in stepParent.Siblings)
+                foreach (GenealogyPlaceholder sibling in stepParent.Siblings)
                 {
-                    if (sibling == stepUncle || (sibling.Spouse == stepUncle && sibling.PartnerType == PartnerType.Marriage))
+                    if (sibling.Genealogy == stepUncle || (sibling.Genealogy.Spouse == stepUncle && sibling.Genealogy.PartnerType == PartnerType.Marriage))
                     {
                         return true;
                     }
                 }
-                if (Tuning.kAccumulateDistantStepRelatives)
+                if (Tuning.kAccumulateStepRelatives)
                 {
-                    foreach (Genealogy stepSibling in stepParent.GetStepSiblings())
+                    foreach (Genealogy stepSibling in stepParent.Genealogy.GetStepSiblings())
                     {
                         if (stepSibling == stepUncle || (stepSibling.Spouse == stepUncle && stepSibling.PartnerType == PartnerType.Marriage))
                         {
@@ -256,9 +282,146 @@ namespace Destrospean
         [TypePatch(typeof(Genealogy))]
         public class GenealogyPatch
         {
+            public void ClearDerivedData()
+            {
+                Genealogy self = (Genealogy)(this as object);
+                self.mAncestors = null;
+                if (self.mSiblings != null && self.mNaturalParents.Count > 0)
+                {
+                    self.mSiblings = null;
+                }
+                if (self.mChildren == null)
+                {
+                    return;
+                }
+                foreach (Genealogy mChild in self.mChildren)
+                {
+                    mChild.ClearDerivedData();
+                }
+                Common.ClearCachesInGenealogyPlaceholders();
+            }
+
+            public bool IsBloodRelated(Genealogy other)
+            {
+                Genealogy self = (Genealogy)(this as object);
+                float relationshipCoefficient = 0f;
+                // Check if one of the Sims is an ancestor of the other
+                AncestorInfo ancestorInfo = self.GetAncestorInfo(other);
+                if (ancestorInfo == null)
+                {
+                    ancestorInfo = other.GetAncestorInfo(self);
+                }
+                if (ancestorInfo != null)
+                {
+                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
+                    if (Tuning.kDenyRomanceWithAncestors)
+                    {
+                        return true;
+                    }
+                }
+                if (Genealogy.IsSibling(self, other))
+                {
+                    bool isHalfSibling = Genealogy.IsHalfSibling(self, other);
+                    relationshipCoefficient += isHalfSibling ? .25f : .5f;
+                    if (Tuning.kDenyRomanceWithSiblings && !(isHalfSibling && Tuning.kAllowRomanceForHalfRelatives))
+                    {
+                        return true;
+                    }
+                }
+                // Check if Sim 1 is a descendant of one of Sim 2's siblings
+                foreach (GenealogyPlaceholder sibling in other.GetGenealogyPlaceholder().Siblings)
+                {
+                    AncestorInfo tempAncestorInfo = self.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (tempAncestorInfo != null)
+                    {
+                        relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(other, sibling.Genealogy) ? 3 : 2));
+                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                // Check if Sim 1 is a sibling of one of Sim 2's ancestors
+                foreach (GenealogyPlaceholder sibling in self.GetGenealogyPlaceholder().Siblings)
+                {
+                    AncestorInfo tempAncestorInfo = other.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                    if (tempAncestorInfo != null)
+                    {
+                        relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(self, sibling.Genealogy) ? 3 : 2));
+                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                foreach (DistantRelationInfo distantRelationInfo in other.GetGenealogyPlaceholder().CalculateDistantRelations(self.GetGenealogyPlaceholder()))
+                {
+                    if (distantRelationInfo.Degree == 0)
+                    {
+                        continue;
+                    }
+                    bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
+                    relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
+                    /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
+                     * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
+                     * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
+                     */
+                    if (distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
+                    {
+                        return true;
+                    }
+                }
+                /* Check if the coefficient of relationship for the two Sims is higher the minimum to disallow it.
+                 * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
+                 */
+                return relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f;
+            }
+
+            public static bool IsCousin(Genealogy sim1, Genealogy sim2)
+            {
+                foreach (DistantRelationInfo distantRelationInfo in sim1.GetGenealogyPlaceholder().CalculateDistantRelations(sim2.GetGenealogyPlaceholder()))
+                {
+                    if (distantRelationInfo.Degree == 1 && distantRelationInfo.TimesRemoved == 0)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public bool IsFutureBloodRelated(Genealogy other)
+            {
+                Genealogy self = (Genealogy)(this as object);
+                if (other.SimDescription == null)
+                {
+                    return false;
+                }
+                if ((FutureDescendantService.IsAncestorOf(self.SimDescription, other.SimDescription) || FutureDescendantService.IsAncestorOf(other.SimDescription, self.SimDescription)) && Tuning.kDenyRomanceWithAncestors)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public static bool IsGrandparent(Genealogy grandparent, Genealogy grandchild)
+            {
+                AncestorInfo ancestorInfo = grandchild.GetAncestorInfo(grandparent);
+                return ancestorInfo != null && ancestorInfo.GenerationalDistance == 1;
+            }
+
+            public static bool IsGreatGrandparent(Genealogy greatGrandparent, Genealogy greatGrandchild)
+            {
+                AncestorInfo ancestorInfo = greatGrandchild.GetAncestorInfo(greatGrandparent);
+                return ancestorInfo != null && ancestorInfo.GenerationalDistance == 2;
+            }
+
             public static bool IsHalfSibling(Genealogy sim1, Genealogy sim2)
             {
-                int sharedParentCount = 0, totalParentCount = sim1.Parents.Count + sim2.Parents.Count;
+                if (sim1 == null || sim2 == null)
+                {
+                    return false;
+                }
+                int sharedParentCount = 0;
                 foreach (Genealogy parent1 in sim1.Parents)
                 {
                     foreach (Genealogy parent2 in sim2.Parents)
@@ -269,7 +432,7 @@ namespace Destrospean
                         }
                     }
                 }
-                return Genealogy.IsSibling(sim1, sim2) && sharedParentCount * 2 != totalParentCount;
+                return Genealogy.IsSibling(sim1, sim2) && sharedParentCount * 2 != sim1.Parents.Count + sim2.Parents.Count;
             }
 
             public static bool IsSiblingInLaw(Genealogy sim1, Genealogy sim2)
@@ -278,7 +441,7 @@ namespace Destrospean
                 {
                     foreach (Genealogy sibling in sim1.Spouse.Siblings)
                     {
-                        if (sibling == sim2 || (sibling.Spouse == sim2 && sibling.PartnerType == PartnerType.Marriage))
+                        if (sibling == sim2 || sibling.Spouse == sim2 && sibling.PartnerType == PartnerType.Marriage)
                         {
                             return true;
                         }
@@ -288,7 +451,7 @@ namespace Destrospean
                 {
                     foreach (Genealogy sibling in sim2.Spouse.Siblings)
                     {
-                        if (sibling == sim1 || (sibling.Spouse == sim1 && sibling.PartnerType == PartnerType.Marriage))
+                        if (sibling == sim1 || sibling.Spouse == sim1 && sibling.PartnerType == PartnerType.Marriage)
                         {
                             return true;
                         }
@@ -297,28 +460,18 @@ namespace Destrospean
                 return false;
             }
 
-            /* This method is the only method from the vanilla game still used by NRaas Woohooer to check if romance between two Sims is allowed, 
-             * whereas other methods from the vanilla game are not referenced, and so replacing this specific method will allow the romance restrictions
-             * from this mod to continue to work if NRaas Woohooer is installed.
-             */
             public bool IsStepRelated(Genealogy other)
             {
-                Genealogy self = (Genealogy)(this as object);
-                Common.DistantRelationInfo distantRelationInfo = Common.CalculateDistantRelation(other, self);
-                bool isHalfRelative = distantRelationInfo == null ? false : Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0], distantRelationInfo.ThroughWhichChildren[1]);
-                /* Check if there is a distant relation, and if so, then check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
-                 * and/or the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
-                 * the latter of which matters depending on whether romantic interactions between half-relatives are allowed
-                 */
-                if (distantRelationInfo != null && distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForDistantHalfRelatives))
+                if (Tuning.kAllowRomanceForStepRelatives)
                 {
-                    return true;
+                    return false;
                 }
+                Genealogy self = (Genealogy)(this as object);
                 foreach (Genealogy parent1 in self.Parents)
                 {
                     foreach (Genealogy parent2 in other.Parents)
                     {
-                        if (parent1.Spouse == parent2 && parent1.PartnerType == PartnerType.Marriage)
+                        if (parent1.Spouse == parent2 && parent1.PartnerType == PartnerType.Marriage && Tuning.kDenyRomanceWithSiblings)
                         {
                             return true;
                         }
@@ -326,14 +479,14 @@ namespace Destrospean
                 }
                 foreach (Genealogy parent in self.Parents)
                 {
-                    if (parent.Spouse == other && parent.PartnerType == PartnerType.Marriage)
+                    if (parent.Spouse == other && parent.PartnerType == PartnerType.Marriage && Tuning.kDenyRomanceWithAncestors)
                     {
                         return true;
                     }
                 }
                 foreach (Genealogy parent in other.Parents)
                 {
-                    if (parent.Spouse == self && parent.PartnerType == PartnerType.Marriage)
+                    if (parent.Spouse == self && parent.PartnerType == PartnerType.Marriage && Tuning.kDenyRomanceWithAncestors)
                     {
                         return true;
                     }
@@ -343,11 +496,23 @@ namespace Destrospean
 
             public static bool IsUncle(Genealogy uncle, Genealogy nephew)
             {
-                foreach (Genealogy parent in nephew.Parents)
+                foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
                 {
-                    foreach (Genealogy sibling in parent.Siblings)
+                    foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
                     {
-                        if (sibling == uncle || (sibling.Spouse == uncle && sibling.PartnerType == PartnerType.Marriage))
+                        AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                        if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
+                {
+                    foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
+                    {
+                        AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
+                        if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
                         {
                             return true;
                         }
@@ -362,10 +527,11 @@ namespace Destrospean
         {
             public string GetMyFamilialDescriptionFor(SimDescription other)
             {
+                string text = "";
                 SimDescription self = (SimDescription)(this as object);
                 if (other.Genealogy == self.Genealogy)
                 {
-                    return "";
+                    return text;
                 }
                 if (GameUtils.IsAnyTravelBasedWorld() && GameStates.TravelerIds != null && GameStates.TravelerIds.Contains(self.SimDescriptionId))
                 {
@@ -381,8 +547,7 @@ namespace Destrospean
                         }
                     }
                 }
-                PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang." + Localization.LocalizeString("Destrospean/ExpandedGenealogy:LanguageCode"))) as PlayerLanguage;
-                string text = "";
+                PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/Genealogy:LanguageCode"))) as PlayerLanguage;
                 if (Genealogy.IsParent(other.Genealogy, self.Genealogy))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Parent");
@@ -399,19 +564,19 @@ namespace Destrospean
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:ChildInLaw");
                 }
-                else if (Genealogy.IsHalfSibling(other.Genealogy, self.Genealogy))
+                else if (Genealogy.IsHalfSibling(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:HalfSibling");
                 }
-                else if (Genealogy.IsSibling(other.Genealogy, self.Genealogy))
+                else if (Genealogy.IsSibling(other.Genealogy, self.Genealogy) && (!Genealogy.IsHalfSibling(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Sibling");
                 }
-                else if (IsHalfSiblingInLaw(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives)
+                else if (IsHalfSiblingInLaw(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:HalfSiblingInLaw");
                 }
-                else if (Genealogy.IsSiblingInLaw(other.Genealogy, self.Genealogy) && (!IsHalfSiblingInLaw(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (Genealogy.IsSiblingInLaw(other.Genealogy, self.Genealogy) && (!IsHalfSiblingInLaw(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:SiblingInLaw");
                 }
@@ -423,31 +588,27 @@ namespace Destrospean
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Grandchild");
                 }
-                else if (IsHalfCousin(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives && Tuning.kShow1stCousinsAsCousins)
+                else if (IsHalfCousin(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives && Tuning.kShow1stCousinsAsCousins)
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:HalfCousin");
                 }
-                else if (Genealogy.IsCousin(other.Genealogy, self.Genealogy) && Tuning.kShow1stCousinsAsCousins && (!IsHalfCousin(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (Genealogy.IsCousin(other.Genealogy, self.Genealogy) && Tuning.kShow1stCousinsAsCousins && (!IsHalfCousin(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Cousin");
                 }
-                else if (IsHalfUncle(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives)
+                else if (IsHalfUncle(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:HalfUncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthHalfCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", "");
                 }
-                else if (Genealogy.IsFatherSideUncle(other.Genealogy, self.Genealogy) && Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", "");
+                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle" + (Genealogy.IsMotherSideUncle(other.Genealogy, self.Genealogy) ? "MothersSide" : "")) : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
                 }
-                else if (Genealogy.IsMotherSideUncle(other.Genealogy, self.Genealogy) && Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
-                {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:UncleMothersSide") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", "");
-                }
-                else if (IsHalfNephew(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives)
+                else if (IsHalfNephew(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:HalfNephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthHalfCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", "");
                 }
-                else if (Genealogy.IsNephew(other.Genealogy, self.Genealogy) && (!IsHalfNephew(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (Genealogy.IsNephew(other.Genealogy, self.Genealogy) && (!IsHalfNephew(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Nephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", "");
                 }
@@ -459,11 +620,11 @@ namespace Destrospean
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:GGC");
                 }
-                else if (self.Genealogy.IsAncestor(other.Genealogy))
+                else if (self.Genealogy.GetGenealogyPlaceholder().IsAncestor(other.Genealogy))
                 {
                     text = playerLanguage.GetAncestorString(self.Genealogy, other.Genealogy);
                 }
-                else if (other.Genealogy.IsAncestor(self.Genealogy))
+                else if (other.Genealogy.GetGenealogyPlaceholder().IsAncestor(self.Genealogy))
                 {
                     text = playerLanguage.GetDescendantString(self.Genealogy, other.Genealogy);
                 }
@@ -483,27 +644,27 @@ namespace Destrospean
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepSiblingInLaw");
                 }
-                else if (IsStepHalfCousin(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives && Tuning.kShowDistantStepRelatives && Tuning.kShow1stCousinsAsCousins)
+                else if (IsStepHalfCousin(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives && Tuning.kShowStepRelatives && Tuning.kShow1stCousinsAsCousins)
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepHalfCousin");
                 }
-                else if (IsStepCousin(other.Genealogy, self.Genealogy) && Tuning.kShowDistantStepRelatives && Tuning.kShow1stCousinsAsCousins && (!IsStepHalfCousin(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (IsStepCousin(other.Genealogy, self.Genealogy) && Tuning.kShowStepRelatives && Tuning.kShow1stCousinsAsCousins && (!IsStepHalfCousin(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepCousin");
                 }
-                else if (IsStepHalfUncle(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives && Tuning.kShowDistantStepRelatives)
+                else if (IsStepHalfUncle(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives && Tuning.kShowStepRelatives)
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepHalfUncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthHalfCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:Step"));
                 }
-                else if (IsStepUncle(other.Genealogy, self.Genealogy) && Tuning.kShowDistantStepRelatives && (!IsStepHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (IsStepUncle(other.Genealogy, self.Genealogy) && Tuning.kShowStepRelatives && (!IsStepHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepUncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:Step"));
                 }
-                else if (IsStepHalfNephew(other.Genealogy, self.Genealogy) && Tuning.kShowDistantHalfRelatives && !Tuning.kShowDistantHalfRelativesAsFullRelatives && Tuning.kShowDistantStepRelatives)
+                else if (IsStepHalfNephew(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives && Tuning.kShowStepRelatives)
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepHalfNephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthHalfCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:Step"));
                 }
-                else if (IsStepNephew(other.Genealogy, self.Genealogy) && Tuning.kShowDistantStepRelatives && (!IsStepHalfNephew(other.Genealogy, self.Genealogy) || Tuning.kShowDistantHalfRelativesAsFullRelatives))
+                else if (IsStepNephew(other.Genealogy, self.Genealogy) && Tuning.kShowStepRelatives && (!IsStepHalfNephew(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
                     text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepNephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:NthCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:OrdinalSuffixNoun1"), "", "", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:Step"));
                 }
@@ -524,7 +685,7 @@ namespace Destrospean
                     text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy:StepGGC");
                 }
                 // Check if the selected Sim is married to one of the target's descendants
-                else if (self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.Spouse.IsAncestor(other.Genealogy) && self.Genealogy.PartnerType == PartnerType.Marriage)
+                else if (self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.Spouse.GetGenealogyPlaceholder().IsAncestor(other.Genealogy) && self.Genealogy.PartnerType == PartnerType.Marriage)
                 {
                     if (Genealogy.IsGrandparent(other.Genealogy, self.Genealogy.Spouse))
                     {
@@ -540,7 +701,7 @@ namespace Destrospean
                     }
                 }
                 // Check if the target is married to one of the selected Sim's descendants
-                else if (other.Genealogy.Spouse != null && other.Genealogy.Spouse != self.Genealogy && other.Genealogy.Spouse.IsAncestor(self.Genealogy) && other.Genealogy.PartnerType == PartnerType.Marriage)
+                else if (other.Genealogy.Spouse != null && other.Genealogy.Spouse != self.Genealogy && other.Genealogy.Spouse.GetGenealogyPlaceholder().IsAncestor(self.Genealogy) && other.Genealogy.PartnerType == PartnerType.Marriage)
                 {
                     if (Genealogy.IsGrandchild(other.Genealogy.Spouse, self.Genealogy))
                     {
@@ -555,121 +716,8 @@ namespace Destrospean
                         text = playerLanguage.GetDescendantString(other.IsFemale, self.Genealogy, other.Genealogy.Spouse, true);
                     }
                 }
-                else
+                else if (playerLanguage.TryGetDistantRelationString(self, other, out text))
                 {
-                    if (Tuning.kShowDistantStepRelatives)
-                    {
-                        Common.DistantRelationInfo distantStepRelationInfo = Common.CalculateDistantStepRelation(other.Genealogy, self.Genealogy);
-                        if (distantStepRelationInfo == null)
-                        {
-                            // Check if the target is married to someone other than the selected Sim
-                            if (other.Genealogy.Spouse != null && other.Genealogy.Spouse != self.Genealogy && other.Genealogy.PartnerType == PartnerType.Marriage)
-                            {
-                                distantStepRelationInfo = Common.CalculateDistantStepRelation(other.Genealogy.Spouse, self.Genealogy);
-                            }
-                            if (distantStepRelationInfo == null)
-                            {
-                                // Check if the selected Sim is married to someone other than the target
-                                if (self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.PartnerType == PartnerType.Marriage)
-                                {
-                                    distantStepRelationInfo = Common.CalculateDistantStepRelation(other.Genealogy, self.Genealogy.Spouse);
-                                }
-                                // Check if the selected Sim is married to a (step)sibling of one of the target's (step-)ancestors
-                                if (distantStepRelationInfo != null && distantStepRelationInfo.Degree == 0 && distantStepRelationInfo.ClosestDescendant == self.Genealogy.Spouse)
-                                {
-                                    text = playerLanguage.GetDistantRelationString(other.Genealogy, distantStepRelationInfo, true);
-                                }
-                            }
-                            // Check if the target is married to a (step)sibling of one of the selected Sim's (step-)ancestors
-                            else if (distantStepRelationInfo.Degree == 0 && distantStepRelationInfo.ClosestDescendant == other.Genealogy.Spouse)
-                            {
-                                text = playerLanguage.GetDistantRelationString(other.IsFemale, other.Genealogy.Spouse, distantStepRelationInfo, true);
-                            }
-                        }
-                        else
-                        {
-                            /* Get a relation name that is valid if the target is a collateral step-descendant or type of step-cousin
-                             * of the selected Sim or if the selected Sim is a collateral step-descendant of the target
-                             */
-                            text = playerLanguage.GetDistantRelationString(other.Genealogy, distantStepRelationInfo, true);
-                        }
-                        // This if-statement block is necessary for when the selected Sim and the target do not share an ancestor in the game but each has an ancestor who is a sibling of the other.
-                        if (distantStepRelationInfo == null)
-                        {
-                            // Get a relation name that is valid if the target is a sibling of one of the selected Sim's ancestors
-                            text = playerLanguage.GetSiblingOfAncestorString(other.IsFemale, self.Genealogy, other.Genealogy);
-                            if (string.IsNullOrEmpty(text) && other.Genealogy.Spouse != null && self.Genealogy != other.Genealogy.Spouse && other.Genealogy.PartnerType == PartnerType.Marriage)
-                            {
-                                // Get a relation name that is valid if the target is married to a sibling of one of the selected Sim's ancestors
-                                text = playerLanguage.GetSiblingOfAncestorString(other.IsFemale, self.Genealogy, other.Genealogy.Spouse);
-                            }
-                            if (string.IsNullOrEmpty(text))
-                            {
-                                // Get a relation name that is valid if the selected Sim is a sibling of one of the target's ancestors
-                                text = playerLanguage.GetDescendantOfSiblingString(other.IsFemale, self.Genealogy, other.Genealogy);
-                            }
-                            if (string.IsNullOrEmpty(text) && self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.PartnerType == PartnerType.Marriage)
-                            {
-                                // Get a relation name that is valid if the selected Sim is married to a sibling of one of the target's ancestors
-                                text = playerLanguage.GetDescendantOfSiblingString(other.IsFemale, self.Genealogy.Spouse, other.Genealogy);
-                            }
-                        }
-                    }
-                    Common.DistantRelationInfo distantRelationInfo = Common.CalculateDistantRelation(other.Genealogy, self.Genealogy);
-                    if (distantRelationInfo == null)
-                    {
-                        // Check if the target is married to someone other than the selected Sim
-                        if (other.Genealogy.Spouse != null && other.Genealogy.Spouse != self.Genealogy && other.Genealogy.PartnerType == PartnerType.Marriage)
-                        {
-                            distantRelationInfo = Common.CalculateDistantRelation(other.Genealogy.Spouse, self.Genealogy);
-                        }
-                        if (distantRelationInfo == null)
-                        {
-                            // Check if the selected Sim is married to someone other than the target
-                            if (self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.PartnerType == PartnerType.Marriage)
-                            {
-                                distantRelationInfo = Common.CalculateDistantRelation(other.Genealogy, self.Genealogy.Spouse);
-                            }
-                            // Check if the selected Sim is married to a sibling of one of the target's ancestors
-                            if (distantRelationInfo != null && distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant == self.Genealogy.Spouse)
-                            {
-                                text = playerLanguage.GetDistantRelationString(other.Genealogy, distantRelationInfo);
-                            }
-                        }
-                        // Check if the target is married to a sibling of one of the selected Sim's ancestors
-                        else if (distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant == other.Genealogy.Spouse)
-                        {
-                            text = playerLanguage.GetDistantRelationString(other.IsFemale, other.Genealogy.Spouse, distantRelationInfo);
-                        }
-                    }
-                    else
-                    {
-                        /* Get a relation name that is valid if the target is a collateral descendant or type of cousin
-                         * of the selected Sim or if the selected Sim is a collateral descendant of the target
-                         */
-                        text = playerLanguage.GetDistantRelationString(other.Genealogy, distantRelationInfo);
-                    }
-                    // This if-statement block is necessary for when the selected Sim and the target do not share an ancestor in the game but each has an ancestor who is a sibling of the other.
-                    if (distantRelationInfo == null)
-                    {
-                        // Get a relation name that is valid if the target is a sibling of one of the selected Sim's ancestors
-                        text = playerLanguage.GetSiblingOfAncestorString(other.IsFemale, self.Genealogy, other.Genealogy);
-                        if (string.IsNullOrEmpty(text) && other.Genealogy.Spouse != null && self.Genealogy != other.Genealogy.Spouse && other.Genealogy.PartnerType == PartnerType.Marriage)
-                        {
-                            // Get a relation name that is valid if the target is married to a sibling of one of the selected Sim's ancestors
-                            text = playerLanguage.GetSiblingOfAncestorString(other.IsFemale, self.Genealogy, other.Genealogy.Spouse);
-                        }
-                        if (string.IsNullOrEmpty(text))
-                        {
-                            // Get a relation name that is valid if the selected Sim is a sibling of one of the target's ancestors
-                            text = playerLanguage.GetDescendantOfSiblingString(other.IsFemale, self.Genealogy, other.Genealogy);
-                        }
-                        if (string.IsNullOrEmpty(text) && self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.PartnerType == PartnerType.Marriage)
-                        {
-                            // Get a relation name that is valid if the selected Sim is married to a sibling of one of the target's ancestors
-                            text = playerLanguage.GetDescendantOfSiblingString(other.IsFemale, self.Genealogy.Spouse, other.Genealogy);
-                        }
-                    }
                 }
                 if (FutureDescendantService.IsAncestorOf(other, self))
                 {
@@ -729,6 +777,34 @@ namespace Destrospean
                     }
                 }
                 return text.Replace("  ", " ").Capitalize();
+            }
+
+            public ulong MakeUniqueId()
+            {
+                SimDescription self = (SimDescription)(this as object);
+                ulong simDescriptionId = self.mSimDescriptionId;
+                while (!self.IsSimDescriptionIdUnique(simDescriptionId) || Common.GenealogyPlaceholders.ContainsKey(simDescriptionId))
+                {
+                    simDescriptionId = DownloadContent.GenerateGUID();
+                }
+                if (simDescriptionId != self.mSimDescriptionId)
+                {
+                    self.mOldSimDescriptionId = self.mSimDescriptionId;
+                }
+                self.mSimDescriptionId = simDescriptionId;
+                if (self.CelebrityManager != null)
+                {
+                    self.CelebrityManager.ResetOwnerSimDescription(self.mSimDescriptionId);
+                }
+                if (self.PetManager != null)
+                {
+                    self.PetManager.ResetOwnerSimDescription(self.mSimDescriptionId);
+                }
+                if (self.TraitChipManager != null)
+                {
+                    self.TraitChipManager.ResetOwnerSimDescription(self.mSimDescriptionId);
+                }
+                return simDescriptionId;
             }
         }
     }
