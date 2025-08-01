@@ -640,7 +640,7 @@ namespace Destrospean.ExpandedGenealogy
             }
             int[] lowestGenDistAndHalfRelPair = new int[]
                 {
-                    int.MinValue,
+                    int.MaxValue,
                     int.MaxValue
                 };
             foreach (int[] genDistAndHalfRelPair in genDistsAndHalfRelPairs)
