@@ -585,17 +585,17 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     }
                 }
-                if ((other.IsEP11Bot || self.IsEP11Bot || ((other.IsFrankenstein || self.IsFrankenstein) && Tuning.kReplaceRelationsForSimBots)) && !string.IsNullOrEmpty(text))
+                if ((other.IsEP11Bot || self.IsEP11Bot || (other.IsFrankenstein || self.IsFrankenstein) && Tuning.kReplaceRelationsForSimBots) && !string.IsNullOrEmpty(text))
                 {
-                    if (Genealogy.IsParent(other.Genealogy, self.Genealogy) && (self.IsEP11Bot || (self.IsFrankenstein && Tuning.kReplaceRelationsForSimBots)))
+                    if (Genealogy.IsParent(other.Genealogy, self.Genealogy) && (self.IsEP11Bot || self.IsFrankenstein && Tuning.kReplaceRelationsForSimBots))
                     {
                         text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Creator");
                     }
-                    else if (Genealogy.IsChild(other.Genealogy, self.Genealogy) && (other.IsEP11Bot || (other.IsFrankenstein && Tuning.kReplaceRelationsForSimBots)))
+                    else if (Genealogy.IsChild(other.Genealogy, self.Genealogy) && (other.IsEP11Bot || other.IsFrankenstein && Tuning.kReplaceRelationsForSimBots))
                     {
                         text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Creation");
                     }
-                    else if ((self.IsEP11Bot || (self.IsFrankenstein && Tuning.kReplaceRelationsForSimBots)) && !(other.IsEP11Bot || (other.IsFrankenstein && Tuning.kReplaceRelationsForSimBots)))
+                    else if ((self.IsEP11Bot || self.IsFrankenstein && Tuning.kReplaceRelationsForSimBots) && !(other.IsEP11Bot || other.IsFrankenstein && Tuning.kReplaceRelationsForSimBots))
                     {
                         text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:FamilyMember");
                     }
