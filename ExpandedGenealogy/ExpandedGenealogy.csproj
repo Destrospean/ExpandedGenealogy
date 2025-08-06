@@ -55,6 +55,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Replacements.cs" />
+    <Compile Include="SiblingOfAncestorInfo.cs" />
+    <Compile Include="AncestorInfo.cs" />
+    <Compile Include="DistantRelationInfo.cs" />
+    <Compile Include="GenealogyPlaceholder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">

@@ -3,7 +3,6 @@ using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Socializing;
 using Sims3.SimIFace;
-using Sims3.SimIFace.CustomContent;
 using System;
 using System.Collections.Generic;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
@@ -18,245 +17,6 @@ namespace System.Runtime.CompilerServices
 
 namespace Destrospean.ExpandedGenealogy
 {
-    public class AncestorInfo
-    {
-        [Obsolete("Please use `GenerationalDistance` as it has a better name.")]
-        public int AncestorDistance
-        {
-            get
-            {
-                return GenerationalDistance;
-            }
-        }
-
-        public int GenerationalDistance
-        {
-            get;
-            private set;
-        }
-
-        public GenealogyPlaceholder ThroughWhichChild
-        {
-            get;
-            private set;
-        }
-
-        public AncestorInfo(int generationalDistance, GenealogyPlaceholder throughWhichChild)
-        {
-            GenerationalDistance = generationalDistance;
-            ThroughWhichChild = throughWhichChild;
-        }
-    }
-
-    public class DistantRelationInfo
-    {
-        public GenealogyPlaceholder ClosestDescendant
-        {
-            get;
-            private set;
-        }
-
-        public int Degree
-        {
-            get;
-            private set;
-        }
-
-        public GenealogyPlaceholder[] ThroughWhichChildren
-        {
-            get;
-            private set;
-        }
-
-        public int TimesRemoved
-        {
-            get;
-            private set;
-        }
-
-        public DistantRelationInfo(int degree, int timesRemoved, GenealogyPlaceholder closestDescendant, GenealogyPlaceholder[] throughWhichChildren)
-        {
-            ClosestDescendant = closestDescendant;
-            Degree = degree;
-            ThroughWhichChildren = throughWhichChildren;
-            TimesRemoved = timesRemoved;
-        }
-    }
-
-    public class GenealogyPlaceholder
-    {
-        public Dictionary<GenealogyPlaceholder, AncestorInfo> CachedAncestorInfo = new Dictionary<GenealogyPlaceholder, AncestorInfo>();
-
-        public Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>> CachedDistantRelationInfoLists = new Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>>();
-
-        public List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null, mSiblingsRaw = new List<GenealogyPlaceholder>();
-
-        public List<GenealogyPlaceholder> Ancestors
-        {
-            get
-            {
-                if (mAncestors == null)
-                {
-                    List<GenealogyPlaceholder> ancestors = new List<GenealogyPlaceholder>(), tempAncestors = new List<GenealogyPlaceholder>();
-                    tempAncestors.AddRange(Parents);
-                    while (tempAncestors.Count > 0)
-                    {
-                        GenealogyPlaceholder tempAncestor = tempAncestors[0];
-                        tempAncestors.RemoveAt(0);
-                        ancestors.Add(tempAncestor);
-                        tempAncestors.AddRange(tempAncestor.Parents);
-                    }
-                    mAncestors = ancestors;
-                }
-                return mAncestors;
-            }
-        }
-
-        public Genealogy Genealogy
-        {
-            get;
-            private set;
-        }
-
-        public ulong Id
-        {
-            get;
-            private set;
-        }
-
-        public List<GenealogyPlaceholder> Parents
-        {
-            get
-            {
-                if (mParents == null)
-                {
-                    List<GenealogyPlaceholder> parents = new List<GenealogyPlaceholder>();
-                    parents.AddRange(mParentsRaw);
-                    if (Genealogy != null)
-                    {
-                        parents.AddRange(Genealogy.Parents.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(parent => parent.GetGenealogyPlaceholder())));
-                    }
-                    mParents = parents;
-                }
-                return mParents;
-            }
-        }
-
-        public List<GenealogyPlaceholder> Siblings
-        {
-            get
-            {
-                if (mSiblings == null)
-                {
-                    List<GenealogyPlaceholder> siblings = new List<GenealogyPlaceholder>();
-                    siblings.AddRange(mSiblingsRaw);
-                    if (Genealogy != null)
-                    {
-                        siblings.AddRange(Genealogy.Siblings.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(sibling => sibling.GetGenealogyPlaceholder())));
-                    }
-                    mSiblings = siblings;
-                }
-                return mSiblings;
-            }
-        }
-
-        public void AddParent(Genealogy parent)
-        {
-            AddParent(parent.GetGenealogyPlaceholder());
-        }
-
-        public void AddParent(GenealogyPlaceholder parent)
-        {
-            mParentsRaw.Add(parent);
-            Common.ClearCachesInGenealogyPlaceholders();
-        }
-
-        public void AddChild(Genealogy child)
-        {
-            AddChild(child.GetGenealogyPlaceholder());
-        }
-
-        public void AddChild(GenealogyPlaceholder child)
-        {
-            child.AddParent(this);
-        }
-
-        public void AddSibling(Genealogy sibling)
-        {
-            AddSibling(sibling.GetGenealogyPlaceholder());
-        }
-
-        public void AddSibling(GenealogyPlaceholder sibling)
-        {
-            mSiblingsRaw.Add(sibling);
-            Common.ClearCachesInGenealogyPlaceholders();
-        }
-
-        public bool IsAncestor(Genealogy ancestor)
-        {
-            return IsAncestor(ancestor.GetGenealogyPlaceholder());
-        }
-
-        public bool IsAncestor(GenealogyPlaceholder ancestor)
-        {
-            return this.GetAncestorInfo(ancestor) != null;
-        }
-
-        public bool IsChild(Genealogy child)
-        {
-            return IsChild(child.GetGenealogyPlaceholder());
-        }
-
-        public bool IsChild(GenealogyPlaceholder child)
-        {
-            return child.Parents.Contains(this);
-        }
-
-        public bool IsDescendant(Genealogy descendant)
-        {
-            return IsDescendant(descendant.GetGenealogyPlaceholder());
-        }
-
-        public bool IsDescendant(GenealogyPlaceholder descendant)
-        {
-            return descendant.GetAncestorInfo(this) != null;
-        }
-
-        public bool IsParent(Genealogy parent)
-        {
-            return IsParent(parent.GetGenealogyPlaceholder());
-        }
-
-        public bool IsParent(GenealogyPlaceholder parent)
-        {
-            return Parents.Contains(parent);
-        }
-
-        public bool IsSibling(Genealogy sibling)
-        {
-            return IsSibling(sibling.GetGenealogyPlaceholder());
-        }
-
-        public bool IsSibling(GenealogyPlaceholder sibling)
-        {
-            return Siblings.Contains(sibling);
-        }
-
-        public GenealogyPlaceholder(Genealogy genealogy = null)
-        {
-            Genealogy = genealogy;
-            while (genealogy == null)
-            {
-                Id = DownloadContent.GenerateGUID();
-                if (Common.IsSimDescriptionIdUnique(Id) && !Common.GenealogyPlaceholders.ContainsKey(Id))
-                {
-                    return;
-                }
-            }
-            Id = genealogy.SimDescription == null ? genealogy.mMiniSim.SimDescriptionId : genealogy.SimDescription.SimDescriptionId;
-        }
-    }
-
     public static class Common
     {
         public static Dictionary<ulong, GenealogyPlaceholder> GenealogyPlaceholders
@@ -614,7 +374,7 @@ namespace Destrospean.ExpandedGenealogy
             return sGenealogyPlaceholders[id];
         }
 
-        public static Dictionary<string, object> GetSiblingOfAncestorInfoDictionary(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
+        public static SiblingOfAncestorInfo GetSiblingOfAncestorInfo(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
         {
             List<int[]> genDistsAndHalfRelPairs = new List<int[]>();
             foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
@@ -650,17 +410,7 @@ namespace Destrospean.ExpandedGenealogy
                     lowestGenDistAndHalfRelPair = genDistAndHalfRelPair;
                 }
             }
-            return new Dictionary<string, object>
-            {
-                {
-                    "Generational Distance",
-                    lowestGenDistAndHalfRelPair[0]
-                },
-                {
-                    "Is Half Relative",
-                    lowestGenDistAndHalfRelPair[1] == 1
-                },
-            };
+            return new SiblingOfAncestorInfo(lowestGenDistAndHalfRelPair[0], lowestGenDistAndHalfRelPair[1] == 1);
         }
 
         public static bool IsSimDescriptionIdUnique(ulong simDescriptionId)
