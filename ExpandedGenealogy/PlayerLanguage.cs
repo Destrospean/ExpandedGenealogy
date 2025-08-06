@@ -3,7 +3,6 @@ using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.Utilities;
 using Sims3.UI.CAS;
-using System.Collections.Generic;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.Lang.ExpandedGenealogy

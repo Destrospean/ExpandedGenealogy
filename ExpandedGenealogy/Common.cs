@@ -3,7 +3,6 @@ using Sims3.Gameplay.Core;
 using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Socializing;
 using Sims3.SimIFace;
-using System;
 using System.Collections.Generic;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
