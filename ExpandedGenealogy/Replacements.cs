@@ -215,10 +215,11 @@ namespace Destrospean.ExpandedGenealogy
                 // Check if the target is a sibling of one of the selected Sim's ancestors
                 foreach (GenealogyPlaceholder sibling in other.GetGenealogyPlaceholder().Siblings)
                 {
-                    foreach (AncestorInfo tempAncestorInfo in self.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
+                    foreach (AncestorInfo ancestorInfo in self.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
                     {
-                        relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(other, sibling.Genealogy) ? 3 : 2));
-                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
+                        bool isHalfRelative = Genealogy.IsHalfSibling(other, sibling.Genealogy);
+                        relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - (isHalfRelative ? 3 : 2));
+                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                         {
                             return true;
                         }
@@ -227,10 +228,11 @@ namespace Destrospean.ExpandedGenealogy
                 // Check if the selected Sim is a sibling of one of the target's ancestors
                 foreach (GenealogyPlaceholder sibling in self.GetGenealogyPlaceholder().Siblings)
                 {
-                    foreach (AncestorInfo tempAncestorInfo in other.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
+                    foreach (AncestorInfo ancestorInfo in other.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
                     {
-                        relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(self, sibling.Genealogy) ? 3 : 2));
-                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
+                        bool isHalfRelative = Genealogy.IsHalfSibling(self, sibling.Genealogy);
+                        relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - (isHalfRelative ? 3 : 2));
+                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                         {
                             return true;
                         }
