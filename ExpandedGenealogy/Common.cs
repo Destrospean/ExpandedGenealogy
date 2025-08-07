@@ -292,7 +292,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             foreach (GenealogyPlaceholder genealogyPlaceholder in sGenealogyPlaceholders.Values)
             {
-                genealogyPlaceholder.CachedAncestorInfo.Clear();
+                genealogyPlaceholder.CachedAncestorInfoLists.Clear();
                 genealogyPlaceholder.CachedDistantRelationInfoLists.Clear();
                 genealogyPlaceholder.mAncestors = null;
                 genealogyPlaceholder.mParents = null;
@@ -313,12 +313,31 @@ namespace Destrospean.ExpandedGenealogy
 
         public static AncestorInfo GetAncestorInfo(this GenealogyPlaceholder descendant, GenealogyPlaceholder ancestor)
         {
-            AncestorInfo cachedAncestorInfo, closestAncestorInfo = null;
-            if (descendant.CachedAncestorInfo.TryGetValue(ancestor, out cachedAncestorInfo))
+            AncestorInfo closestAncestorInfo = null;
+            int shortestGenerationalDistance = int.MaxValue;
+            foreach (AncestorInfo ancestorInfo in descendant.GetAncestorInfoList(ancestor))
             {
-                return cachedAncestorInfo;
+                if (shortestGenerationalDistance > ancestorInfo.GenerationalDistance)
+                {
+                    shortestGenerationalDistance = ancestorInfo.GenerationalDistance;
+                    closestAncestorInfo = ancestorInfo;
+                }
             }
-            List<AncestorInfo> ancestorInfoList = new List<AncestorInfo>();
+            return closestAncestorInfo;
+        }
+
+        public static List<AncestorInfo> GetAncestorInfoList(this Genealogy descendant, Genealogy ancestor)
+        {
+            return descendant.GetGenealogyPlaceholder().GetAncestorInfoList(ancestor.GetGenealogyPlaceholder());
+        }
+
+        public static List<AncestorInfo> GetAncestorInfoList(this GenealogyPlaceholder descendant, GenealogyPlaceholder ancestor)
+        {
+            List<AncestorInfo> ancestorInfoList = new List<AncestorInfo>(), cachedAncestorInfoList;
+            if (descendant.CachedAncestorInfoLists.TryGetValue(ancestor, out cachedAncestorInfoList))
+            {
+                return cachedAncestorInfoList;
+            }
             List<object[]> tempAncestorInfoAndParentList = new List<object[]>();
             foreach (GenealogyPlaceholder parent in descendant.Parents)
             {
@@ -349,17 +368,8 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
             }
-            int shortestGenerationalDistance = int.MaxValue;
-            foreach (AncestorInfo ancestorInfo in ancestorInfoList)
-            {
-                if (shortestGenerationalDistance > ancestorInfo.GenerationalDistance)
-                {
-                    shortestGenerationalDistance = ancestorInfo.GenerationalDistance;
-                    closestAncestorInfo = ancestorInfo;
-                }
-            }
-            descendant.CachedAncestorInfo[ancestor] = closestAncestorInfo;
-            return closestAncestorInfo;
+            descendant.CachedAncestorInfoLists[ancestor] = ancestorInfoList;
+            return ancestorInfoList;
         }
 
         public static GenealogyPlaceholder GetGenealogyPlaceholder(this Genealogy self)
@@ -378,7 +388,7 @@ namespace Destrospean.ExpandedGenealogy
             List<int[]> genDistsAndHalfRelPairs = new List<int[]>();
             foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
             {
-                AncestorInfo ancestorInfo = descendantOfSibling.GetAncestorInfo(sibling.Genealogy);
+                AncestorInfo ancestorInfo = descendantOfSibling.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
                 if (ancestorInfo != null)
                 {
                     bool isHalfRelative = Genealogy.IsHalfSibling(sibling.Genealogy, siblingOfAncestor);

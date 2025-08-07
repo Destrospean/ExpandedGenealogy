@@ -7,7 +7,7 @@ namespace Destrospean.ExpandedGenealogy
 {
     public class GenealogyPlaceholder
     {
-        public Dictionary<GenealogyPlaceholder, AncestorInfo> CachedAncestorInfo = new Dictionary<GenealogyPlaceholder, AncestorInfo>();
+        public Dictionary<GenealogyPlaceholder, List<AncestorInfo>> CachedAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<AncestorInfo>>();
 
         public Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>> CachedDistantRelationInfoLists = new Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>>();
 

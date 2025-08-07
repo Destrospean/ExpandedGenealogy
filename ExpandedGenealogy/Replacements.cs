@@ -184,13 +184,8 @@ namespace Destrospean.ExpandedGenealogy
             {
                 Genealogy self = (Genealogy)(this as object);
                 float relationshipCoefficient = 0f;
-                // Check if one of the Sims is an ancestor of the other
-                AncestorInfo ancestorInfo = self.GetAncestorInfo(other);
-                if (ancestorInfo == null)
-                {
-                    ancestorInfo = other.GetAncestorInfo(self);
-                }
-                if (ancestorInfo != null)
+                // Check if the target is an ancestor of the selected Sim
+                foreach (AncestorInfo ancestorInfo in self.GetAncestorInfoList(other))
                 {
                     relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
                     if (Tuning.kDenyRomanceWithAncestors)
@@ -198,6 +193,16 @@ namespace Destrospean.ExpandedGenealogy
                         return true;
                     }
                 }
+                // Check if the selected Sim is an ancestor of the target
+                foreach (AncestorInfo ancestorInfo in other.GetAncestorInfoList(self))
+                {
+                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
+                    if (Tuning.kDenyRomanceWithAncestors)
+                    {
+                        return true;
+                    }
+                }
+                // Check if the Sims are siblings
                 if (Genealogy.IsSibling(self, other))
                 {
                     bool isHalfSibling = Genealogy.IsHalfSibling(self, other);
@@ -207,7 +212,7 @@ namespace Destrospean.ExpandedGenealogy
                         return true;
                     }
                 }
-                // Check if Sim 1 is a descendant of one of Sim 2's siblings
+                //  Check if the target is a sibling of one of the selected Sim's ancestors
                 foreach (GenealogyPlaceholder sibling in other.GetGenealogyPlaceholder().Siblings)
                 {
                     AncestorInfo tempAncestorInfo = self.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
@@ -220,7 +225,7 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     }
                 }
-                // Check if Sim 1 is a sibling of one of Sim 2's ancestors
+                // Check if the selected Sim is a sibling of one of the target's ancestors
                 foreach (GenealogyPlaceholder sibling in self.GetGenealogyPlaceholder().Siblings)
                 {
                     AncestorInfo tempAncestorInfo = other.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
