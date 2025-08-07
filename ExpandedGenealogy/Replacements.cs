@@ -177,7 +177,7 @@ namespace Destrospean.ExpandedGenealogy
                         descendants.AddRange(descendant.mChildren);
                     }
                 }
-                Common.ClearCachesInGenealogyPlaceholders();
+                Common.RebuildRelationAssignments();
             }
 
             public bool IsBloodRelated(Genealogy other)
@@ -212,11 +212,10 @@ namespace Destrospean.ExpandedGenealogy
                         return true;
                     }
                 }
-                //  Check if the target is a sibling of one of the selected Sim's ancestors
+                // Check if the target is a sibling of one of the selected Sim's ancestors
                 foreach (GenealogyPlaceholder sibling in other.GetGenealogyPlaceholder().Siblings)
                 {
-                    AncestorInfo tempAncestorInfo = self.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                    if (tempAncestorInfo != null)
+                    foreach (AncestorInfo tempAncestorInfo in self.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
                     {
                         relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(other, sibling.Genealogy) ? 3 : 2));
                         if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
@@ -228,8 +227,7 @@ namespace Destrospean.ExpandedGenealogy
                 // Check if the selected Sim is a sibling of one of the target's ancestors
                 foreach (GenealogyPlaceholder sibling in self.GetGenealogyPlaceholder().Siblings)
                 {
-                    AncestorInfo tempAncestorInfo = other.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                    if (tempAncestorInfo != null)
+                    foreach (AncestorInfo tempAncestorInfo in other.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
                     {
                         relationshipCoefficient += (float)Math.Pow(2, -tempAncestorInfo.GenerationalDistance - (Genealogy.IsHalfSibling(self, sibling.Genealogy) ? 3 : 2));
                         if (Tuning.kDenyRomanceWithSiblingsOfAncestors)
@@ -240,11 +238,15 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 foreach (DistantRelationInfo distantRelationInfo in other.GetGenealogyPlaceholder().CalculateDistantRelations(self.GetGenealogyPlaceholder()))
                 {
-                    if (distantRelationInfo.Degree == 0)
+                    if (distantRelationInfo.Degree == 0 && new List<GenealogyPlaceholder>(distantRelationInfo.ThroughWhichChildren).Exists(sibling => self.GetGenealogyPlaceholder().IsAncestor(sibling) || other.GetGenealogyPlaceholder().IsAncestor(sibling)) && (other.GetGenealogyPlaceholder().Siblings.Exists(sibling => self.GetGenealogyPlaceholder().IsAncestor(sibling) && self.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1) || self.GetGenealogyPlaceholder().Siblings.Exists(sibling => other.GetGenealogyPlaceholder().IsAncestor(sibling) && other.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1)))
                     {
                         continue;
                     }
                     bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
+                    if (distantRelationInfo.Degree == 0 && Tuning.kDenyRomanceWithSiblingsOfAncestors && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
+                    {
+                        return true;
+                    }
                     relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
                     /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
                      * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
