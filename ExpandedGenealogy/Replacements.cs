@@ -102,13 +102,9 @@ namespace Destrospean.ExpandedGenealogy
             {
                 return true;
             }
-            else if (IsCousin(uncle, nephew, 0, 1, uncle))
+            if (IsCousin(uncle, nephew, 0, 1, uncle))
             {
                 return false;
-            }
-            else if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage && IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
-            {
-                return true;
             }
             bool isOnlyHalf = false;
             foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
@@ -132,7 +128,11 @@ namespace Destrospean.ExpandedGenealogy
             if (isOnlyHalf)
             {
                 return true;
-            }    
+            }
+            if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage && IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
+            {
+                return true;
+            }
             if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
             {
                 foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)

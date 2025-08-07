@@ -221,60 +221,27 @@ namespace Destrospean.ExpandedGenealogy
             {
                 foreach (GenealogyPlaceholder ancestor2 in other.Ancestors)
                 {
+                    AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1), ancestor2Info = other.GetAncestorInfo(ancestor2);
                     if (ancestor1 == ancestor2)
                     {
-                        AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1), ancestor2Info = other.GetAncestorInfo(ancestor2);
                         if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                         {
-                            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, self, new GenealogyPlaceholder[]
-                                {
-                                    ancestor1Info.ThroughWhichChild,
-                                    ancestor2Info.ThroughWhichChild
-                                });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
-                            {
-                                distantRelationInfoList.Add(distantRelationInfo);
-                            }
+                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1Info.ThroughWhichChild, ancestor2Info.ThroughWhichChild, self);
                         }
                         else
                         {
-                            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, other, new GenealogyPlaceholder[]
-                                {
-                                    ancestor1Info.ThroughWhichChild,
-                                    ancestor2Info.ThroughWhichChild
-                                });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
-                            {
-                                distantRelationInfoList.Add(distantRelationInfo);
-                            }
+                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, ancestor1Info.ThroughWhichChild, ancestor2Info.ThroughWhichChild, other);
                         }
                     }
                     else if (ancestor1.IsSibling(ancestor2))
                     {
-                        AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1), ancestor2Info = other.GetAncestorInfo(ancestor2);
                         if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
                         {
-                            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, self, new GenealogyPlaceholder[]
-                                {
-                                    ancestor1,
-                                    ancestor2
-                                });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
-                            {
-                                distantRelationInfoList.Add(distantRelationInfo);
-                            }
+                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1, ancestor2, self);
                         }
                         else
                         {
-                            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, other, new GenealogyPlaceholder[]
-                                {
-                                    ancestor1,
-                                    ancestor2
-                                });
-                            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
-                            {
-                                distantRelationInfoList.Add(distantRelationInfo);
-                            }
+                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, ancestor1, ancestor2, other);
                         }
                     }
                 }
@@ -385,7 +352,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static SiblingOfAncestorInfo GetSiblingOfAncestorInfo(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
         {
-            List<int[]> genDistsAndHalfRelPairs = new List<int[]>();
+            List<int[]> siblingOfAncestorInfoListAsArrays = new List<int[]>();
             foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
             {
                 AncestorInfo ancestorInfo = descendantOfSibling.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
@@ -396,30 +363,30 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         continue;
                     }
-                    genDistsAndHalfRelPairs.Add(new int[]
+                    siblingOfAncestorInfoListAsArrays.Add(new int[]
                         {
                             ancestorInfo.GenerationalDistance,
                             isHalfRelative ? 1 : 0
                         });
                 }
             }
-            if (genDistsAndHalfRelPairs.Count == 0)
+            if (siblingOfAncestorInfoListAsArrays.Count == 0)
             {
                 return null;
             }
-            int[] lowestGenDistAndHalfRelPair = new int[]
+            int[] closestSiblingOfAncestorInfoAsArray = new int[]
                 {
                     int.MaxValue,
                     int.MaxValue
                 };
-            foreach (int[] genDistAndHalfRelPair in genDistsAndHalfRelPairs)
+            foreach (int[] siblingOfAncestorInfoAsArray in siblingOfAncestorInfoListAsArrays)
             {
-                if (lowestGenDistAndHalfRelPair[0] > genDistAndHalfRelPair[0] || lowestGenDistAndHalfRelPair[0] == genDistAndHalfRelPair[0] && lowestGenDistAndHalfRelPair[1] > genDistAndHalfRelPair[1])
+                if (closestSiblingOfAncestorInfoAsArray[0] > siblingOfAncestorInfoAsArray[0] || closestSiblingOfAncestorInfoAsArray[0] == siblingOfAncestorInfoAsArray[0] && closestSiblingOfAncestorInfoAsArray[1] > siblingOfAncestorInfoAsArray[1])
                 {
-                    lowestGenDistAndHalfRelPair = genDistAndHalfRelPair;
+                    closestSiblingOfAncestorInfoAsArray = siblingOfAncestorInfoAsArray;
                 }
             }
-            return new SiblingOfAncestorInfo(lowestGenDistAndHalfRelPair[0], lowestGenDistAndHalfRelPair[1] == 1);
+            return new SiblingOfAncestorInfo(closestSiblingOfAncestorInfoAsArray[0], closestSiblingOfAncestorInfoAsArray[1] == 1);
         }
 
         public static bool IsSimDescriptionIdUnique(ulong simDescriptionId)
@@ -534,6 +501,21 @@ namespace Destrospean.ExpandedGenealogy
                     ((Genealogy)sim1).AddSiblingOfAncestor((Genealogy)sim2, (int)generationalDistance, false);
                 }
             }
+        }
+
+        public static bool TryAddDistantRelationInfoToList(ref List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
+        {
+            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new GenealogyPlaceholder[]
+                {
+                    throughWhichChild1,
+                    throughWhichChild2
+                });
+            if (distantRelationInfo.IsUniqueIn(distantRelationInfoList) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
+            {
+                distantRelationInfoList.Add(distantRelationInfo);
+                return true;
+            }
+            return false;
         }
     }
 }
