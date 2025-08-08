@@ -192,18 +192,12 @@ namespace Destrospean.ExpandedGenealogy
 
         public static DistantRelationInfo CalculateDistantRelation(this GenealogyPlaceholder self, GenealogyPlaceholder other)
         {
-            DistantRelationInfo closestDistantRelationInfo = null;
-            int highestRelationshipCoefficientPower = int.MinValue;
-            foreach (DistantRelationInfo distantRelationInfo in self.CalculateDistantRelations(other))
+            List<DistantRelationInfo> distantRelationInfoList = self.CalculateDistantRelations(other);
+            if (distantRelationInfoList.Count == 0)
             {
-                int relationshipCoefficientPower = -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy) ? 2 : 1);
-                if (relationshipCoefficientPower > highestRelationshipCoefficientPower || relationshipCoefficientPower == highestRelationshipCoefficientPower && closestDistantRelationInfo != null && (closestDistantRelationInfo.Degree > distantRelationInfo.Degree || closestDistantRelationInfo.Degree == distantRelationInfo.Degree && closestDistantRelationInfo.TimesRemoved > distantRelationInfo.TimesRemoved))
-                {
-                    closestDistantRelationInfo = distantRelationInfo;
-                    highestRelationshipCoefficientPower = relationshipCoefficientPower;
-                }
+                return null;
             }
-            return closestDistantRelationInfo;
+            return distantRelationInfoList[0];
         }
 
         public static List<DistantRelationInfo> CalculateDistantRelations(this GenealogyPlaceholder self, GenealogyPlaceholder other)
@@ -222,9 +216,9 @@ namespace Destrospean.ExpandedGenealogy
                 foreach (GenealogyPlaceholder ancestor2 in other.Ancestors)
                 {
                     AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1), ancestor2Info = other.GetAncestorInfo(ancestor2);
-                    if (ancestor1 == ancestor2)
+                    if (ancestor1 == ancestor2 && (ancestor1Info.GenerationalDistance == 0 ^ ancestor2Info.GenerationalDistance == 0))
                     {
-                        if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
+                        if (ancestor1Info.GenerationalDistance < ancestor2Info.GenerationalDistance)
                         {
                             TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1Info.ThroughWhichChild, ancestor2Info.ThroughWhichChild, self);
                         }
@@ -233,9 +227,9 @@ namespace Destrospean.ExpandedGenealogy
                             TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, ancestor1Info.ThroughWhichChild, ancestor2Info.ThroughWhichChild, other);
                         }
                     }
-                    else if (ancestor1.IsSibling(ancestor2))
+                    if (ancestor1.IsSibling(ancestor2))
                     {
-                        if (ancestor1Info.GenerationalDistance <= ancestor2Info.GenerationalDistance)
+                        if (ancestor1Info.GenerationalDistance < ancestor2Info.GenerationalDistance)
                         {
                             TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1, ancestor2, self);
                         }
@@ -246,6 +240,19 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
             }
+            distantRelationInfoList.Sort((a, b) =>
+                {
+                    int aCoRelPow = 2 * a.Degree + a.TimesRemoved + (Genealogy.IsHalfSibling(a.ThroughWhichChildren[0].Genealogy, a.ThroughWhichChildren[1].Genealogy) ? 2 : 1), bCoRelPow = 2 * b.Degree + b.TimesRemoved + (Genealogy.IsHalfSibling(b.ThroughWhichChildren[0].Genealogy, b.ThroughWhichChildren[1].Genealogy) ? 2 : 1);
+                    if (aCoRelPow == bCoRelPow && a.Degree == b.Degree && a.TimesRemoved == b.TimesRemoved)
+                    {
+                        return 0;
+                    }
+                    if (aCoRelPow > bCoRelPow || aCoRelPow == bCoRelPow && (a.Degree > b.Degree || a.Degree == b.Degree && a.TimesRemoved > b.TimesRemoved))
+                    {
+                        return 1;
+                    }
+                    return -1;
+                });
             self.CachedDistantRelationInfoLists[other] = distantRelationInfoList;
             return distantRelationInfoList;
         }
@@ -261,6 +268,7 @@ namespace Destrospean.ExpandedGenealogy
             {
                 genealogyPlaceholder.CachedAncestorInfoLists.Clear();
                 genealogyPlaceholder.CachedDistantRelationInfoLists.Clear();
+                genealogyPlaceholder.CachedSiblingOfAncestorInfoLists.Clear();
                 genealogyPlaceholder.mAncestors = null;
                 genealogyPlaceholder.mParents = null;
                 genealogyPlaceholder.mSiblings = null;
@@ -269,7 +277,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static void ClearRelationsWith(this Genealogy self, Genealogy other)
         {
-            sRelationAssignments.RemoveAll(relationAssignment => (relationAssignment["Sim A"] == self && relationAssignment["Sim B"] == other) || (relationAssignment["Sim A"] == other && relationAssignment["Sim B"] == self));
+            sRelationAssignments.RemoveAll(relationAssignment => relationAssignment["Sim A"] == self && relationAssignment["Sim B"] == other || relationAssignment["Sim A"] == other && relationAssignment["Sim B"] == self);
             RebuildRelationAssignments();
         }
 
@@ -280,17 +288,12 @@ namespace Destrospean.ExpandedGenealogy
 
         public static AncestorInfo GetAncestorInfo(this GenealogyPlaceholder descendant, GenealogyPlaceholder ancestor)
         {
-            AncestorInfo closestAncestorInfo = null;
-            int shortestGenerationalDistance = int.MaxValue;
-            foreach (AncestorInfo ancestorInfo in descendant.GetAncestorInfoList(ancestor))
+            List<AncestorInfo> ancestorInfoList = descendant.GetAncestorInfoList(ancestor);
+            if (ancestorInfoList.Count == 0)
             {
-                if (shortestGenerationalDistance > ancestorInfo.GenerationalDistance)
-                {
-                    shortestGenerationalDistance = ancestorInfo.GenerationalDistance;
-                    closestAncestorInfo = ancestorInfo;
-                }
+                return null;
             }
-            return closestAncestorInfo;
+            return ancestorInfoList[0];
         }
 
         public static List<AncestorInfo> GetAncestorInfoList(this Genealogy descendant, Genealogy ancestor)
@@ -335,6 +338,7 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
             }
+            ancestorInfoList.Sort((a, b) => a.GenerationalDistance == b.GenerationalDistance ? 0 : a.GenerationalDistance > b.GenerationalDistance ? 1 : -1);
             descendant.CachedAncestorInfoLists[ancestor] = ancestorInfoList;
             return ancestorInfoList;
         }
@@ -352,41 +356,57 @@ namespace Destrospean.ExpandedGenealogy
 
         public static SiblingOfAncestorInfo GetSiblingOfAncestorInfo(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
         {
-            List<int[]> siblingOfAncestorInfoListAsArrays = new List<int[]>();
-            foreach (GenealogyPlaceholder sibling in siblingOfAncestor.GetGenealogyPlaceholder().Siblings)
-            {
-                AncestorInfo ancestorInfo = descendantOfSibling.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                if (ancestorInfo != null)
-                {
-                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling.Genealogy, siblingOfAncestor);
-                    if (isHalfRelative && !Tuning.kShowHalfRelatives)
-                    {
-                        continue;
-                    }
-                    siblingOfAncestorInfoListAsArrays.Add(new int[]
-                        {
-                            ancestorInfo.GenerationalDistance,
-                            isHalfRelative ? 1 : 0
-                        });
-                }
-            }
-            if (siblingOfAncestorInfoListAsArrays.Count == 0)
+            return descendantOfSibling.GetGenealogyPlaceholder().GetSiblingOfAncestorInfo(siblingOfAncestor.GetGenealogyPlaceholder());
+        }
+
+        public static SiblingOfAncestorInfo GetSiblingOfAncestorInfo(this GenealogyPlaceholder descendantOfSibling, GenealogyPlaceholder siblingOfAncestor)
+        {
+            List<SiblingOfAncestorInfo> siblingOfAncestorInfoList = descendantOfSibling.GetSiblingOfAncestorInfoList(siblingOfAncestor);
+            if (siblingOfAncestorInfoList.Count == 0)
             {
                 return null;
             }
-            int[] closestSiblingOfAncestorInfoAsArray = new int[]
-                {
-                    int.MaxValue,
-                    int.MaxValue
-                };
-            foreach (int[] siblingOfAncestorInfoAsArray in siblingOfAncestorInfoListAsArrays)
+            return siblingOfAncestorInfoList[0];
+        }
+
+        public static List<SiblingOfAncestorInfo> GetSiblingOfAncestorInfoList(this Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
+        {
+            return descendantOfSibling.GetGenealogyPlaceholder().GetSiblingOfAncestorInfoList(siblingOfAncestor.GetGenealogyPlaceholder());
+        }
+
+        public static List<SiblingOfAncestorInfo> GetSiblingOfAncestorInfoList(this GenealogyPlaceholder descendantOfSibling, GenealogyPlaceholder siblingOfAncestor)
+        {
+            List<SiblingOfAncestorInfo> cachedSiblingOfAncestorInfoList, siblingOfAncestorInfoList = new List<SiblingOfAncestorInfo>();
+            if (descendantOfSibling.CachedSiblingOfAncestorInfoLists.TryGetValue(siblingOfAncestor, out cachedSiblingOfAncestorInfoList))
             {
-                if (closestSiblingOfAncestorInfoAsArray[0] > siblingOfAncestorInfoAsArray[0] || closestSiblingOfAncestorInfoAsArray[0] == siblingOfAncestorInfoAsArray[0] && closestSiblingOfAncestorInfoAsArray[1] > siblingOfAncestorInfoAsArray[1])
+                return cachedSiblingOfAncestorInfoList;
+            }
+            foreach (GenealogyPlaceholder sibling in siblingOfAncestor.Siblings)
+            {
+                AncestorInfo ancestorInfo = descendantOfSibling.GetAncestorInfo(sibling);
+                if (ancestorInfo != null)
                 {
-                    closestSiblingOfAncestorInfoAsArray = siblingOfAncestorInfoAsArray;
+                    bool isHalfRelative = Genealogy.IsHalfSibling(sibling.Genealogy, siblingOfAncestor.Genealogy);
+                    if (!isHalfRelative || Tuning.kShowHalfRelatives)
+                    {
+                        siblingOfAncestorInfoList.Add(new SiblingOfAncestorInfo(ancestorInfo.GenerationalDistance, isHalfRelative));
+                    }
                 }
             }
-            return new SiblingOfAncestorInfo(closestSiblingOfAncestorInfoAsArray[0], closestSiblingOfAncestorInfoAsArray[1] == 1);
+            siblingOfAncestorInfoList.Sort((a, b) =>
+                {
+                    if (a.GenerationalDistance > b.GenerationalDistance || a.GenerationalDistance == b.GenerationalDistance && a.IsHalfRelative && !b.IsHalfRelative)
+                    {
+                        return 1;
+                    }
+                    if (a.GenerationalDistance < b.GenerationalDistance || a.GenerationalDistance == b.GenerationalDistance && !a.IsHalfRelative && b.IsHalfRelative)
+                    {
+                        return -1;
+                    }
+                    return 0;
+                });
+            descendantOfSibling.CachedSiblingOfAncestorInfoLists[siblingOfAncestor] = siblingOfAncestorInfoList;
+            return siblingOfAncestorInfoList;
         }
 
         public static bool IsSimDescriptionIdUnique(ulong simDescriptionId)

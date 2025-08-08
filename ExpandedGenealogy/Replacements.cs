@@ -106,52 +106,29 @@ namespace Destrospean.ExpandedGenealogy
             {
                 return false;
             }
-            bool isOnlyHalf = false;
-            foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
-            {
-                foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
-                {
-                    AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                    if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
-                    {
-                        if (Genealogy.IsHalfSibling(uncle, sibling.Genealogy))
-                        {
-                            isOnlyHalf = true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            if (isOnlyHalf)
+            SiblingOfAncestorInfo siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle);
+            if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0 && siblingOfAncestorInfo.IsHalfRelative)
             {
                 return true;
             }
-            if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage && IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
+            if (uncle.Spouse == null || uncle.PartnerType != PartnerType.Marriage)
+            {
+                return false;
+            }
+            if (IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
             {
                 return true;
             }
-            if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
+            if (IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
             {
-                foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
-                {
-                    AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                    if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
-                    {
-                        if (Genealogy.IsHalfSibling(uncle.Spouse, sibling.Genealogy))
-                        {
-                            isOnlyHalf = true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
+                return false;
             }
-            return isOnlyHalf;
+            siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle.Spouse);
+            if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0 && siblingOfAncestorInfo.IsHalfRelative)
+            {
+                return true;
+            }
+            return false;
         }
 
         [TypePatch(typeof(Genealogy))]
@@ -187,60 +164,52 @@ namespace Destrospean.ExpandedGenealogy
                 // Check if the target is an ancestor of the selected Sim
                 foreach (AncestorInfo ancestorInfo in self.GetAncestorInfoList(other))
                 {
-                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
                     if (Tuning.kDenyRomanceWithAncestors)
                     {
                         return true;
                     }
+                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
                 }
                 // Check if the selected Sim is an ancestor of the target
                 foreach (AncestorInfo ancestorInfo in other.GetAncestorInfoList(self))
                 {
-                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
                     if (Tuning.kDenyRomanceWithAncestors)
                     {
                         return true;
                     }
+                    relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - 1);
                 }
                 // Check if the Sims are siblings
                 if (Genealogy.IsSibling(self, other))
                 {
                     bool isHalfSibling = Genealogy.IsHalfSibling(self, other);
-                    relationshipCoefficient += isHalfSibling ? .25f : .5f;
                     if (Tuning.kDenyRomanceWithSiblings && !(isHalfSibling && Tuning.kAllowRomanceForHalfRelatives))
                     {
                         return true;
                     }
+                    relationshipCoefficient += isHalfSibling ? .25f : .5f;
                 }
                 // Check if the target is a sibling of one of the selected Sim's ancestors
-                foreach (GenealogyPlaceholder sibling in other.GetGenealogyPlaceholder().Siblings)
+                foreach (SiblingOfAncestorInfo siblingOfAncestorInfo in self.GetSiblingOfAncestorInfoList(other))
                 {
-                    foreach (AncestorInfo ancestorInfo in self.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
+                    if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(siblingOfAncestorInfo.IsHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                     {
-                        bool isHalfRelative = Genealogy.IsHalfSibling(other, sibling.Genealogy);
-                        relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - (isHalfRelative ? 3 : 2));
-                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
+                    relationshipCoefficient += (float)Math.Pow(2, -siblingOfAncestorInfo.GenerationalDistance - (siblingOfAncestorInfo.IsHalfRelative ? 3 : 2));
                 }
                 // Check if the selected Sim is a sibling of one of the target's ancestors
-                foreach (GenealogyPlaceholder sibling in self.GetGenealogyPlaceholder().Siblings)
+                foreach (SiblingOfAncestorInfo siblingOfAncestorInfo in other.GetSiblingOfAncestorInfoList(self))
                 {
-                    foreach (AncestorInfo ancestorInfo in other.GetGenealogyPlaceholder().GetAncestorInfoList(sibling))
+                    if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(siblingOfAncestorInfo.IsHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                     {
-                        bool isHalfRelative = Genealogy.IsHalfSibling(self, sibling.Genealogy);
-                        relationshipCoefficient += (float)Math.Pow(2, -ancestorInfo.GenerationalDistance - (isHalfRelative ? 3 : 2));
-                        if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
+                    relationshipCoefficient += (float)Math.Pow(2, -siblingOfAncestorInfo.GenerationalDistance - (siblingOfAncestorInfo.IsHalfRelative ? 3 : 2));
                 }
                 foreach (DistantRelationInfo distantRelationInfo in other.GetGenealogyPlaceholder().CalculateDistantRelations(self.GetGenealogyPlaceholder()))
                 {
-                    if (distantRelationInfo.Degree == 0 && new List<GenealogyPlaceholder>(distantRelationInfo.ThroughWhichChildren).Exists(sibling => self.GetGenealogyPlaceholder().IsAncestor(sibling) || other.GetGenealogyPlaceholder().IsAncestor(sibling)) && (other.GetGenealogyPlaceholder().Siblings.Exists(sibling => self.GetGenealogyPlaceholder().IsAncestor(sibling) && self.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1) || self.GetGenealogyPlaceholder().Siblings.Exists(sibling => other.GetGenealogyPlaceholder().IsAncestor(sibling) && other.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1)))
+                    if (distantRelationInfo.Degree == 0 && new List<GenealogyPlaceholder>(distantRelationInfo.ThroughWhichChildren).Exists(sibling => other.GetGenealogyPlaceholder().IsAncestor(sibling) || self.GetGenealogyPlaceholder().IsAncestor(sibling)) && (other.GetGenealogyPlaceholder().Siblings.Exists(sibling => self.GetGenealogyPlaceholder().IsAncestor(sibling) && self.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1) || self.GetGenealogyPlaceholder().Siblings.Exists(sibling => other.GetGenealogyPlaceholder().IsAncestor(sibling) && other.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1)))
                     {
                         continue;
                     }
@@ -249,7 +218,6 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         return true;
                     }
-                    relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
                     /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
                      * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
                      * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
@@ -258,6 +226,7 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         return true;
                     }
+                    relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
                 }
                 /* Check if the coefficient of relationship for the two Sims is higher the minimum to disallow it.
                  * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
@@ -377,31 +346,27 @@ namespace Destrospean.ExpandedGenealogy
 
             public static bool IsUncle(Genealogy uncle, Genealogy nephew)
             {
-                if (Replacements.IsCousin(uncle, nephew, 0, 1, uncle) || uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage && Replacements.IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
+                if (Replacements.IsCousin(uncle, nephew, 0, 1, uncle))
                 {
                     return true;
                 }
-                foreach (GenealogyPlaceholder genealogyPlaceholder in uncle.GetGenealogyPlaceholder().Siblings)
+                SiblingOfAncestorInfo siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle);
+                if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0)
                 {
-                    foreach (GenealogyPlaceholder sibling in uncle.GetGenealogyPlaceholder().Siblings)
-                    {
-                        AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                        if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
-                if (uncle.Spouse != null && uncle.PartnerType == PartnerType.Marriage)
+                if (uncle.Spouse == null || uncle.PartnerType != PartnerType.Marriage)
                 {
-                    foreach (GenealogyPlaceholder sibling in uncle.Spouse.GetGenealogyPlaceholder().Siblings)
-                    {
-                        AncestorInfo ancestorInfo = nephew.GetGenealogyPlaceholder().GetAncestorInfo(sibling);
-                        if (ancestorInfo != null && ancestorInfo.GenerationalDistance == 0)
-                        {
-                            return true;
-                        }
-                    }
+                    return false;
+                }
+                if (Replacements.IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
+                {
+                    return true;
+                }
+                siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle.Spouse);
+                if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0)
+                {
+                    return true;
                 }
                 return false;
             }

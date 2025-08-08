@@ -7,12 +7,6 @@ namespace Destrospean.ExpandedGenealogy
 {
     public class GenealogyPlaceholder
     {
-        public Dictionary<GenealogyPlaceholder, List<AncestorInfo>> CachedAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<AncestorInfo>>();
-
-        public Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>> CachedDistantRelationInfoLists = new Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>>();
-
-        public List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null, mSiblingsRaw = new List<GenealogyPlaceholder>();
-
         public List<GenealogyPlaceholder> Ancestors
         {
             get
@@ -34,6 +28,12 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
+        public Dictionary<GenealogyPlaceholder, List<AncestorInfo>> CachedAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<AncestorInfo>>();
+
+        public Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>> CachedDistantRelationInfoLists = new Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>>();
+
+        public Dictionary<GenealogyPlaceholder, List<SiblingOfAncestorInfo>> CachedSiblingOfAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<SiblingOfAncestorInfo>>();
+
         public Genealogy Genealogy
         {
             get;
@@ -45,6 +45,9 @@ namespace Destrospean.ExpandedGenealogy
             get;
             private set;
         }
+
+        public List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null, mSiblingsRaw = new List<GenealogyPlaceholder>();
+
 
         public List<GenealogyPlaceholder> Parents
         {
@@ -82,6 +85,16 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
+        public void AddChild(Genealogy child)
+        {
+            AddChild(child.GetGenealogyPlaceholder());
+        }
+
+        public void AddChild(GenealogyPlaceholder child)
+        {
+            child.AddParent(this);
+        }
+
         public void AddParent(Genealogy parent)
         {
             AddParent(parent.GetGenealogyPlaceholder());
@@ -91,16 +104,6 @@ namespace Destrospean.ExpandedGenealogy
         {
             mParentsRaw.Add(parent);
             Common.ClearCachesInGenealogyPlaceholders();
-        }
-
-        public void AddChild(Genealogy child)
-        {
-            AddChild(child.GetGenealogyPlaceholder());
-        }
-
-        public void AddChild(GenealogyPlaceholder child)
-        {
-            child.AddParent(this);
         }
 
         public void AddSibling(Genealogy sibling)
