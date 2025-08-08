@@ -2,6 +2,7 @@
 using MonoPatcherLib;
 using Sims3.Gameplay;
 using Sims3.Gameplay.CAS;
+using Sims3.Gameplay.EventSystem;
 using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.TimeTravel;
 using Sims3.Gameplay.Utilities;
@@ -17,62 +18,6 @@ namespace Destrospean.ExpandedGenealogy
 {
     public class Replacements
     {
-        public static void ClearAllGenealogyInformationNoRebuild(Genealogy sim)
-        {
-            List<Genealogy> genealogies = new List<Genealogy>();
-            if (sim.Spouse != null)
-            {
-                genealogies.Add(sim.Spouse);
-            }
-            if (sim.mChildren != null)
-            {
-                genealogies.AddRange(sim.mChildren);
-            }
-            if (sim.mSiblings != null)
-            {
-                genealogies.AddRange(sim.mSiblings);
-            }
-            if (sim.mNaturalParents != null)
-            {
-                genealogies.AddRange(sim.mNaturalParents);
-            }
-            foreach (Genealogy genealogy in genealogies)
-            {
-                if (genealogy != null)
-                {
-                    RemoveDirectRelationNoRebuild(sim, genealogy);
-                }
-            }
-            if (sim.mMiniSim != null)
-            {
-                MiniSimDescription.RemoveMSD(sim.mMiniSim.SimDescriptionId);
-                sim.mMiniSim = null;
-                sim.mSim = null;
-            }
-        }
-
-        public static void ClearDerivedDataNoRebuild(Genealogy sim)
-        {
-            List<Genealogy> descendants = new List<Genealogy>()
-                {
-                    sim
-                };
-            while (descendants.Count > 0)
-            {
-                Genealogy descendant = descendants[0];
-                descendants.RemoveAt(0);
-                descendant.mAncestors = null;
-                if (descendant.mSiblings != null && descendant.mNaturalParents.Count > 0)
-                {
-                    descendant.mSiblings = null;
-                }
-                if (descendant.mChildren != null)
-                {
-                    descendants.AddRange(descendant.mChildren);
-                }
-            }
-        }
-
         public static bool IsCloselyRelated(SimDescription sim1, SimDescription sim2, bool thoroughCheck)
         {
             if (sim1 == sim2)
@@ -187,64 +132,75 @@ namespace Destrospean.ExpandedGenealogy
             return false;
         }
 
-        public static void RemoveDirectRelationNoRebuild(Genealogy sim1, Genealogy sim2)
-        {
-            if (sim1.mSpouse == sim2)
-            {
-                ClearDerivedDataNoRebuild(sim1.mSpouse);
-                sim1.mSpouse = null;
-                sim2.mSpouse = null;
-                sim1.mPartnerType = PartnerType.None;
-                sim2.mPartnerType = PartnerType.None;
-                foreach (Genealogy child in sim2.mChildren)
-                {
-                    sim1.mChildren.Remove(child);
-                    child.mNaturalParents.Remove(sim1);
-                    ClearDerivedDataNoRebuild(child);
-                }
-            }
-            else if (sim1.mChildren.Contains(sim2))
-            {
-                sim1.mChildren.Remove(sim2);
-                sim2.mNaturalParents.Remove(sim1);
-            }
-            else if (sim2.mChildren.Contains(sim1))
-            {
-                sim2.mChildren.Remove(sim1);
-                sim1.mNaturalParents.Remove(sim2);
-            }
-            else if (sim1.Siblings.Contains(sim2))
-            {
-                sim1.Siblings.Remove(sim2);
-                sim2.Siblings.Remove(sim1);
-                List<Genealogy> parents = new List<Genealogy>(sim1.mNaturalParents);
-                foreach (Genealogy parent in parents)
-                {
-                    if (parent.mChildren.Contains(sim2))
-                    {
-                        parent.mChildren.Remove(sim1);
-                        sim1.mNaturalParents.Remove(parent);
-                    }
-                    ClearDerivedDataNoRebuild(parent);
-                }
-            }
-            ClearDerivedDataNoRebuild(sim2);
-            ClearDerivedDataNoRebuild(sim1);
-        }
-
         [TypePatch(typeof(Genealogy))]
         public class GenealogyPatch
         {
-            public void ClearAllGenealogyInformation()
+            public void AddChild(IGenealogy iChild)
             {
-                ClearAllGenealogyInformationNoRebuild((Genealogy)(this as object));
+                Genealogy other = iChild as Genealogy, self = (Genealogy)(this as object);
+                if (other.mNaturalParents.Count == 2)
+                {
+                    return;
+                }
+                List<Genealogy> siblings = new List<Genealogy>();
+                if (other.mNaturalParents.Count == 0)
+                {
+                    siblings.AddRange(other.Siblings);
+                }
+                siblings.Add(other);
+                foreach (Genealogy sibling in siblings)
+                {
+                    if (self.mChildren.Contains(sibling))
+                    {
+                        continue;
+                    }
+                    self.ClearDerivedData();
+                    sibling.ClearDerivedData();
+                    foreach (Genealogy child in self.mChildren)
+                    {
+                        child.ClearDerivedData();
+                    }
+                    List<Genealogy> parents = new List<Genealogy>();
+                    parents.AddRange(self.mNaturalParents);
+                    while (parents.Count > 0)
+                    {
+                        Genealogy parent = parents[0];
+                        parents.RemoveAt(0);
+                        parent.ClearDerivedData();
+                        parents.AddRange(parent.mNaturalParents);
+                    }
+                    self.mChildren.Add(sibling);
+                    sibling.mNaturalParents.Add(self);
+                    if (sibling.mSim != null && !sibling.IMiniSimDescription.IsEP11Bot && self.mSim != null && self.mSim.CreatedSim != null)
+                    {
+                        EventTracker.SendEvent(new GotChildAndAgeTransitionEvent(self.mSim.CreatedSim, sibling.mSim.CreatedSim, false));
+                        EventTracker.SendEvent(EventTypeId.kChildBornOrAdopted, null, sibling.mSim.CreatedSim);
+                    }
+                }
                 Common.RebuildRelationAssignments();
             }
 
             public void ClearDerivedData()
             {
-                ClearDerivedDataNoRebuild((Genealogy)(this as object));
-                Common.RebuildRelationAssignments();
+                List<Genealogy> descendants = new List<Genealogy>()
+                    {
+                        (Genealogy)(this as object)
+                    };
+                while (descendants.Count > 0)
+                {
+                    Genealogy descendant = descendants[0];
+                    descendants.RemoveAt(0);
+                    descendant.mAncestors = null;
+                    if (descendant.mSiblings != null && descendant.mNaturalParents.Count > 0)
+                    {
+                        descendant.mSiblings = null;
+                    }
+                    if (descendant.mChildren != null)
+                    {
+                        descendants.AddRange(descendant.mChildren);
+                    }
+                }
+                Common.ClearCachesInGenealogyPlaceholders();
             }
 
             public bool IsBloodRelated(Genealogy other)
@@ -459,61 +415,6 @@ namespace Destrospean.ExpandedGenealogy
                     return true;
                 }
                 return false;
-            }
-
-            public static void PurgeDistantGenealogyRelations(List<Pair<Genealogy, int>> roots)
-            {
-                SortedDictionary<int, List<Genealogy>> rootsSortedDictionary = new SortedDictionary<int, List<Genealogy>>();
-                Dictionary<Genealogy, bool> genealogyBoolDictionary = new Dictionary<Genealogy, bool>();
-                List<Genealogy> genealogies = new List<Genealogy>();
-                foreach (Pair<Genealogy, int> root in roots)
-                {
-                    if (root.First != null && !genealogyBoolDictionary.ContainsKey(root.First))
-                    {
-                        Genealogy.PushElement(rootsSortedDictionary, -root.Second, root.First);
-                        genealogyBoolDictionary.Add(root.First, true);
-                    }
-                }
-                while (rootsSortedDictionary.Count > 0)
-                {
-                    Pair<int, Genealogy> pair = Genealogy.PopFirst(rootsSortedDictionary);
-                    int depth = pair.First + 1;
-                    Genealogy second = pair.Second;
-                    Genealogy.Expand(second.Spouse, depth, rootsSortedDictionary, genealogyBoolDictionary, genealogies);
-                    if (second.Children != null)
-                    {
-                        foreach (Genealogy child in second.Children)
-                        {
-                            Genealogy.Expand(child, depth, rootsSortedDictionary, genealogyBoolDictionary, genealogies);
-                        }
-                    }
-                    if (second.Siblings != null)
-                    {
-                        foreach (Genealogy sibling in second.Siblings)
-                        {
-                            Genealogy.Expand(sibling, depth, rootsSortedDictionary, genealogyBoolDictionary, genealogies);
-                        }
-                    }
-                    if (second.Parents == null)
-                    {
-                        continue;
-                    }
-                    foreach (Genealogy parent in second.Parents)
-                    {
-                        Genealogy.Expand(parent, depth, rootsSortedDictionary, genealogyBoolDictionary, genealogies);
-                    }
-                }
-                foreach (Genealogy genealogy in genealogies)
-                {
-                    ClearAllGenealogyInformationNoRebuild(genealogy);
-                }
-                Common.RebuildRelationAssignments();
-            }
-
-            public void RemoveDirectRelation(IGenealogy other)
-            {
-                RemoveDirectRelationNoRebuild((Genealogy)(this as object), (Genealogy)other);
-                Common.RebuildRelationAssignments();
             }
         }
 
