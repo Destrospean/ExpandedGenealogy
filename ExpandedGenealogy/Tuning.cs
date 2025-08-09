@@ -41,6 +41,9 @@ namespace Sims3.Gameplay.Destrospean
         public static bool kShow1stCousinsAsCousins;
 
         [Tunable]
+        public static bool kShowCheatInteractions;
+
+        [Tunable]
         public static bool kShowHalfRelatives;
 
         [Tunable]

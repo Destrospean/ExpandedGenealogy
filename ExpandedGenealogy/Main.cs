@@ -2,13 +2,14 @@
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.CAS;
-using Sims3.Gameplay.Core;
 using Sims3.Gameplay.EventSystem;
 using Sims3.Gameplay.Interactions;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.ExpandedGenealogy
 {
@@ -29,13 +30,14 @@ namespace Destrospean.ExpandedGenealogy
                 MonoPatcher.ReplaceMethod(nraasWoohooerType.GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static), Type.GetType("Destrospean.ExpandedGenealogy.Replacements").GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static));
             }
         }
-
+            
         public class DEBUG_AddCousin : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
 
             public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddCousin:";
 
+            [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddCousin>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
@@ -53,7 +55,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
                 }
             }
 
@@ -63,13 +65,14 @@ namespace Destrospean.ExpandedGenealogy
                 return true;
             }
         }
-
+            
         public class DEBUG_AddGrandchild : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
 
             public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandchild:";
 
+            [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandchild>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
@@ -87,7 +90,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
                 }
             }
 
@@ -97,13 +100,14 @@ namespace Destrospean.ExpandedGenealogy
                 return true;
             }
         }
-
+            
         public class DEBUG_AddGrandparent : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
 
             public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandparent:";
 
+            [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandparent>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
@@ -121,7 +125,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
                 }
             }
 
@@ -138,6 +142,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddNephew:";
 
+            [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddNephew>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
@@ -155,7 +160,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
                 }
             }
 
@@ -172,6 +177,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddUncle:";
 
+            [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddUncle>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
@@ -189,7 +195,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
                 }
             }
 
@@ -206,6 +212,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_ClearRelations:";
 
+            [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_ClearRelations>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
@@ -223,7 +230,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Cheats.sTestingCheatsEnabled && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
                 }
             }
 
@@ -236,14 +243,18 @@ namespace Destrospean.ExpandedGenealogy
 
         static void AddInteractions(Sim sim)
         {
-            if (sim != null && !sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == DEBUG_AddCousin.Singleton.GetType()))
+            List<InteractionDefinition> interactions = new List<InteractionDefinition>()
+                {
+                    DEBUG_AddCousin.Singleton,
+                    DEBUG_AddGrandchild.Singleton,
+                    DEBUG_AddGrandparent.Singleton,
+                    DEBUG_AddNephew.Singleton,
+                    DEBUG_AddUncle.Singleton,
+                    DEBUG_ClearRelations.Singleton
+                };
+            if (sim != null && !sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == interactions[0].GetType()))
             {
-                sim.AddInteraction(DEBUG_AddCousin.Singleton);
-                sim.AddInteraction(DEBUG_AddGrandchild.Singleton);
-                sim.AddInteraction(DEBUG_AddGrandparent.Singleton);
-                sim.AddInteraction(DEBUG_AddNephew.Singleton);
-                sim.AddInteraction(DEBUG_AddUncle.Singleton);
-                sim.AddInteraction(DEBUG_ClearRelations.Singleton);
+                interactions.ForEach(sim.AddInteraction);
             }
         }
 

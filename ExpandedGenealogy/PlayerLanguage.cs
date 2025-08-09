@@ -121,6 +121,9 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
             if (string.IsNullOrEmpty(text))
             {
+                text = GetDistantRelationString(sim2.Genealogy, sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder()));
+                // The below may be modified and added back if cousins by marriage are ever included.
+                /*
                 DistantRelationInfo distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
                 if (distantRelationInfo == null)
                 {
@@ -150,11 +153,10 @@ namespace Destrospean.Lang.ExpandedGenealogy
                 }
                 else
                 {
-                    /* Get a relation name that is valid if Sim 2 is a collateral descendant or type of cousin
-                     * of Sim 1 or if Sim 1 is a collateral descendant of Sim 2
-                     */
+                    // Get a relation name that is valid if Sim 2 is a collateral descendant or type of cousin of Sim 1 or if Sim 1 is a collateral descendant of Sim 2
                     text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
                 }
+                */
             }
             result = text;
             return !string.IsNullOrEmpty(result);
