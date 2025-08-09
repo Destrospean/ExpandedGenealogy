@@ -121,8 +121,6 @@ namespace Destrospean.ExpandedGenealogy
             sGenealogyPlaceholders.Add(sharedAncestorGenealogyPlaceholder.Id, sharedAncestorGenealogyPlaceholder);
             sGenealogyPlaceholders[sim1GenealogyPlaceholders[sim1GenealogyPlaceholders.Count - 1].Id].AddParent(sGenealogyPlaceholders[sharedAncestorGenealogyPlaceholder.Id]);
             sGenealogyPlaceholders[sim2GenealogyPlaceholders[sim2GenealogyPlaceholders.Count - 1].Id].AddParent(sGenealogyPlaceholders[sharedAncestorGenealogyPlaceholder.Id]);
-            sGenealogyPlaceholders[sim1GenealogyPlaceholders[sim1GenealogyPlaceholders.Count - 1].Id].AddSibling(sGenealogyPlaceholders[sim2GenealogyPlaceholders[sim2GenealogyPlaceholders.Count - 1].Id]);
-            sGenealogyPlaceholders[sim2GenealogyPlaceholders[sim2GenealogyPlaceholders.Count - 1].Id].AddSibling(sGenealogyPlaceholders[sim1GenealogyPlaceholders[sim1GenealogyPlaceholders.Count - 1].Id]);
             for (int i = 0; i < sim1GenealogyPlaceholders.Count - 1; i++)
             {
                 sGenealogyPlaceholders[sim1GenealogyPlaceholders[i].Id].AddParent(sGenealogyPlaceholders[sim1GenealogyPlaceholders[i + 1].Id]);
@@ -216,17 +214,6 @@ namespace Destrospean.ExpandedGenealogy
                 foreach (GenealogyPlaceholder ancestor2 in other.Ancestors)
                 {
                     AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1), ancestor2Info = other.GetAncestorInfo(ancestor2);
-                    if (ancestor1 == ancestor2 && (ancestor1Info.GenerationalDistance == 0 ^ ancestor2Info.GenerationalDistance == 0))
-                    {
-                        if (ancestor1Info.GenerationalDistance < ancestor2Info.GenerationalDistance)
-                        {
-                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor1Info.GenerationalDistance, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1Info.ThroughWhichChild, ancestor2Info.ThroughWhichChild, self);
-                        }
-                        else
-                        {
-                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor2Info.GenerationalDistance, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, ancestor1Info.ThroughWhichChild, ancestor2Info.ThroughWhichChild, other);
-                        }
-                    }
                     if (ancestor1.IsSibling(ancestor2))
                     {
                         if (ancestor1Info.GenerationalDistance < ancestor2Info.GenerationalDistance)

@@ -80,64 +80,38 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 return "";
             }
-            string ancestorTitle = "", degree = (distantRelationInfo.Degree + 1).ToString(), greatNxUncleEntryKey = "Destrospean/Genealogy:GreatNx" + (isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "") + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Uncle" : "Nephew"), nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:Nth{0}CousinNxRemoved{1}ward", isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down");
-            if (distantRelationInfo.Degree > 0)
+            string ancestorTitle = "", degree = (distantRelationInfo.Degree + 1).ToString(), nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:Nth{0}CousinNxRemoved{1}ward", isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down");
+            if (distantRelationInfo.Degree > 0 && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
             {
-                if (distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
+                if (distantRelationInfo.TimesRemoved > 0)
                 {
-                    if (distantRelationInfo.TimesRemoved > 0)
+                    if (distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                     {
-                        if (distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
+                        switch (distantRelationInfo.TimesRemoved)
                         {
-                            switch (distantRelationInfo.TimesRemoved)
-                            {
-                                case 1:
-                                    break;
-                                case 2:
-                                    ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:Grand" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "parent" : "child"));
-                                    break;
-                                case 3:
-                                    ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:GG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"));
-                                    break;
-                                case 4:
-                                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"));
-                                    break;
-                                default:
-                                    string generationalDistance = (distantRelationInfo.TimesRemoved - 1).ToString();
-                                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "parent" : "child"), generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
-                                    break;
-                            }
-                            return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(degree)), ancestorTitle.ToLower()).Replace("  ", " ");
+                            case 1:
+                                break;
+                            case 2:
+                                ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:Grand" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "parent" : "child"));
+                                break;
+                            case 3:
+                                ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:GG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"));
+                                break;
+                            case 4:
+                                ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"));
+                                break;
+                            default:
+                                string generationalDistance = (distantRelationInfo.TimesRemoved - 1).ToString();
+                                ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "parent" : "child"), generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
+                                break;
                         }
-                        return "";
+                        return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(degree)), ancestorTitle.ToLower()).Replace("  ", " ");
                     }
-                    return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", distantRelationInfo.Degree.ToString(), Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(distantRelationInfo.Degree.ToString())));
+                    return "";
                 }
-                return "";
+                return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", distantRelationInfo.Degree.ToString(), Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun" + GetOrdinalSuffix(distantRelationInfo.Degree.ToString())));
             }
-            if (distantRelationInfo.TimesRemoved < 1)
-            {
-                return "";
-            }
-            switch (distantRelationInfo.TimesRemoved)
-            {
-                case 1:
-                    break;
-                case 2:
-                    ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:Grand" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "parent" : "child"));
-                    break;
-                case 3:
-                    ancestorTitle = Localization.LocalizeString(isFemale, "Gameplay/Socializing:GG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"));
-                    break;
-                case 4:
-                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GGG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"));
-                    break;
-                default:
-                    string generationalDistance = (distantRelationInfo.TimesRemoved - 1).ToString();
-                    ancestorTitle = Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrand" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "parent" : "child"), generationalDistance, Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
-                    break;
-            }
-            return Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, greatNxUncleEntryKey, ancestorTitle.ToLower()) : Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), ancestorTitle.ToLower()).Replace("  ", " ");
+            return "";
         }
 
         public override string GetSiblingOfAncestorString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)

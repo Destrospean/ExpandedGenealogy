@@ -46,8 +46,7 @@ namespace Destrospean.ExpandedGenealogy
             private set;
         }
 
-        public List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null, mSiblingsRaw = new List<GenealogyPlaceholder>();
-
+        public List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null;
 
         public List<GenealogyPlaceholder> Parents
         {
@@ -74,10 +73,13 @@ namespace Destrospean.ExpandedGenealogy
                 if (mSiblings == null)
                 {
                     List<GenealogyPlaceholder> siblings = new List<GenealogyPlaceholder>();
-                    siblings.AddRange(mSiblingsRaw);
                     if (Genealogy != null)
                     {
                         siblings.AddRange(Genealogy.Siblings.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(sibling => sibling.GetGenealogyPlaceholder())));
+                    }
+                    foreach (GenealogyPlaceholder parent in Parents)
+                    {
+                        siblings.AddRange(new List<GenealogyPlaceholder>(Common.GenealogyPlaceholders.Values).FindAll(child => child.IsParent(parent) && child != this && !siblings.Contains(child)));
                     }
                     mSiblings = siblings;
                 }
@@ -103,17 +105,10 @@ namespace Destrospean.ExpandedGenealogy
         public void AddParent(GenealogyPlaceholder parent)
         {
             mParentsRaw.Add(parent);
-            Common.ClearCachesInGenealogyPlaceholders();
-        }
-
-        public void AddSibling(Genealogy sibling)
-        {
-            AddSibling(sibling.GetGenealogyPlaceholder());
-        }
-
-        public void AddSibling(GenealogyPlaceholder sibling)
-        {
-            mSiblingsRaw.Add(sibling);
+            foreach (GenealogyPlaceholder sibling in Siblings)
+            {
+                sibling.mParentsRaw.Add(parent);
+            }
             Common.ClearCachesInGenealogyPlaceholders();
         }
 

@@ -80,44 +80,32 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 return "";
             }
-            string degree = "", greatNxUncleEntryKey = "Destrospean/Genealogy:GreatNx" + (isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "") + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Uncle" : "Nephew"), greats = "", nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:Nth{0}CousinNxRemoved{1}ward", isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down");
-            if (distantRelationInfo.Degree > 0)
+            string degree = "", greats = "", nthCousinNxRemovedEntryKey = string.Format("Destrospean/Genealogy:Nth{0}CousinNxRemoved{1}ward", isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down");
+            if (distantRelationInfo.Degree > 0 && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
             {
-                if (distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
+                if (distantRelationInfo.TimesRemoved > 0)
                 {
-                    if (distantRelationInfo.TimesRemoved > 0)
+                    if (distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
                     {
-                        if (distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
+                        for (int i = 0; i < distantRelationInfo.Degree; i++)
                         {
-                            for (int i = 0; i < distantRelationInfo.Degree; i++)
-                            {
-                                degree += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
-                            }
-                            for (int i = 1; i < distantRelationInfo.TimesRemoved; i++)
-                            {
-                                greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
-                            }
-                            return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, greats);
+                            degree += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
                         }
-                        return "";
+                        for (int i = 1; i < distantRelationInfo.TimesRemoved; i++)
+                        {
+                            greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
+                        }
+                        return Localization.LocalizeString(isFemale, nthCousinNxRemovedEntryKey, degree, greats);
                     }
-                    for (int i = 1; i < distantRelationInfo.Degree; i++)
-                    {
-                        degree += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
-                    }
-                    return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", degree);
+                    return "";
                 }
-                return "";
+                for (int i = 1; i < distantRelationInfo.Degree; i++)
+                {
+                    degree += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun0");
+                }
+                return Localization.LocalizeString(isFemale, isHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousin" : "Destrospean/Genealogy:NthCousin", degree);
             }
-            if (distantRelationInfo.TimesRemoved < 1)
-            {
-                return "";
-            }
-            for (int i = 2; i < distantRelationInfo.TimesRemoved; i++)
-            {
-                greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
-            }
-            return Localization.LocalizeString(isFemale, greatNxUncleEntryKey, greats);
+            return "";
         }
     }
 }

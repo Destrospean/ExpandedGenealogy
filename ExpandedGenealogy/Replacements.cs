@@ -99,28 +99,12 @@ namespace Destrospean.ExpandedGenealogy
 
         public static bool IsHalfUncle(Genealogy uncle, Genealogy nephew)
         {
-            if (IsHalfCousin(uncle, nephew, 0, 1, uncle))
-            {
-                return true;
-            }
-            if (IsCousin(uncle, nephew, 0, 1, uncle))
-            {
-                return false;
-            }
             SiblingOfAncestorInfo siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle);
             if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0 && siblingOfAncestorInfo.IsHalfRelative)
             {
                 return true;
             }
             if (uncle.Spouse == null || uncle.PartnerType != PartnerType.Marriage)
-            {
-                return false;
-            }
-            if (IsHalfCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
-            {
-                return true;
-            }
-            if (IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
             {
                 return false;
             }
@@ -392,10 +376,6 @@ namespace Destrospean.ExpandedGenealogy
 
             public static bool IsUncle(Genealogy uncle, Genealogy nephew)
             {
-                if (Replacements.IsCousin(uncle, nephew, 0, 1, uncle))
-                {
-                    return true;
-                }
                 SiblingOfAncestorInfo siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle);
                 if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0)
                 {
@@ -404,10 +384,6 @@ namespace Destrospean.ExpandedGenealogy
                 if (uncle.Spouse == null || uncle.PartnerType != PartnerType.Marriage)
                 {
                     return false;
-                }
-                if (Replacements.IsCousin(uncle.Spouse, nephew, 0, 1, uncle.Spouse))
-                {
-                    return true;
                 }
                 siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle.Spouse);
                 if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0)
