@@ -137,13 +137,13 @@ namespace Destrospean.Lang.ExpandedGenealogy
                  *         {
                  *             distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.Spouse.GetGenealogyPlaceholder());
                  *         }
-                 *         // Check if Sim 1 is married to a sibling of one of Sim 2's ancestors
-                 *         if (distantRelationInfo != null && distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant.Genealogy == sim1.Genealogy.Spouse)
+                 *         // Check if Sim 1 is married to a cousin of Sim 2
+                 *         if (distantRelationInfo != null && distantRelationInfo.ClosestDescendant.Genealogy == sim1.Genealogy.Spouse)
                  *         {
                  *             text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
                  *         }
                  *     }
-                 *     // Check if Sim 2 is married a cousin of Sim 1
+                 *     // Check if Sim 2 is married to a cousin of Sim 1
                  *     else if (distantRelationInfo.ClosestDescendant.Genealogy == sim2.Genealogy.Spouse)
                  *     {
                  *         text = GetDistantRelationString(sim2.IsFemale, sim2.Genealogy.Spouse, distantRelationInfo);
