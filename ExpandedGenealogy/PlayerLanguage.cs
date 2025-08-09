@@ -122,41 +122,39 @@ namespace Destrospean.Lang.ExpandedGenealogy
             if (string.IsNullOrEmpty(text))
             {
                 text = GetDistantRelationString(sim2.Genealogy, sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder()));
-                // The below may be modified and added back if cousins by marriage are ever included.
-                /*
-                DistantRelationInfo distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
-                if (distantRelationInfo == null)
-                {
-                    // Check if Sim 2 is married to someone other than Sim 1
-                    if (sim2.Genealogy.Spouse != null && sim2.Genealogy.Spouse != sim1.Genealogy && sim2.Genealogy.PartnerType == PartnerType.Marriage)
-                    {
-                        distantRelationInfo = sim2.Genealogy.Spouse.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
-                    }
-                    if (distantRelationInfo == null)
-                    {
-                        // Check if Sim 1 is married to someone other than Sim 2
-                        if (sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
-                        {
-                            distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.Spouse.GetGenealogyPlaceholder());
-                        }
-                        // Check if Sim 1 is married to a sibling of one of Sim 2's ancestors
-                        if (distantRelationInfo != null && distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant.Genealogy == sim1.Genealogy.Spouse)
-                        {
-                            text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
-                        }
-                    }
-                    // Check if Sim 2 is married to a sibling of one of Sim 1's ancestors
-                    else if (distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant.Genealogy == sim2.Genealogy.Spouse)
-                    {
-                        text = GetDistantRelationString(sim2.IsFemale, sim2.Genealogy.Spouse, distantRelationInfo);
-                    }
-                }
-                else
-                {
-                    // Get a relation name that is valid if Sim 2 is a collateral descendant or type of cousin of Sim 1 or if Sim 1 is a collateral descendant of Sim 2
-                    text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
-                }
-                */
+                /* DistantRelationInfo distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
+                 * if (distantRelationInfo == null)
+                 * {    
+                 *     // Check if Sim 2 is married to someone other than Sim 1
+                 *     if (sim2.Genealogy.Spouse != null && sim2.Genealogy.Spouse != sim1.Genealogy && sim2.Genealogy.PartnerType == PartnerType.Marriage)
+                 *     {
+                 *         distantRelationInfo = sim2.Genealogy.Spouse.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
+                 *     }
+                 *     if (distantRelationInfo == null)
+                 *     {
+                 *         // Check if Sim 1 is married to someone other than Sim 2
+                 *         if (sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
+                 *         {
+                 *             distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.Spouse.GetGenealogyPlaceholder());
+                 *         }
+                 *         // Check if Sim 1 is married to a sibling of one of Sim 2's ancestors
+                 *         if (distantRelationInfo != null && distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant.Genealogy == sim1.Genealogy.Spouse)
+                 *         {
+                 *             text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
+                 *         }
+                 *     }
+                 *     // Check if Sim 2 is married a cousin of Sim 1
+                 *     else if (distantRelationInfo.ClosestDescendant.Genealogy == sim2.Genealogy.Spouse)
+                 *     {
+                 *         text = GetDistantRelationString(sim2.IsFemale, sim2.Genealogy.Spouse, distantRelationInfo);
+                 *     }
+                 * }
+                 * else
+                 * {
+                 *     // Get a relation name that is valid if Sim 2 is a collateral descendant or type of cousin of Sim 1 or if Sim 1 is a collateral descendant of Sim 2
+                 *     text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
+                 * }
+                 */
             }
             result = text;
             return !string.IsNullOrEmpty(result);

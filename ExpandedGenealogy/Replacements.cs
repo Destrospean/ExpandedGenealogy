@@ -239,15 +239,7 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 foreach (DistantRelationInfo distantRelationInfo in other.GetGenealogyPlaceholder().CalculateDistantRelations(self.GetGenealogyPlaceholder()))
                 {
-                    if (distantRelationInfo.Degree == 0 && new List<GenealogyPlaceholder>(distantRelationInfo.ThroughWhichChildren).Exists(sibling => other.GetGenealogyPlaceholder().IsAncestor(sibling) || self.GetGenealogyPlaceholder().IsAncestor(sibling)) && (other.GetGenealogyPlaceholder().Siblings.Exists(sibling => self.GetGenealogyPlaceholder().IsAncestor(sibling) && self.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1) || self.GetGenealogyPlaceholder().Siblings.Exists(sibling => other.GetGenealogyPlaceholder().IsAncestor(sibling) && other.GetGenealogyPlaceholder().GetAncestorInfo(sibling).GenerationalDistance == distantRelationInfo.TimesRemoved - 1)))
-                    {
-                        continue;
-                    }
                     bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
-                    if (distantRelationInfo.Degree == 0 && Tuning.kDenyRomanceWithSiblingsOfAncestors && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
-                    {
-                        return true;
-                    }
                     /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
                      * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
                      * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed
