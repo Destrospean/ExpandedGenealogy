@@ -109,11 +109,7 @@ namespace Destrospean.ExpandedGenealogy
                 return false;
             }
             siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle.Spouse);
-            if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0 && siblingOfAncestorInfo.IsHalfRelative)
-            {
-                return true;
-            }
-            return false;
+            return siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0 && siblingOfAncestorInfo.IsHalfRelative;
         }
 
         [TypePatch(typeof(Genealogy))]
@@ -378,11 +374,7 @@ namespace Destrospean.ExpandedGenealogy
                     return false;
                 }
                 siblingOfAncestorInfo = nephew.GetSiblingOfAncestorInfo(uncle.Spouse);
-                if (siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0)
-                {
-                    return true;
-                }
-                return false;
+                return siblingOfAncestorInfo != null && siblingOfAncestorInfo.GenerationalDistance == 0;
             }
         }
 
