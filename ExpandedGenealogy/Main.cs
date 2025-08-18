@@ -16,7 +16,6 @@ namespace Destrospean.ExpandedGenealogy
     [Plugin]
     public class Main
     {
-        [PersistableStatic]
         static EventListener sSimAddedListener;
 
         public Main()
@@ -35,21 +34,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddCousin:";
+            public const string LocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddCousin:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddCousin>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
+                    return Localization.LocalizeString(target.IsFemale, LocalizationKey + "Name");
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, LocalizationKey + "Path")
                     };
                 }
 
@@ -70,21 +69,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandchild:";
+            public const string LocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandchild:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandchild>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
+                    return Localization.LocalizeString(target.IsFemale, LocalizationKey + "Name");
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, LocalizationKey + "Path")
                     };
                 }
 
@@ -105,21 +104,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandparent:";
+            public const string LocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandparent:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandparent>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
+                    return Localization.LocalizeString(target.IsFemale, LocalizationKey + "Name");
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, LocalizationKey + "Path")
                     };
                 }
 
@@ -140,21 +139,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddNephew:";
+            public const string LocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddNephew:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddNephew>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
+                    return Localization.LocalizeString(target.IsFemale, LocalizationKey + "Name");
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, LocalizationKey + "Path")
                     };
                 }
 
@@ -175,21 +174,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddUncle:";
+            public const string LocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddUncle:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddUncle>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
+                    return Localization.LocalizeString(target.IsFemale, LocalizationKey + "Name");
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, LocalizationKey + "Path")
                     };
                 }
 
@@ -210,21 +209,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_ClearRelations:";
+            public const string LocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_ClearRelations:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_ClearRelations>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name", actor.FirstName, target.FirstName);
+                    return Localization.LocalizeString(target.IsFemale, LocalizationKey + "Name", actor.FirstName, target.FirstName);
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, LocalizationKey + "Path")
                     };
                 }
 
@@ -252,25 +251,21 @@ namespace Destrospean.ExpandedGenealogy
                     DEBUG_AddUncle.Singleton,
                     DEBUG_ClearRelations.Singleton
                 };
-            if (sim != null && !sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == interactions[0].GetType()))
+            if (!sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == interactions[0].GetType()))
             {
                 interactions.ForEach(sim.AddInteraction);
             }
-        }
-
-        static void Init()
-        {
-            UpdateListeners();
         }
 
         static ListenerAction OnSimAdded(Event e)
         {
             try
             {
-                if (e.TargetObject is Sim)
+                Sim sim = e.TargetObject as Sim;
+                if (sim != null)
                 {
-                    AddInteractions((Sim)e.TargetObject);
-                    ((Sim)e.TargetObject).Genealogy.GetGenealogyPlaceholder();
+                    AddInteractions(sim);
+                    sim.Genealogy.GetGenealogyPlaceholder();
                 }
             }
             catch (Exception ex)
@@ -282,15 +277,12 @@ namespace Destrospean.ExpandedGenealogy
 
         static void OnWorldLoadFinished(object sender, EventArgs e)
         {
-            Init();
-            foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
-            {
-                AddInteractions(sim);
-            }
+            new List<Sim>(Sims3.Gameplay.Queries.GetObjects<Sim>()).ForEach(AddInteractions);
             if (Household.ActiveHousehold != null)
             {
                 Common.RebuildRelationAssignments();
             }
+            UpdateListeners();
         }
 
         static void OnWorldQuit(object sender, EventArgs e)

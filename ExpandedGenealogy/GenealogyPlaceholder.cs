@@ -26,6 +26,10 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 return mAncestors;
             }
+            set
+            {
+                mAncestors = value;
+            }
         }
 
         public Dictionary<GenealogyPlaceholder, List<AncestorInfo>> CachedAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<AncestorInfo>>();
@@ -46,7 +50,7 @@ namespace Destrospean.ExpandedGenealogy
             private set;
         }
 
-        public List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null;
+        List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null;
 
         public List<GenealogyPlaceholder> Parents
         {
@@ -63,6 +67,10 @@ namespace Destrospean.ExpandedGenealogy
                     mParents = parents;
                 }
                 return mParents;
+            }
+            set
+            {
+                mParents = value;
             }
         }
 
@@ -84,6 +92,10 @@ namespace Destrospean.ExpandedGenealogy
                     mSiblings = siblings;
                 }
                 return mSiblings;
+            }
+            set
+            {
+                mSiblings = value;
             }
         }
 

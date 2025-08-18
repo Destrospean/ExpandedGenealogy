@@ -121,21 +121,21 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
             if (string.IsNullOrEmpty(text))
             {
-                text = GetDistantRelationString(sim2.Genealogy, sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder()));
-                /* DistantRelationInfo distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
+                text = GetDistantRelationString(sim2.Genealogy, sim2.Genealogy.CalculateDistantRelation(sim1.Genealogy));
+                /* DistantRelationInfo distantRelationInfo = sim2.Genealogy.CalculateDistantRelation(sim1.Genealogy);
                  * if (distantRelationInfo == null)
                  * {    
                  *     // Check if Sim 2 is married to someone other than Sim 1
                  *     if (sim2.Genealogy.Spouse != null && sim2.Genealogy.Spouse != sim1.Genealogy && sim2.Genealogy.PartnerType == PartnerType.Marriage)
                  *     {
-                 *         distantRelationInfo = sim2.Genealogy.Spouse.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.GetGenealogyPlaceholder());
+                 *         distantRelationInfo = sim2.Genealogy.Spouse.CalculateDistantRelation(sim1.Genealogy);
                  *     }
                  *     if (distantRelationInfo == null)
                  *     {
                  *         // Check if Sim 1 is married to someone other than Sim 2
                  *         if (sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
                  *         {
-                 *             distantRelationInfo = sim2.Genealogy.GetGenealogyPlaceholder().CalculateDistantRelation(sim1.Genealogy.Spouse.GetGenealogyPlaceholder());
+                 *             distantRelationInfo = sim2.Genealogy.CalculateDistantRelation(sim1.Genealogy.Spouse);
                  *         }
                  *         // Check if Sim 1 is married to a type of cousin of Sim 2
                  *         if (distantRelationInfo != null)

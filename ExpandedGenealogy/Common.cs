@@ -28,7 +28,7 @@ namespace Destrospean.ExpandedGenealogy
 
         static Dictionary<ulong, GenealogyPlaceholder> sGenealogyPlaceholders = new Dictionary<ulong, GenealogyPlaceholder>();
 
-        [PersistableStatic]
+        [PersistableStatic(true)]
         static List<Dictionary<string, object>> sRelationAssignments = new List<Dictionary<string, object>>();
 
         public static void AddAncestor(this Genealogy descendant, Genealogy ancestor, int generationalDistance = 1, bool addRelationAssignment = true)
@@ -188,6 +188,11 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
+        public static DistantRelationInfo CalculateDistantRelation(this Genealogy self, Genealogy other)
+        {
+            return self.GetGenealogyPlaceholder().CalculateDistantRelation(other.GetGenealogyPlaceholder());
+        }
+
         public static DistantRelationInfo CalculateDistantRelation(this GenealogyPlaceholder self, GenealogyPlaceholder other)
         {
             List<DistantRelationInfo> distantRelationInfoList = self.CalculateDistantRelations(other);
@@ -196,6 +201,11 @@ namespace Destrospean.ExpandedGenealogy
                 return null;
             }
             return distantRelationInfoList[0];
+        }
+
+        public static List<DistantRelationInfo> CalculateDistantRelations(this Genealogy self, Genealogy other)
+        {
+            return self.GetGenealogyPlaceholder().CalculateDistantRelations(other.GetGenealogyPlaceholder());
         }
 
         public static List<DistantRelationInfo> CalculateDistantRelations(this GenealogyPlaceholder self, GenealogyPlaceholder other)
@@ -218,11 +228,11 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         if (ancestor1Info.GenerationalDistance < ancestor2Info.GenerationalDistance)
                         {
-                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1, ancestor2, self);
+                            distantRelationInfoList.TryAddDistantRelationInfo(ancestor1Info.GenerationalDistance + 1, ancestor2Info.GenerationalDistance - ancestor1Info.GenerationalDistance, ancestor1, ancestor2, self);
                         }
                         else
                         {
-                            TryAddDistantRelationInfoToList(ref distantRelationInfoList, ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, ancestor1, ancestor2, other);
+                            distantRelationInfoList.TryAddDistantRelationInfo(ancestor2Info.GenerationalDistance + 1, ancestor1Info.GenerationalDistance - ancestor2Info.GenerationalDistance, ancestor1, ancestor2, other);
                         }
                     }
                 }
@@ -256,9 +266,9 @@ namespace Destrospean.ExpandedGenealogy
                 genealogyPlaceholder.CachedAncestorInfoLists.Clear();
                 genealogyPlaceholder.CachedDistantRelationInfoLists.Clear();
                 genealogyPlaceholder.CachedSiblingOfAncestorInfoLists.Clear();
-                genealogyPlaceholder.mAncestors = null;
-                genealogyPlaceholder.mParents = null;
-                genealogyPlaceholder.mSiblings = null;
+                genealogyPlaceholder.Ancestors = null;
+                genealogyPlaceholder.Parents = null;
+                genealogyPlaceholder.Siblings = null;
             }
         }
 
@@ -510,7 +520,7 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
-        public static bool TryAddDistantRelationInfoToList(ref List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
+        public static bool TryAddDistantRelationInfo(this List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
         {
             DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new GenealogyPlaceholder[]
                 {

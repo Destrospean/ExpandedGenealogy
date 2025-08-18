@@ -37,7 +37,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static bool IsCousin(Genealogy sim1, Genealogy sim2, int degree = 1, int timesRemoved = 0, Genealogy closestDescendant = null)
         {
-            foreach (DistantRelationInfo distantRelationInfo in sim1.GetGenealogyPlaceholder().CalculateDistantRelations(sim2.GetGenealogyPlaceholder()))
+            foreach (DistantRelationInfo distantRelationInfo in sim1.CalculateDistantRelations(sim2))
             {
                 if (distantRelationInfo.Degree == degree && distantRelationInfo.TimesRemoved == timesRemoved && (closestDescendant == null || distantRelationInfo.ClosestDescendant.Genealogy == closestDescendant))
                 {
@@ -50,7 +50,7 @@ namespace Destrospean.ExpandedGenealogy
         public static bool IsHalfCousin(Genealogy sim1, Genealogy sim2, int degree = 1, int timesRemoved = 0, Genealogy closestDescendant = null)
         {
             bool isOnlyHalf = false;
-            foreach (DistantRelationInfo distantRelationInfo in sim1.GetGenealogyPlaceholder().CalculateDistantRelations(sim2.GetGenealogyPlaceholder()))
+            foreach (DistantRelationInfo distantRelationInfo in sim1.CalculateDistantRelations(sim2))
             {
                 if (distantRelationInfo.Degree == degree && distantRelationInfo.TimesRemoved == timesRemoved && (closestDescendant == null || distantRelationInfo.ClosestDescendant.Genealogy == closestDescendant))
                 {
@@ -117,7 +117,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public void AddChild(IGenealogy iChild)
             {
-                Genealogy other = iChild as Genealogy, self = (Genealogy)(this as object);
+                Genealogy other = (Genealogy)iChild, self = (Genealogy)(object)this;
                 if (other.mNaturalParents.Count == 2)
                 {
                     return;
@@ -164,7 +164,7 @@ namespace Destrospean.ExpandedGenealogy
             {
                 List<Genealogy> descendants = new List<Genealogy>()
                     {
-                        (Genealogy)(this as object)
+                        (Genealogy)(object)this
                     };
                 while (descendants.Count > 0)
                 {
@@ -185,7 +185,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public bool IsBloodRelated(Genealogy other)
             {
-                Genealogy self = (Genealogy)(this as object);
+                Genealogy self = (Genealogy)(object)this;
                 float relationshipCoefficient = 0f;
                 // Check if the target is an ancestor of the selected Sim
                 foreach (AncestorInfo ancestorInfo in self.GetAncestorInfoList(other))
@@ -259,7 +259,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public bool IsFutureBloodRelated(Genealogy other)
             {
-                Genealogy self = (Genealogy)(this as object);
+                Genealogy self = (Genealogy)(object)this;
                 if (other.SimDescription == null)
                 {
                     return false;
@@ -334,7 +334,7 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     return false;
                 }
-                Genealogy self = (Genealogy)(this as object);
+                Genealogy self = (Genealogy)(object)this;
                 foreach (Genealogy parent1 in self.Parents)
                 {
                     foreach (Genealogy parent2 in other.Parents)
@@ -384,7 +384,7 @@ namespace Destrospean.ExpandedGenealogy
             public string GetMyFamilialDescriptionFor(SimDescription other)
             {
                 string text = "";
-                SimDescription self = (SimDescription)(this as object);
+                SimDescription self = (SimDescription)(object)this;
                 if (other.Genealogy == self.Genealogy)
                 {
                     return text;
@@ -593,7 +593,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public ulong MakeUniqueId()
             {
-                SimDescription self = (SimDescription)(this as object);
+                SimDescription self = (SimDescription)(object)this;
                 ulong simDescriptionId = self.mSimDescriptionId;
                 while (!self.IsSimDescriptionIdUnique(simDescriptionId) || Common.GenealogyPlaceholders.ContainsKey(simDescriptionId))
                 {
