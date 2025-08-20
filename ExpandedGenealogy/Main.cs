@@ -287,6 +287,7 @@ namespace Destrospean.ExpandedGenealogy
 
         static void OnWorldQuit(object sender, EventArgs e)
         {
+            Common.GenealogyPlaceholders.Clear();
             EventTracker.RemoveListener(sSimAddedListener);
             sSimAddedListener = null;
         }

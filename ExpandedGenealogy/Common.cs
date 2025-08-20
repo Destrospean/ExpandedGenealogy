@@ -468,34 +468,6 @@ namespace Destrospean.ExpandedGenealogy
         public static void RebuildRelationAssignments()
         {
             sGenealogyPlaceholders.Clear();
-            foreach (MiniSimDescription miniSimDescription in MiniSimDescription.sMiniSims.Values)
-            {
-                miniSimDescription.Genealogy.GetGenealogyPlaceholder();
-            }
-            foreach (Household household in Household.sHouseholdList)
-            {
-                foreach (SimDescription simDescription in household.AllSimDescriptions)
-                {
-                    simDescription.Genealogy.GetGenealogyPlaceholder();
-                }
-            }
-            if (Bin.Singleton != null)
-            {
-                foreach (HouseholdContents household in Bin.Singleton.Households)
-                {
-                    foreach (SimDescription simDescription in household.Household.AllSimDescriptions)
-                    {
-                        simDescription.Genealogy.GetGenealogyPlaceholder();
-                    }
-                }
-            }
-            foreach (Urnstone urnstone in Sims3.Gameplay.Queries.GetObjects<Urnstone>())
-            {
-                if (urnstone.DeadSimsDescription != null)
-                {
-                    urnstone.DeadSimsDescription.Genealogy.GetGenealogyPlaceholder();
-                }
-            }
             foreach (Dictionary<string, object> relationAssignment in sRelationAssignments)
             {
                 object degree, generationalDistance, isHigherUpFamilyTree, relationType, sim1, sim2;
