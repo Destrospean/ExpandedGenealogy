@@ -29,7 +29,7 @@ namespace Destrospean.ExpandedGenealogy
                 MonoPatcher.ReplaceMethod(nraasWoohooerType.GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static), Type.GetType("Destrospean.ExpandedGenealogy.Replacements").GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static));
             }
         }
-            
+
         public class DEBUG_AddCousin : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
@@ -64,7 +64,7 @@ namespace Destrospean.ExpandedGenealogy
                 return true;
             }
         }
-            
+
         public class DEBUG_AddGrandchild : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
@@ -99,7 +99,7 @@ namespace Destrospean.ExpandedGenealogy
                 return true;
             }
         }
-            
+
         public class DEBUG_AddGrandparent : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
