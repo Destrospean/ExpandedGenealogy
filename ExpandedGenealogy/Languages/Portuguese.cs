@@ -15,7 +15,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
         }
 
-        public override string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
+        public override string GetAncestorString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance.ToString();
             if (generationalDistance == "3")
@@ -29,7 +29,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return "";
         }
 
-        public override string GetDescendantOfSiblingString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
+        public override string GetDescendantOfSiblingString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
         {
             SiblingOfAncestorInfo siblingOfAncestorInfo = descendantOfSibling.GetSiblingOfAncestorInfo(siblingOfAncestor);
             if (siblingOfAncestorInfo == null)
@@ -55,7 +55,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", descendantTitle.ToLower()) : Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:NthHalfCousinNxRemovedDownward" : "Destrospean/Genealogy:NthCousinNxRemovedDownward", "1", Localization.LocalizeString(isFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), descendantTitle.ToLower());
         }
 
-        public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
+        public override string GetDescendantString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
             string generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance.ToString();
             if (generationalDistance == "3")
@@ -114,7 +114,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return "";
         }
 
-        public override string GetSiblingOfAncestorString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
+        public override string GetSiblingOfAncestorString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
         {
             SiblingOfAncestorInfo siblingOfAncestorInfo = descendantOfSibling.GetSiblingOfAncestorInfo(siblingOfAncestor);
             if (siblingOfAncestorInfo == null)

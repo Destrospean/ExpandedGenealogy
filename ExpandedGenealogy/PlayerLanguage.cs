@@ -17,12 +17,12 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
         }
 
-        public string GetAncestorString(Genealogy descendant, Genealogy ancestor)
+        public string GetAncestorString(Genealogy ancestor, Genealogy descendant)
         {
-            return GetAncestorString(ancestor.SimDescription.IsFemale, descendant, ancestor, false);
+            return GetAncestorString(ancestor.SimDescription.IsFemale, ancestor, descendant, false);
         }
 
-        public virtual string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
+        public virtual string GetAncestorString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string greats = "";
             for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
@@ -32,7 +32,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
         }
 
-        public virtual string GetDescendantOfSiblingString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
+        public virtual string GetDescendantOfSiblingString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
         {
             SiblingOfAncestorInfo siblingOfAncestorInfo = descendantOfSibling.GetSiblingOfAncestorInfo(siblingOfAncestor);
             if (siblingOfAncestorInfo == null)
@@ -47,12 +47,12 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", greats);
         }
 
-        public string GetDescendantString(Genealogy ancestor, Genealogy descendant)
+        public string GetDescendantString(Genealogy descendant, Genealogy ancestor)
         {
-            return GetDescendantString(descendant.SimDescription.IsFemale, ancestor, descendant, false);
+            return GetDescendantString(descendant.SimDescription.IsFemale, descendant, ancestor, false);
         }
 
-        public virtual string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
+        public virtual string GetDescendantString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
             string greats = "";
             for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
@@ -84,7 +84,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return number.Substring(number.Length - 1);
         }
 
-        public virtual string GetSiblingOfAncestorString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
+        public virtual string GetSiblingOfAncestorString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
         {
             SiblingOfAncestorInfo siblingOfAncestorInfo = descendantOfSibling.GetSiblingOfAncestorInfo(siblingOfAncestor);
             if (siblingOfAncestorInfo == null)
@@ -99,62 +99,57 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", greats);
         }
 
-        public bool TryGetDistantRelationString(SimDescription sim1, SimDescription sim2, out string result)
+        public bool TryGetDescendantOfSiblingString(SimDescription descendantOfSibling, SimDescription siblingOfAncestor, out string result)
         {
-            string text = "";
-            // Get a relation name that is valid if Sim 2 is a sibling of one of Sim 1's ancestors
-            text = GetSiblingOfAncestorString(sim2.IsFemale, sim1.Genealogy, sim2.Genealogy);
-            if (string.IsNullOrEmpty(text) && sim2.Genealogy.Spouse != null && sim1.Genealogy != sim2.Genealogy.Spouse && sim2.Genealogy.PartnerType == PartnerType.Marriage)
+            string text = GetDescendantOfSiblingString(descendantOfSibling.IsFemale, descendantOfSibling.Genealogy, siblingOfAncestor.Genealogy);
+            if (string.IsNullOrEmpty(text) && siblingOfAncestor.Genealogy.Spouse != null && siblingOfAncestor.Genealogy.Spouse != descendantOfSibling.Genealogy && siblingOfAncestor.Genealogy.PartnerType == PartnerType.Marriage)
             {
-                // Get a relation name that is valid if Sim 2 is married to a sibling of one of Sim 1's ancestors
-                text = GetSiblingOfAncestorString(sim2.IsFemale, sim1.Genealogy, sim2.Genealogy.Spouse);
+                text = GetDescendantOfSiblingString(descendantOfSibling.IsFemale, descendantOfSibling.Genealogy, siblingOfAncestor.Genealogy.Spouse);
             }
-            if (string.IsNullOrEmpty(text))
+            result = text;
+            return !string.IsNullOrEmpty(result);
+        }
+
+        public bool TryGetDistantRelationString(SimDescription simWithRelationName, SimDescription simToGetRelationTo, out string result)
+        {
+            /* DistantRelationInfo distantRelationInfo = simWithRelationName.Genealogy.CalculateDistantRelation(simToGetRelationTo.Genealogy);
+             * if (distantRelationInfo == null)
+             * {    
+             *     if (simWithRelationName.Genealogy.Spouse != null && simWithRelationName.Genealogy.Spouse != simToGetRelationTo.Genealogy && simWithRelationName.Genealogy.PartnerType == PartnerType.Marriage)
+             *     {
+             *         distantRelationInfo = simWithRelationName.Genealogy.Spouse.CalculateDistantRelation(simToGetRelationTo.Genealogy);
+             *     }
+             *     if (distantRelationInfo == null)
+             *     {
+             *         if (simToGetRelationTo.Genealogy.Spouse != null && simToGetRelationTo.Genealogy.Spouse != simWithRelationName.Genealogy && simToGetRelationTo.Genealogy.PartnerType == PartnerType.Marriage)
+             *         {
+             *             distantRelationInfo = simWithRelationName.Genealogy.CalculateDistantRelation(simToGetRelationTo.Genealogy.Spouse);
+             *         }
+             *         if (distantRelationInfo != null)
+             *         {
+             *             text = GetDistantRelationString(simWithRelationName.Genealogy, distantRelationInfo);
+             *         }
+             *     }
+             *     else
+             *     {
+             *         text = GetDistantRelationString(simWithRelationName.IsFemale, simWithRelationName.Genealogy.Spouse, distantRelationInfo);
+             *     }
+             * }
+             * else
+             * {
+             *     text = GetDistantRelationString(simWithRelationName.Genealogy, distantRelationInfo);
+             * }
+             */
+            result = GetDistantRelationString(simWithRelationName.Genealogy, simWithRelationName.Genealogy.GetDistantRelationInfo(simToGetRelationTo.Genealogy));
+            return !string.IsNullOrEmpty(result);
+        }
+
+        public bool TryGetSiblingOfAncestorString(SimDescription siblingOfAncestor, SimDescription descendantOfSibling, out string result)
+        {
+            string text = GetSiblingOfAncestorString(siblingOfAncestor.IsFemale, siblingOfAncestor.Genealogy, descendantOfSibling.Genealogy);
+            if (string.IsNullOrEmpty(text) && siblingOfAncestor.Genealogy.Spouse != null && descendantOfSibling.Genealogy != siblingOfAncestor.Genealogy.Spouse && siblingOfAncestor.Genealogy.PartnerType == PartnerType.Marriage)
             {
-                // Get a relation name that is valid if Sim 1 is a sibling of one of Sim 2's ancestors
-                text = GetDescendantOfSiblingString(sim2.IsFemale, sim1.Genealogy, sim2.Genealogy);
-            }
-            if (string.IsNullOrEmpty(text) && sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
-            {
-                // Get a relation name that is valid if Sim 1 is married to a sibling of one of Sim 2's ancestors
-                text = GetDescendantOfSiblingString(sim2.IsFemale, sim1.Genealogy.Spouse, sim2.Genealogy);
-            }
-            if (string.IsNullOrEmpty(text))
-            {
-                text = GetDistantRelationString(sim2.Genealogy, sim2.Genealogy.CalculateDistantRelation(sim1.Genealogy));
-                /* DistantRelationInfo distantRelationInfo = sim2.Genealogy.CalculateDistantRelation(sim1.Genealogy);
-                 * if (distantRelationInfo == null)
-                 * {    
-                 *     // Check if Sim 2 is married to someone other than Sim 1
-                 *     if (sim2.Genealogy.Spouse != null && sim2.Genealogy.Spouse != sim1.Genealogy && sim2.Genealogy.PartnerType == PartnerType.Marriage)
-                 *     {
-                 *         distantRelationInfo = sim2.Genealogy.Spouse.CalculateDistantRelation(sim1.Genealogy);
-                 *     }
-                 *     if (distantRelationInfo == null)
-                 *     {
-                 *         // Check if Sim 1 is married to someone other than Sim 2
-                 *         if (sim1.Genealogy.Spouse != null && sim1.Genealogy.Spouse != sim2.Genealogy && sim1.Genealogy.PartnerType == PartnerType.Marriage)
-                 *         {
-                 *             distantRelationInfo = sim2.Genealogy.CalculateDistantRelation(sim1.Genealogy.Spouse);
-                 *         }
-                 *         // Check if Sim 1 is married to a type of cousin of Sim 2
-                 *         if (distantRelationInfo != null)
-                 *         {
-                 *             text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
-                 *         }
-                 *     }
-                 *     // Check if Sim 2 is married to a type of cousin of Sim 1
-                 *     else
-                 *     {
-                 *         text = GetDistantRelationString(sim2.IsFemale, sim2.Genealogy.Spouse, distantRelationInfo);
-                 *     }
-                 * }
-                 * else
-                 * {
-                 *     // Get a relation name that is valid if Sim 2 is a type of cousin of Sim 1
-                 *     text = GetDistantRelationString(sim2.Genealogy, distantRelationInfo);
-                 * }
-                 */
+                text = GetSiblingOfAncestorString(siblingOfAncestor.IsFemale, siblingOfAncestor.Genealogy.Spouse, descendantOfSibling.Genealogy);
             }
             result = text;
             return !string.IsNullOrEmpty(result);

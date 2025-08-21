@@ -7,7 +7,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
 {
     public class ITA : PlayerLanguage
     {
-        public override string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
+        public override string GetAncestorString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             int generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance;
             if (generationalDistance == 3)
@@ -52,7 +52,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return "";
         }
 
-        public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
+        public override string GetDescendantString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
             int generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance;
             if (generationalDistance == 3)

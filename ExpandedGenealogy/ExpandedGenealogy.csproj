@@ -59,6 +59,8 @@
     <Compile Include="AncestorInfo.cs" />
     <Compile Include="DistantRelationInfo.cs" />
     <Compile Include="GenealogyPlaceholder.cs" />
+    <Compile Include="Interactions.cs" />
+    <Compile Include="GenealogyExtended.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">

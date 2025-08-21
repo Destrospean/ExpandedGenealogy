@@ -8,9 +8,6 @@ namespace Sims3.Gameplay.Destrospean
         public static bool kAllowRomanceForHalfRelatives;
 
         [Tunable]
-        public static bool kAllowRomanceForStepRelatives;
-
-        [Tunable]
         public static bool kDenyRomanceWithAncestors;
 
         [Tunable]
@@ -18,6 +15,12 @@ namespace Sims3.Gameplay.Destrospean
 
         [Tunable]
         public static bool kDenyRomanceWithSiblingsOfAncestors;
+
+        [Tunable]
+        public static bool kDenyRomanceWithStepParents;
+
+        [Tunable]
+        public static bool kDenyRomanceWithStepSiblings;
 
         [Tunable]
         public static int kMaxDegreeCousinsToShow;

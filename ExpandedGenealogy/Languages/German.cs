@@ -15,7 +15,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
         }
 
-        public override string GetDescendantOfSiblingString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
+        public override string GetDescendantOfSiblingString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
         {
             SiblingOfAncestorInfo siblingOfAncestorInfo = descendantOfSibling.GetSiblingOfAncestorInfo(siblingOfAncestor);
             if (siblingOfAncestorInfo == null)
@@ -61,7 +61,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return "";
         }
 
-        public override string GetSiblingOfAncestorString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
+        public override string GetSiblingOfAncestorString(bool isFemale, Genealogy siblingOfAncestor, Genealogy descendantOfSibling)
         {
             SiblingOfAncestorInfo siblingOfAncestorInfo = descendantOfSibling.GetSiblingOfAncestorInfo(siblingOfAncestor);
             if (siblingOfAncestorInfo == null)

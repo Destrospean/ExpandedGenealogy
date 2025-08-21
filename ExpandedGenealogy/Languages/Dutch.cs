@@ -1,15 +1,15 @@
-﻿using Destrospean.ExpandedGenealogy;
+﻿using System;
+using System.Collections.Generic;
+using Destrospean.ExpandedGenealogy;
 using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.Utilities;
-using System;
-using System.Collections.Generic;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
 namespace Destrospean.Lang.ExpandedGenealogy
 {
     public class DUT : PlayerLanguage
     {
-        public override string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
+        public override string GetAncestorString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string text = "";
             List<string> binaryGroups = new List<string>();
@@ -59,7 +59,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return text;
         }
 
-        public override string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
+        public override string GetDescendantString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
             string greats = "";
             for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
