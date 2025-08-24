@@ -69,7 +69,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
             {
-                sim.AddInteractions();
+                AddInteractions(sim);
             }
             if (Household.ActiveHousehold != null)
             {
