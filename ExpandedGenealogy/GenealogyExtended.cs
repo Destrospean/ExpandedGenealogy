@@ -46,18 +46,18 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     });
             }
-            List<GenealogyPlaceholder> genealogyPlaceholders = new List<GenealogyPlaceholder>();
-            genealogyPlaceholders.Add(descendant.GetGenealogyPlaceholder());
+            List<GenealogyPlaceholder> ancestry = new List<GenealogyPlaceholder>();
+            ancestry.Add(descendant.GetGenealogyPlaceholder());
             for (int i = 0; i < generationalDistance; i++)
             {
-                GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder();
-                GenealogyPlaceholder.GenealogyPlaceholders.Add(genealogyPlaceholder.Id, genealogyPlaceholder);
-                genealogyPlaceholders.Add(genealogyPlaceholder);
+                GenealogyPlaceholder fakeAncestor = new GenealogyPlaceholder();
+                GenealogyPlaceholder.GenealogyPlaceholders.Add(fakeAncestor.Id, fakeAncestor);
+                ancestry.Add(fakeAncestor);
             }
-            genealogyPlaceholders.Add(ancestor.GetGenealogyPlaceholder());
-            for (int i = 0; i < genealogyPlaceholders.Count - 1; i++)
+            ancestry.Add(ancestor.GetGenealogyPlaceholder());
+            for (int i = 0; i < ancestry.Count - 1; i++)
             {
-                GenealogyPlaceholder.GenealogyPlaceholders[genealogyPlaceholders[i].Id].AddParent(GenealogyPlaceholder.GenealogyPlaceholders[genealogyPlaceholders[i + 1].Id]);
+                ancestry[i].AddParent(ancestry[i + 1]);
             }
         }
 
@@ -100,32 +100,32 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     });
             }
-            List<GenealogyPlaceholder> sim1GenealogyPlaceholders = new List<GenealogyPlaceholder>(), sim2GenealogyPlaceholders = new List<GenealogyPlaceholder>();
-            sim1GenealogyPlaceholders.Add(self.GetGenealogyPlaceholder());
-            for (int i = 0; i < degree + (isHigherUpFamilyTree ? 0 : timesRemoved); i++)
+            List<GenealogyPlaceholder>[] ancestries = new List<GenealogyPlaceholder>[]
             {
-                GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder();
-                GenealogyPlaceholder.GenealogyPlaceholders.Add(genealogyPlaceholder.Id, genealogyPlaceholder);
-                sim1GenealogyPlaceholders.Add(genealogyPlaceholder);
-            }
-            sim2GenealogyPlaceholders.Add(other.GetGenealogyPlaceholder());
-            for (int i = 0; i < degree + (isHigherUpFamilyTree ? timesRemoved : 0); i++)
+                new List<GenealogyPlaceholder>()
+                {
+                    self.GetGenealogyPlaceholder()
+                },
+                new List<GenealogyPlaceholder>()
+                {
+                    other.GetGenealogyPlaceholder()
+                }
+            };
+            GenealogyPlaceholder sharedFakeAncestor = new GenealogyPlaceholder();
+            GenealogyPlaceholder.GenealogyPlaceholders.Add(sharedFakeAncestor.Id, sharedFakeAncestor);
+            for (int i = 0; i < 2; i++)
             {
-                GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder();
-                GenealogyPlaceholder.GenealogyPlaceholders.Add(genealogyPlaceholder.Id, genealogyPlaceholder);
-                sim2GenealogyPlaceholders.Add(genealogyPlaceholder);
-            }
-            GenealogyPlaceholder sharedAncestorGenealogyPlaceholder = new GenealogyPlaceholder();
-            GenealogyPlaceholder.GenealogyPlaceholders.Add(sharedAncestorGenealogyPlaceholder.Id, sharedAncestorGenealogyPlaceholder);
-            GenealogyPlaceholder.GenealogyPlaceholders[sim1GenealogyPlaceholders[sim1GenealogyPlaceholders.Count - 1].Id].AddParent(GenealogyPlaceholder.GenealogyPlaceholders[sharedAncestorGenealogyPlaceholder.Id]);
-            GenealogyPlaceholder.GenealogyPlaceholders[sim2GenealogyPlaceholders[sim2GenealogyPlaceholders.Count - 1].Id].AddParent(GenealogyPlaceholder.GenealogyPlaceholders[sharedAncestorGenealogyPlaceholder.Id]);
-            for (int i = 0; i < sim1GenealogyPlaceholders.Count - 1; i++)
-            {
-                GenealogyPlaceholder.GenealogyPlaceholders[sim1GenealogyPlaceholders[i].Id].AddParent(GenealogyPlaceholder.GenealogyPlaceholders[sim1GenealogyPlaceholders[i + 1].Id]);
-            }
-            for (int i = 0; i < sim2GenealogyPlaceholders.Count - 1; i++)
-            {
-                GenealogyPlaceholder.GenealogyPlaceholders[sim2GenealogyPlaceholders[i].Id].AddParent(GenealogyPlaceholder.GenealogyPlaceholders[sim2GenealogyPlaceholders[i + 1].Id]);
+                for (int j = 0; j < degree + (isHigherUpFamilyTree ^ i == 0 ? timesRemoved : 0); j++)
+                {
+                    GenealogyPlaceholder fakeAncestor = new GenealogyPlaceholder();
+                    GenealogyPlaceholder.GenealogyPlaceholders.Add(fakeAncestor.Id, fakeAncestor);
+                    ancestries[i].Add(fakeAncestor);
+                }
+                ancestries[i].FindLast(x => true).AddParent(sharedFakeAncestor);
+                for (int j = 0; j < ancestries[i].Count - 1; j++)
+                {
+                    ancestries[i][j].AddParent(ancestries[i][j + 1]);
+                }
             }
         }
 

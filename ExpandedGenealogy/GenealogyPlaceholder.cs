@@ -140,7 +140,7 @@ namespace Destrospean.ExpandedGenealogy
                     parents.AddRange(mParentsRaw);
                     if (Genealogy != null)
                     {
-                        parents.AddRange(Genealogy.Parents.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(parent => GetGenealogyPlaceholder(parent))));
+                        parents.AddRange(Genealogy.Parents.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(GetGenealogyPlaceholder)));
                     }
                     mParents = parents;
                 }
@@ -163,7 +163,7 @@ namespace Destrospean.ExpandedGenealogy
                     List<GenealogyPlaceholder> siblings = new List<GenealogyPlaceholder>();
                     if (Genealogy != null)
                     {
-                        siblings.AddRange(Genealogy.Siblings.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(sibling => GetGenealogyPlaceholder(sibling))));
+                        siblings.AddRange(Genealogy.Siblings.ConvertAll(new Converter<Genealogy, GenealogyPlaceholder>(GetGenealogyPlaceholder)));
                     }
                     foreach (GenealogyPlaceholder parent in Parents)
                     {
