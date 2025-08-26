@@ -46,8 +46,10 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     });
             }
-            List<GenealogyPlaceholder> ancestry = new List<GenealogyPlaceholder>();
-            ancestry.Add(descendant.GetGenealogyPlaceholder());
+            List<GenealogyPlaceholder> ancestry = new List<GenealogyPlaceholder>()
+                {
+                    descendant.GetGenealogyPlaceholder()
+                };
             for (int i = 0; i < generationalDistance; i++)
             {
                 GenealogyPlaceholder fakeAncestor = new GenealogyPlaceholder();
