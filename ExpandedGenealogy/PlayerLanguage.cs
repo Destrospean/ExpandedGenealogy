@@ -27,9 +27,9 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string greats = "";
             for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
             {
-                greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
+                greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Great");
             }
-            return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandparent", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
+            return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:GreatNxGrandparent", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:InLaw") : "");
         }
 
         public virtual string GetDescendantOfSiblingString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
@@ -42,9 +42,9 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string greats = "";
             for (int i = 1; i < siblingOfAncestorInfo.GenerationalDistance; i++)
             {
-                greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
+                greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Great");
             }
-            return Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfNephew" : "Destrospean/Genealogy:GreatNxNephew", greats);
+            return Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy/RelationNames:GreatNxHalfNephew" : "Destrospean/ExpandedGenealogy/RelationNames:GreatNxNephew", greats);
         }
 
         public string GetDescendantString(Genealogy descendant, Genealogy ancestor)
@@ -57,9 +57,9 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string greats = "";
             for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
             {
-                greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
+                greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Great");
             }
-            return Localization.LocalizeString(isFemale, "Destrospean/Genealogy:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/Genealogy:InLaw") : "");
+            return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:InLaw") : "");
         }
 
         public abstract string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo);
@@ -94,9 +94,9 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string greats = "";
             for (int i = 1; i < siblingOfAncestorInfo.GenerationalDistance; i++)
             {
-                greats += Localization.LocalizeString(isFemale, "Destrospean/Genealogy:Great");
+                greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Great");
             }
-            return Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/Genealogy:GreatNxHalfUncle" : "Destrospean/Genealogy:GreatNxUncle", greats);
+            return Localization.LocalizeString(isFemale, siblingOfAncestorInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy/RelationNames:GreatNxHalfUncle" : "Destrospean/ExpandedGenealogy/RelationNames:GreatNxUncle", greats);
         }
 
         public bool TryGetDescendantOfSiblingString(SimDescription descendantOfSibling, SimDescription siblingOfAncestor, out string result)

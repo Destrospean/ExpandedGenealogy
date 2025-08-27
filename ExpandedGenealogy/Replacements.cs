@@ -324,7 +324,7 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     }
                 }
-                PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/Genealogy:LanguageCode"))) as PlayerLanguage;
+                PlayerLanguage playerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/ExpandedGenealogy:LanguageCode"))) as PlayerLanguage;
                 if (Genealogy.IsParent(other.Genealogy, self.Genealogy))
                 {
                     text = Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Parent");
@@ -379,29 +379,29 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 else if (GenealogyExtended.IsHalfUncle(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:HalfUncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthHalfCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:HalfUncle") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:NthHalfCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun1"), "", "");
                 }
                 else if (Genealogy.IsUncle(other.Genealogy, self.Genealogy) && (!GenealogyExtended.IsHalfUncle(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle" + (Genealogy.IsMotherSideUncle(other.Genealogy, self.Genealogy) ? "MothersSide" : "")) : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Uncle" + (Genealogy.IsMotherSideUncle(other.Genealogy, self.Genealogy) ? "MothersSide" : "")) : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:NthCousinNxRemovedUpward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun1"), "", "");
                 }
                 else if (playerLanguage.TryGetSiblingOfAncestorString(other, self, out text))
                 {
                 }
                 else if (GenealogyExtended.IsHalfNephew(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:HalfNephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthHalfCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:HalfNephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:NthHalfCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun1"), "", "");
                 }
                 else if (Genealogy.IsNephew(other.Genealogy, self.Genealogy) && (!GenealogyExtended.IsHalfNephew(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
-                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Nephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:NthCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:OrdinalSuffixNoun1"), "", "");
+                    text = !playerLanguage.HasNthUncles || Tuning.kShow1stCousinsAsCousins ? Localization.LocalizeString(other.IsFemale, "Gameplay/Socializing:Nephew") : Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:NthCousinNxRemovedDownward", "1", Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun1"), "", "");
                 }
                 else if (playerLanguage.TryGetDescendantOfSiblingString(other, self, out text))
                 {
                 }
                 else if (GenealogyExtended.IsHalfCousin(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives && Tuning.kShow1stCousinsAsCousins)
                 {
-                    text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:HalfCousin");
+                    text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:HalfCousin");
                 }
                 else if (Genealogy.IsCousin(other.Genealogy, self.Genealogy) && Tuning.kShow1stCousinsAsCousins && (!GenealogyExtended.IsHalfCousin(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
@@ -419,11 +419,11 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     if (Genealogy.IsGrandparent(other.Genealogy, self.Genealogy.Spouse))
                     {
-                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:GrandparentInLaw");
+                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:GrandparentInLaw");
                     }
                     else if (Genealogy.IsGreatGrandparent(other.Genealogy, self.Genealogy.Spouse))
                     {
-                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:GGPInLaw");
+                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:GGPInLaw");
                     }
                     else
                     {
@@ -439,11 +439,11 @@ namespace Destrospean.ExpandedGenealogy
                 {
                     if (Genealogy.IsGrandchild(other.Genealogy.Spouse, self.Genealogy))
                     {
-                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:GrandchildInLaw");
+                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:GrandchildInLaw");
                     }
                     else if (Genealogy.IsGreatGrandchild(other.Genealogy.Spouse, self.Genealogy))
                     {
-                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:GGCInLaw");
+                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:GGCInLaw");
                     }
                     else
                     {
@@ -452,7 +452,7 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 else if (GenealogyExtended.IsHalfSiblingInLaw(other.Genealogy, self.Genealogy) && Tuning.kShowHalfRelatives && !Tuning.kShowHalfRelativesAsFullRelatives)
                 {
-                    text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:HalfSiblingInLaw");
+                    text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:HalfSiblingInLaw");
                 }
                 else if (Genealogy.IsSiblingInLaw(other.Genealogy, self.Genealogy) && (!GenealogyExtended.IsHalfSiblingInLaw(other.Genealogy, self.Genealogy) || Tuning.kShowHalfRelativesAsFullRelatives))
                 {
@@ -512,7 +512,7 @@ namespace Destrospean.ExpandedGenealogy
                     }
                     else if (other.IsFrankenstein && Tuning.kReplaceRelationsForSimBots)
                     {
-                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/Genealogy:FamilyBot");
+                        text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:FamilyBot");
                     }
                 }
                 return text.Replace("  ", " ").Capitalize();
