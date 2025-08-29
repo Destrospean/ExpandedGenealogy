@@ -4,7 +4,6 @@ using MonoPatcherLib;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.EventSystem;
-using Sims3.Gameplay.Interactions;
 using Sims3.SimIFace;
 
 namespace System.Runtime.CompilerServices
