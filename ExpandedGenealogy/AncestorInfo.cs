@@ -1,18 +1,7 @@
-﻿using System;
-
-namespace Destrospean.ExpandedGenealogy
+﻿namespace Destrospean.ExpandedGenealogy
 {
     public class AncestorInfo
     {
-        [Obsolete("Please use `GenerationalDistance` as it has a better name.")]
-        public int AncestorDistance
-        {
-            get
-            {
-                return GenerationalDistance;
-            }
-        }
-
         public int GenerationalDistance
         {
             get;

@@ -1,4 +1,6 @@
-﻿namespace Destrospean.ExpandedGenealogy
+﻿using Sims3.Gameplay.Socializing;
+
+namespace Destrospean.ExpandedGenealogy
 {
     public class DistantRelationInfo
     {
@@ -12,6 +14,14 @@
         {
             get;
             private set;
+        }
+
+        public bool IsHalfRelative
+        {
+            get
+            {
+                return Genealogy.IsHalfSibling(ThroughWhichChildren[0].Genealogy, ThroughWhichChildren[1].Genealogy);
+            }
         }
 
         public GenealogyPlaceholder[] ThroughWhichChildren

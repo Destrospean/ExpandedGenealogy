@@ -19,13 +19,45 @@ namespace Destrospean.ExpandedGenealogy
     [Plugin]
     public class Main
     {
-        static EventListener sSimAddedListener;
+        static EventListener sSimInstantiatedListener;
 
         public Main()
         {
-            sSimAddedListener = null;
-            World.sOnWorldLoadFinishedEventHandler += OnWorldLoadFinished;
-            World.sOnWorldQuitEventHandler += OnWorldQuit;
+            sSimInstantiatedListener = null;
+            World.sOnWorldLoadFinishedEventHandler += (sender, e) =>
+                {
+                    foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
+                    {
+                        AddInteractions(sim);
+                    }
+                    if (Household.ActiveHousehold != null)
+                    {
+                        GenealogyExtended.RebuildRelationAssignments();
+                    }
+                    sSimInstantiatedListener = EventTracker.AddListener(EventTypeId.kSimInstantiated, evt =>
+                        {
+                            try
+                            {
+                                Sim sim = evt.TargetObject as Sim;
+                                if (sim != null)
+                                {
+                                    AddInteractions(sim);
+                                    sim.Genealogy.GetGenealogyPlaceholder();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                ((IScriptErrorWindow)AppDomain.CurrentDomain.GetData("ScriptErrorWindow")).DisplayScriptError(null, ex);
+                            }
+                            return ListenerAction.Keep;
+                        });
+                };
+            World.sOnWorldQuitEventHandler += (sender, e) =>
+                {
+                    GenealogyPlaceholder.GenealogyPlaceholders.Clear();
+                    EventTracker.RemoveListener(sSimInstantiatedListener);
+                    sSimInstantiatedListener = null;
+                };
             Type nraasWoohooerType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
             if (nraasWoohooerType != null)
             {
@@ -44,54 +76,6 @@ namespace Destrospean.ExpandedGenealogy
                 sim.AddInteraction(Interactions.DEBUG_AddUncle.Singleton);
                 sim.AddInteraction(Interactions.DEBUG_ClearRelations.Singleton);
             }
-        }
-
-        static ListenerAction OnSimAdded(Event e)
-        {
-            try
-            {
-                Sim sim = e.TargetObject as Sim;
-                if (sim != null)
-                {
-                    AddInteractions(sim);
-                    sim.Genealogy.GetGenealogyPlaceholder();
-                }
-            }
-            catch (Exception ex)
-            {
-                ((IScriptErrorWindow)AppDomain.CurrentDomain.GetData("ScriptErrorWindow")).DisplayScriptError(null, ex);
-            }
-            return ListenerAction.Keep;
-        }
-
-        static void OnWorldLoadFinished(object sender, EventArgs e)
-        {
-            foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
-            {
-                AddInteractions(sim);
-            }
-            if (Household.ActiveHousehold != null)
-            {
-                GenealogyExtended.RebuildRelationAssignments();
-            }
-            UpdateListeners();
-        }
-
-        static void OnWorldQuit(object sender, EventArgs e)
-        {
-            GenealogyPlaceholder.GenealogyPlaceholders.Clear();
-            EventTracker.RemoveListener(sSimAddedListener);
-            sSimAddedListener = null;
-        }
-
-        static void UpdateListeners()
-        {
-            if (sSimAddedListener != null)
-            {
-                EventTracker.RemoveListener(sSimAddedListener);
-                sSimAddedListener = null;
-            }
-            sSimAddedListener = EventTracker.AddListener(EventTypeId.kSimInstantiated, OnSimAdded);
         }
     }
 }

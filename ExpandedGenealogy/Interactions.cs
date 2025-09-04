@@ -13,7 +13,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddCousin:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddCousin:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddCousin>
@@ -48,7 +48,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandchild:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandchild:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandchild>
@@ -83,7 +83,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandparent:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandparent:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandparent>
@@ -118,7 +118,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddNephew:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddNephew:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddNephew>
@@ -153,7 +153,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddUncle:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddUncle:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddUncle>
@@ -188,7 +188,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            public const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_ClearRelations:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_ClearRelations:";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_ClearRelations>

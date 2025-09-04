@@ -158,18 +158,17 @@ namespace Destrospean.ExpandedGenealogy
                     }
                     relationshipCoefficient += (float)Math.Pow(2, -siblingOfAncestorInfo.GenerationalDistance - (siblingOfAncestorInfo.IsHalfRelative ? 3 : 2));
                 }
-                foreach (DistantRelationInfo distantRelationInfo in other.GetGenealogyPlaceholder().GetDistantRelationInfoList(self.GetGenealogyPlaceholder()))
+                foreach (DistantRelationInfo distantRelationInfo in other.GetDistantRelationInfoList(self))
                 {
-                    bool isHalfRelative = Genealogy.IsHalfSibling(distantRelationInfo.ThroughWhichChildren[0].Genealogy, distantRelationInfo.ThroughWhichChildren[1].Genealogy);
                     /* Check if the Sims are too closely related for romantic interactions depending on whether their degree of cousinage
                      * and the generational distance between them are below the minimums that determine that they are not, and if so, then check whether they are half-relatives,
                      * the latter of which matters depending on whether romantic interactions between distant half-relatives are allowed.
                      */
-                    if (distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(isHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
+                    if (distantRelationInfo.Degree < (uint)Tuning.kMinDegreeCousinsToAllowRomance && distantRelationInfo.TimesRemoved < (uint)Tuning.kMinTimesRemovedCousinsToAllowRomance && !(distantRelationInfo.IsHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
                     {
                         return true;
                     }
-                    relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (isHalfRelative ? 2 : 1));
+                    relationshipCoefficient += (float)Math.Pow(2, -2 * distantRelationInfo.Degree - distantRelationInfo.TimesRemoved - (distantRelationInfo.IsHalfRelative ? 2 : 1));
                 }
                 /* Check if the coefficient of relationship for the two Sims is higher than the minimum to disallow romance.
                  * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
