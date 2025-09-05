@@ -11,9 +11,9 @@ namespace Destrospean.ExpandedGenealogy
         {
             get
             {
-                #pragma warning disable 0618
+#pragma warning disable 0618
                 return Common.RelationAssignments;
-                #pragma warning restore 0618
+#pragma warning restore 0618
             }
         }
 
