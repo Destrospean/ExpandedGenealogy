@@ -220,12 +220,12 @@ namespace Destrospean.ExpandedGenealogy
         public static GenealogyPlaceholder GetGenealogyPlaceholder(Genealogy sim)
         {
             ulong id = sim.SimDescription == null ? sim.mMiniSim.SimDescriptionId : sim.SimDescription.SimDescriptionId;
-            if (!GenealogyPlaceholder.GenealogyPlaceholders.ContainsKey(id))
+            if (!GenealogyPlaceholders.ContainsKey(id))
             {
                 GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder(sim);
-                GenealogyPlaceholder.GenealogyPlaceholders.Add(id, genealogyPlaceholder);
+                GenealogyPlaceholders.Add(id, genealogyPlaceholder);
             }
-            return GenealogyPlaceholder.GenealogyPlaceholders[id];
+            return GenealogyPlaceholders[id];
         }
 
         public bool IsAncestor(Genealogy ancestor)
