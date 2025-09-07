@@ -19,7 +19,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
 
         public string GetAncestorString(Genealogy ancestor, Genealogy descendant)
         {
-            return GetAncestorString(ancestor.SimDescription.IsFemale, ancestor, descendant, false);
+            return GetAncestorString((ancestor.SimDescription ?? ancestor.mMiniSim).IsFemale, ancestor, descendant, false);
         }
 
         public virtual string GetAncestorString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
@@ -49,7 +49,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
 
         public string GetDescendantString(Genealogy descendant, Genealogy ancestor)
         {
-            return GetDescendantString(descendant.SimDescription.IsFemale, descendant, ancestor, false);
+            return GetDescendantString((descendant.SimDescription ?? descendant.mMiniSim).IsFemale, descendant, ancestor, false);
         }
 
         public virtual string GetDescendantString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
