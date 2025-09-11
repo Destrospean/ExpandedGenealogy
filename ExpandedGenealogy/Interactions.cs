@@ -252,7 +252,7 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         return false;
                     }
-                    if (!TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt"), 0))
+                    if (!TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt")))
                     {
                         return false;
                     }
@@ -265,7 +265,7 @@ namespace Destrospean.ExpandedGenealogy
                     return true;
                 }
                 int? generationalDistance;
-                if (!TryGetInteger(out generationalDistance, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Prompt"), 0))
+                if (!TryGetInteger(out generationalDistance, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Prompt")))
                 {
                     return false;
                 }
