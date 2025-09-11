@@ -354,7 +354,7 @@ namespace Destrospean
                             // Check if the selected Sim is married to a sibling of one of the target's ancestors
                             if (distantRelationInfo != null && distantRelationInfo.Degree == 0 && distantRelationInfo.ClosestDescendant == self.Genealogy.Spouse)
                             {
-                                text = playerLanguage.GetDistantRelationString(other.Genealogy, distantRelationInfo);
+                                text = playerLanguage.GetDistantRelationString(other.IsFemale, other.Genealogy, distantRelationInfo);
                             }
                         }
                         // Check if the target is married to a sibling of one of the selected Sim's ancestors
@@ -368,7 +368,7 @@ namespace Destrospean
                         /* Get a relation name that is valid if the target is a collateral descendant or type of cousin
                          * of the selected Sim or if the selected Sim is a collateral descendant of the target
                          */
-                        text = playerLanguage.GetDistantRelationString(other.Genealogy, distantRelationInfo);
+                        text = playerLanguage.GetDistantRelationString(other.IsFemale, other.Genealogy, distantRelationInfo);
                     }
                     // This if-statement block is necessary for when the selected Sim and the target do not share an ancestor in the game but each has an ancestor who is a sibling of the other.
                     if (distantRelationInfo == null)

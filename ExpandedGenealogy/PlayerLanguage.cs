@@ -68,11 +68,6 @@ namespace Destrospean.Lang
 
         public abstract string GetDistantRelationString(bool isFemale, Genealogy sim, Common.DistantRelationInfo distantRelationInfo);
 
-        public string GetDistantRelationString(Genealogy sim, Common.DistantRelationInfo distantRelationInfo)
-        {
-            return GetDistantRelationString(sim.SimDescription.IsFemale, sim, distantRelationInfo);
-        }
-
         public virtual string GetOrdinalSuffix(string number)
         {
             if (number.Length > 1)
