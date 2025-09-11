@@ -295,25 +295,6 @@ namespace Destrospean.ExpandedGenealogy
                 return true;
             }
 
-            static bool TryGetInteger(out int? integer, string titleText, string promptText, int minimum = 0)
-            {
-                int? result = null;
-                Simulator.AddObject(new OneShotFunctionTask(() =>
-                    {
-                        string text = StringInputDialog.Show(titleText, promptText, minimum.ToString(), true);
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            result = int.Parse(text);
-                            if (result < minimum)
-                            {
-                                result = null;
-                            }
-                        }
-                    }));
-                integer = result;
-                return integer != null;
-            }
-
             static bool TryGetDirection(Sim target, out bool? isHigherUpInFamilyTree)
             {
                 string text = ComboSelectionDialog.Show(entries: new Dictionary<string, object>
@@ -334,6 +315,25 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 isHigherUpInFamilyTree = bool.Parse(text);
                 return true;
+            }
+
+            static bool TryGetInteger(out int? integer, string titleText, string promptText, int minimum = 0)
+            {
+                int? result = null;
+                Simulator.AddObject(new OneShotFunctionTask(() =>
+                    {
+                        string text = StringInputDialog.Show(titleText, promptText, minimum.ToString(), true);
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            result = int.Parse(text);
+                            if (result < minimum)
+                            {
+                                result = null;
+                            }
+                        }
+                    }));
+                integer = result;
+                return integer != null;
             }
 
             static bool TryGetRelationType(Sim target, out RelationTypes? relationType)
