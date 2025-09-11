@@ -514,7 +514,7 @@ namespace Destrospean.ExpandedGenealogy
                         text = Localization.LocalizeString(other.IsFemale, "Destrospean/ExpandedGenealogy/RelationNames:FamilyBot");
                     }
                 }
-                return text.Replace("  ", " ").Capitalize();
+                return text.Capitalize();
             }
 
             public ulong MakeUniqueId()
