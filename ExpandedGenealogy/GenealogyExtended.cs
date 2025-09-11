@@ -123,7 +123,7 @@ namespace Destrospean.ExpandedGenealogy
                     GenealogyPlaceholder.GenealogyPlaceholders.Add(fakeAncestor.Id, fakeAncestor);
                     ancestries[i].Add(fakeAncestor);
                 }
-                ancestries[i].FindLast(x => true).AddParent(sharedFakeAncestor);
+                ancestries[i][ancestries[i].Count - 1].AddParent(sharedFakeAncestor);
                 for (int j = 0; j < ancestries[i].Count - 1; j++)
                 {
                     ancestries[i][j].AddParent(ancestries[i][j + 1]);
