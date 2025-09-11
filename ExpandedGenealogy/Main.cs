@@ -74,6 +74,7 @@ namespace Destrospean.ExpandedGenealogy
                 sim.AddInteraction(Interactions.DEBUG_AddGrandparent.Singleton);
                 sim.AddInteraction(Interactions.DEBUG_AddNephew.Singleton);
                 sim.AddInteraction(Interactions.DEBUG_AddUncle.Singleton);
+                sim.AddInteraction(Interactions.DEBUG_AssignRelation.Singleton);
                 sim.AddInteraction(Interactions.DEBUG_ClearRelations.Singleton);
             }
         }
