@@ -252,12 +252,12 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         return false;
                     }
-                    if (!TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt")))
+                    bool? isHigherUpFamilyTree;
+                    if (!TryGetDirection(Target, out isHigherUpFamilyTree))
                     {
                         return false;
                     }
-                    bool? isHigherUpFamilyTree;
-                    if (!TryGetDirection(Target, out isHigherUpFamilyTree))
+                    if (!TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt")))
                     {
                         return false;
                     }
