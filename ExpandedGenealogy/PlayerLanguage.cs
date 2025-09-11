@@ -14,11 +14,6 @@ namespace Destrospean.Lang
             }
         }
 
-        public string GetAncestorString(Genealogy descendant, Genealogy ancestor)
-        {
-            return GetAncestorString(ancestor.SimDescription.IsFemale, descendant, ancestor, false);
-        }
-
         public virtual string GetAncestorString(bool isFemale, Genealogy descendant, Genealogy ancestor, bool isInLaw)
         {
             string greats = "";
@@ -49,11 +44,6 @@ namespace Destrospean.Lang
                 }
             }
             return "";
-        }
-
-        public string GetDescendantString(Genealogy ancestor, Genealogy descendant)
-        {
-            return GetDescendantString(descendant.SimDescription.IsFemale, ancestor, descendant, false);
         }
 
         public virtual string GetDescendantString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)

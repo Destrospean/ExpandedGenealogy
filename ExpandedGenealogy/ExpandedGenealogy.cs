@@ -296,11 +296,11 @@ namespace Destrospean
                 }
                 else if (self.Genealogy.IsAncestor(other.Genealogy))
                 {
-                    text = playerLanguage.GetAncestorString(self.Genealogy, other.Genealogy);
+                    text = playerLanguage.GetAncestorString(other.IsFemale, self.Genealogy, other.Genealogy, false);
                 }
                 else if (other.Genealogy.IsAncestor(self.Genealogy))
                 {
-                    text = playerLanguage.GetDescendantString(self.Genealogy, other.Genealogy);
+                    text = playerLanguage.GetDescendantString(other.IsFemale, self.Genealogy, other.Genealogy, false);
                 }
                 // Check if the selected Sim is married to one of the target's descendants
                 else if (self.Genealogy.Spouse != null && self.Genealogy.Spouse != other.Genealogy && self.Genealogy.Spouse.IsAncestor(other.Genealogy) && self.Genealogy.PartnerType == PartnerType.Marriage)
