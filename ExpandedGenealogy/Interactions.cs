@@ -39,7 +39,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
-                Actor.Genealogy.AddCousin(Target.SimDescription.Genealogy);
+                Actor.Genealogy.AddCousin(Target.Genealogy);
                 return true;
             }
         }
@@ -74,7 +74,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
-                Actor.Genealogy.AddDescendant(Target.SimDescription.Genealogy);
+                Actor.Genealogy.AddDescendant(Target.Genealogy);
                 return true;
             }
         }
@@ -109,7 +109,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
-                Actor.Genealogy.AddAncestor(Target.SimDescription.Genealogy);
+                Actor.Genealogy.AddAncestor(Target.Genealogy);
                 return true;
             }
         }
@@ -144,7 +144,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
-                Actor.Genealogy.AddDescendantOfSibling(Target.SimDescription.Genealogy);
+                Actor.Genealogy.AddDescendantOfSibling(Target.Genealogy);
                 return true;
             }
         }
@@ -179,7 +179,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
-                Actor.Genealogy.AddSiblingOfAncestor(Target.SimDescription.Genealogy);
+                Actor.Genealogy.AddSiblingOfAncestor(Target.Genealogy);
                 return true;
             }
         }
@@ -214,7 +214,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
-                Actor.Genealogy.ClearRelationsWith(Target.SimDescription.Genealogy);
+                Actor.Genealogy.ClearRelationsWith(Target.Genealogy);
                 return true;
             }
         }
