@@ -11,199 +11,34 @@ namespace Destrospean.ExpandedGenealogy
 {
     public class Interactions
     {
-        public class DEBUG_AddCousin : ImmediateInteraction<Sim, Sim>
+        public class AssignRelation : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddCousin:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/AssignRelation";
 
-            [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddCousin>
+            enum RelationTypes : uint
             {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
-                {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
-                }
-
-                public override string[] GetPath(bool isFemale)
-                {
-                    return new string[]
-                    {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
-                    };
-                }
-
-                public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
-                {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
-                }
+                Ancestor,
+                Descendant,
+                Sibling,
+                SiblingOfAncestor,
+                DescendantOfSibling,
+                Cousin,
+                CousinOfAncestor,
+                DescendantOfCousin
             }
 
-            public override bool Run()
+            class DummyComparer : IComparer<string>
             {
-                Actor.Genealogy.AddCousin(Target.Genealogy);
-                return true;
-            }
-        }
-
-        public class DEBUG_AddGrandchild : ImmediateInteraction<Sim, Sim>
-        {
-            public static InteractionDefinition Singleton = new Definition();
-
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandchild:";
-
-            [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandchild>
-            {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
+                public int Compare(string a, string b)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
+                    return 1;
                 }
-
-                public override string[] GetPath(bool isFemale)
-                {
-                    return new string[]
-                    {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
-                    };
-                }
-
-                public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
-                {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
-                }
-            }
-
-            public override bool Run()
-            {
-                Actor.Genealogy.AddDescendant(Target.Genealogy);
-                return true;
-            }
-        }
-
-        public class DEBUG_AddGrandparent : ImmediateInteraction<Sim, Sim>
-        {
-            public static InteractionDefinition Singleton = new Definition();
-
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddGrandparent:";
-
-            [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddGrandparent>
-            {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
-                {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
-                }
-
-                public override string[] GetPath(bool isFemale)
-                {
-                    return new string[]
-                    {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
-                    };
-                }
-
-                public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
-                {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
-                }
-            }
-
-            public override bool Run()
-            {
-                Actor.Genealogy.AddAncestor(Target.Genealogy);
-                return true;
-            }
-        }
-
-        public class DEBUG_AddNephew : ImmediateInteraction<Sim, Sim>
-        {
-            public static InteractionDefinition Singleton = new Definition();
-
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddNephew:";
-
-            [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddNephew>
-            {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
-                {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
-                }
-
-                public override string[] GetPath(bool isFemale)
-                {
-                    return new string[]
-                    {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
-                    };
-                }
-
-                public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
-                {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
-                }
-            }
-
-            public override bool Run()
-            {
-                Actor.Genealogy.AddDescendantOfSibling(Target.Genealogy);
-                return true;
-            }
-        }
-
-        public class DEBUG_AddUncle : ImmediateInteraction<Sim, Sim>
-        {
-            public static InteractionDefinition Singleton = new Definition();
-
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AddUncle:";
-
-            [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AddUncle>
-            {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
-                {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name");
-                }
-
-                public override string[] GetPath(bool isFemale)
-                {
-                    return new string[]
-                    {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
-                    };
-                }
-
-                public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
-                {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
-                }
-            }
-
-            public override bool Run()
-            {
-                Actor.Genealogy.AddSiblingOfAncestor(Target.Genealogy);
-                return true;
-            }
-        }
-
-        public class DEBUG_AssignRelation : ImmediateInteraction<Sim, Sim>
-        {
-            public static InteractionDefinition Singleton = new Definition();
-
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_AssignRelation";
-
-            enum RelationTypes : int
-            {
-                Ancestor = 0,
-                Descendant = 1,
-                Sibling = 2,
-                SiblingOfAncestor = 3,
-                DescendantOfSibling = 4,
-                Cousin = 5
             }
 
             [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_AssignRelation>
+            public class Definition : ImmediateInteractionDefinition<Sim, Sim, AssignRelation>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
@@ -220,7 +55,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && (actor.SimDescription.Species == target.SimDescription.Species || actor.IsADogSpecies && target.IsADogSpecies) && !isAutonomous;
                 }
             }
 
@@ -236,36 +71,54 @@ namespace Destrospean.ExpandedGenealogy
                     Actor.Genealogy.AddSibling(Target.Genealogy);
                     return true;
                 }
-                bool[] isFemale = relationType == RelationTypes.Descendant || relationType == RelationTypes.DescendantOfSibling ? new bool[]
-                    {
-                        Target.IsFemale,
-                        Actor.IsFemale
-                    } : new bool[]
-                    {
-                        Actor.IsFemale,
-                        Target.IsFemale
-                    };
-                if (relationType == RelationTypes.Cousin)
+                bool[] isFemale;
+                Sim[] sims;
+                if (relationType.ToString().Contains("Descendant"))
                 {
-                    int? degree, timesRemoved;
-                    if (!TryGetInteger(out degree, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/DegreeDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/DegreeDialog:Prompt"), 1))
+                    isFemale = new bool[]
+                        {
+                            Target.IsFemale,
+                            Actor.IsFemale
+                        };
+                    sims = new Sim[]
+                        {
+                            Target,
+                            Actor
+                        };
+                }
+                else
+                {
+                    isFemale = new bool[]
+                        {
+                            Actor.IsFemale,
+                            Target.IsFemale
+                        };
+                    sims = new Sim[]
+                        {
+                            Actor,
+                            Target
+                        };
+                }
+                if (relationType.ToString().Contains("Cousin"))
+                {
+                    int? degree, timesRemoved = null;
+                    if (!TryGetInteger(out degree, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/DegreeDialog:Title"), Localization.LocalizeString(new bool[]
+                        {
+                            isFemale[1],
+                            isFemale[0]
+                        }, sLocalizationKey + "/Dialogs/DegreeDialog:Prompt", sims[1], sims[0]), 1))
                     {
                         return false;
                     }
-                    bool? isHigherUpFamilyTree;
-                    if (!TryGetDirection(Target, out isHigherUpFamilyTree))
+                    if (relationType != RelationTypes.Cousin && !TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt", sims[0], sims[1], Common.PlayerLanguage.GetNthUncleDegreeString(degree ?? 0)), 1))
                     {
                         return false;
                     }
-                    if (!TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt")))
-                    {
-                        return false;
-                    }
-                    Actor.Genealogy.AddCousin(Target.Genealogy, degree ?? 0, timesRemoved ?? 0, isHigherUpFamilyTree ?? true);
+                    Actor.Genealogy.AddCousin(Target.Genealogy, degree ?? 0, timesRemoved ?? 0, relationType != RelationTypes.CousinOfAncestor);
                     return true;
                 }
                 int? generationalDistance;
-                if (!TryGetInteger(out generationalDistance, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Prompt")))
+                if (!TryGetInteger(out generationalDistance, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Prompt" + (relationType == RelationTypes.Ancestor || relationType == RelationTypes.Descendant ? "Lineal" : "Collateral"), sims[0], sims[1])))
                 {
                     return false;
                 }
@@ -295,94 +148,76 @@ namespace Destrospean.ExpandedGenealogy
                 return true;
             }
 
-            static bool TryGetDirection(Sim target, out bool? isHigherUpInFamilyTree)
-            {
-                string text = ComboSelectionDialog.Show(entries: new Dictionary<string, object>
-                    {
-                        {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/DirectionDialog/Options:Downward"),
-                            true
-                        },
-                        {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/DirectionDialog/Options:Upward"),
-                            false
-                        }
-                    }, titleText: Localization.LocalizeString(sLocalizationKey + "/Dialogs/DirectionDialog:Title"), defaultEntry: true.ToString()) as string;
-                if (text == null)
-                {
-                    isHigherUpInFamilyTree = null;
-                    return false;
-                }
-                isHigherUpInFamilyTree = bool.Parse(text);
-                return true;
-            }
-
             static bool TryGetInteger(out int? integer, string titleText, string promptText, int minimum = 0)
             {
-                int? result = null;
-                Simulator.AddObject(new OneShotFunctionTask(() =>
+                integer = null;
+                string text = StringInputDialog.Show(titleText, promptText, minimum.ToString(), true);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    integer = int.Parse(text);
+                    if (integer < minimum)
                     {
-                        string text = StringInputDialog.Show(titleText, promptText, minimum.ToString(), true);
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            result = int.Parse(text);
-                            if (result < minimum)
-                            {
-                                result = null;
-                            }
-                        }
-                    }));
-                integer = result;
+                        integer = null;
+                    }
+                }
                 return integer != null;
             }
 
             static bool TryGetRelationType(Sim target, out RelationTypes? relationType)
             {
-                string text = ComboSelectionDialog.Show(entries: new Dictionary<string, object>
+                string text = Dialogs.ComboSelectionDialog.Show(entries: new SortedDictionary<string, object>(new DummyComparer())
                     {
                         {
                             Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Ancestor"),
-                            RelationTypes.Ancestor
+                            ((uint)RelationTypes.Ancestor).ToString()
                         },
                         {
                             Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Descendant"),
-                            RelationTypes.Descendant
+                            ((uint)RelationTypes.Descendant).ToString()
                         },
                         {
                             Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Sibling"),
-                            RelationTypes.Sibling
+                            ((uint)RelationTypes.Sibling).ToString()
                         },
                         {
                             Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:SiblingOfAncestor"),
-                            RelationTypes.SiblingOfAncestor
+                            ((uint)RelationTypes.SiblingOfAncestor).ToString()
                         },
                         {
                             Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:DescendantOfSibling"),
-                            RelationTypes.DescendantOfSibling
+                            ((uint)RelationTypes.DescendantOfSibling).ToString()
                         },
                         {
                             Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Cousin"),
-                            RelationTypes.Cousin
+                            ((uint)RelationTypes.Cousin).ToString()
+                        },
+                        {
+                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:CousinOfAncestor"),
+                            ((uint)RelationTypes.CousinOfAncestor).ToString()
+                        },
+                        {
+                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:DescendantOfCousin"),
+                            ((uint)RelationTypes.DescendantOfCousin).ToString()
                         }
-                    }, titleText: Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog:Title"), defaultEntry: RelationTypes.Ancestor.ToString()) as string;
+                    }, titleText: Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog:Title"), defaultEntry: ((uint)RelationTypes.Ancestor).ToString()) as string;
                 if (text == null)
                 {
                     relationType = null;
                     return false;
                 }
-                relationType = (RelationTypes)int.Parse(text);
+                relationType = (RelationTypes)uint.Parse(text);
                 return true;
             }
         }
 
-        public class DEBUG_ClearRelations : ImmediateInteraction<Sim, Sim>
+        public class ClearRelations : ImmediateInteraction<Sim, Sim>
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/DEBUG_ClearRelations:";
+            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/ClearRelations:";
 
             [DoesntRequireTuning]
-            public class Definition : ImmediateInteractionDefinition<Sim, Sim, DEBUG_ClearRelations>
+            public class Definition : ImmediateInteractionDefinition<Sim, Sim, ClearRelations>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
@@ -399,13 +234,14 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref GreyedOutTooltipCallback greyedOutTooltipCallback)
                 {
-                    return Tuning.kShowCheatInteractions && actor != target && !isAutonomous;
+                    return Tuning.kShowCheatInteractions && actor != target && (actor.SimDescription.Species == target.SimDescription.Species || actor.IsADogSpecies && target.IsADogSpecies) && !isAutonomous;
                 }
             }
 
             public override bool Run()
             {
                 Actor.Genealogy.ClearRelationsWith(Target.Genealogy);
+                Actor.Genealogy.RemoveDirectRelation(Target.Genealogy);
                 return true;
             }
         }

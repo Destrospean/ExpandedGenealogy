@@ -69,6 +69,12 @@ namespace Destrospean.Lang.ExpandedGenealogy
             return GetDistantRelationString((sim.SimDescription ?? sim.mMiniSim).IsFemale, sim, distantRelationInfo);
         }
 
+        public virtual string GetNthUncleDegreeString(int degree)
+        {
+            string text = (degree + (HasNthUncles ? 1 : 0)).ToString();
+            return text + Localization.LocalizeString("Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun" + GetOrdinalSuffix(text));
+        }
+
         public virtual string GetOrdinalSuffix(string number)
         {
             if (number.Length > 1)
