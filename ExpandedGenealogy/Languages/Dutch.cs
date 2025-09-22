@@ -32,28 +32,28 @@ namespace Destrospean.Lang.ExpandedGenealogy
                 {
                     if (binaryGroups[i][j] == '1')
                     {
-                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun" + (9 - j).ToString());
+                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun" + (9 - j).ToString());
                     }
                 }
                 switch (binaryGroups[i].Substring(binaryGroups[i].Length - 2))
                 {
                     case "01":
-                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Grand");
+                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Grand");
                         break;
                     case "10":
-                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun1");
+                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun1");
                         break;
                     case "11":
-                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun2");
+                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun2");
                         break;
                 }
             }
             for (int i = 0; i < ancestorPrefixes.Length; i++)
             {
-                text += Localization.LocalizeString(isFemale, i == 0 ? "Destrospean/ExpandedGenealogy/RelationNames:GreatNxGrandparent" : "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun12", ancestorPrefixes[i], isInLaw && i == ancestorPrefixes.Length - 1 ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:InLaw") : "");
+                text += Localization.LocalizeString(isFemale, i == 0 ? Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent" : Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun12", ancestorPrefixes[i], isInLaw && i == ancestorPrefixes.Length - 1 ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
                 if (i < ancestorPrefixes.Length - 1)
                 {
-                    text += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun11");
+                    text += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun11");
                 }
             }
             return text;
@@ -64,18 +64,14 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string greats = "";
             for (int i = 1; i < descendant.GetAncestorInfo(ancestor).GenerationalDistance; i++)
             {
-                greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun0");
+                greats += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun0");
             }
-            return Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:InLaw") : "");
+            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
         }
 
         public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)
         {
-            if (distantRelationInfo == null)
-            {
-                return "";
-            }
-            if (distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelatives)
+            if (distantRelationInfo == null || distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelatives)
             {
                 return "";
             }
@@ -88,21 +84,21 @@ namespace Destrospean.Lang.ExpandedGenealogy
                     {
                         for (int i = 0; i < distantRelationInfo.Degree; i++)
                         {
-                            degree += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun0");
+                            degree += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun0");
                         }
                         for (int i = 1; i < distantRelationInfo.TimesRemoved; i++)
                         {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Great");
+                            greats += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Great");
                         }
-                        return Localization.LocalizeString(isFemale, string.Format("Destrospean/ExpandedGenealogy/RelationNames:Nth{0}CousinNxRemoved{1}ward", distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down"), degree, greats);
+                        return Localization.LocalizeString(isFemale, string.Format(Common.kLocalizationPath + "/RelationNames:Nth{0}CousinNxRemoved{1}ward", distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down"), degree, greats);
                     }
                     return "";
                 }
                 for (int i = 1; i < distantRelationInfo.Degree; i++)
                 {
-                    degree += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun0");
+                    degree += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun0");
                 }
-                return Localization.LocalizeString(isFemale, distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy/RelationNames:NthHalfCousin" : "Destrospean/ExpandedGenealogy/RelationNames:NthCousin", degree);
+                return Localization.LocalizeString(isFemale, distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? Common.kLocalizationPath + "/RelationNames:NthHalfCousin" : Common.kLocalizationPath + "/RelationNames:NthCousin", degree);
             }
             return "";
         }
@@ -112,7 +108,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string text = "";
             for (int i = 0; i < degree; i++)
             {
-                text += Localization.LocalizeString("Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun0");
+                text += Localization.LocalizeString(Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun0");
             }
             return text;
         }

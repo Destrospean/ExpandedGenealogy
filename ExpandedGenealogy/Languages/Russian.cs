@@ -9,11 +9,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
     {
         public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)
         {
-            if (distantRelationInfo == null)
-            {
-                return "";
-            }
-            if (distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelatives)
+            if (distantRelationInfo == null || distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelatives)
             {
                 return "";
             }
@@ -22,7 +18,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 if (distantRelationInfo.TimesRemoved == 1)
                 {
-                    return Localization.LocalizeString(isFemale, string.Format("Destrospean/ExpandedGenealogy/RelationNames:GGG{0}", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"), GetNthUncleDegreeString(distantRelationInfo.Degree), distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Grand") : "");
+                    return Localization.LocalizeString(isFemale, string.Format(Common.kLocalizationPath + "/RelationNames:GGG{0}", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"), GetNthUncleDegreeString(distantRelationInfo.Degree), distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Grand") : "");
                 }
                 if (distantRelationInfo.TimesRemoved > 1)
                 {
@@ -30,20 +26,20 @@ namespace Destrospean.Lang.ExpandedGenealogy
                     {
                         for (int i = 2; i < distantRelationInfo.TimesRemoved; i++)
                         {
-                            greats += Localization.LocalizeString(isFemale, "Destrospean/ExpandedGenealogy/RelationNames:Great");
+                            greats += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Great");
                         }
-                        return Localization.LocalizeString(isFemale, string.Format("Destrospean/ExpandedGenealogy/RelationNames:{0}{1}CousinNxRemoved{2}ward", Tuning.kShow1stCousinsAsCousins && distantRelationInfo.Degree == 1 ? "" : "Nth", distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down"), GetNthUncleDegreeString(distantRelationInfo.Degree), greats);
+                        return Localization.LocalizeString(isFemale, string.Format(Common.kLocalizationPath + "/RelationNames:{0}{1}CousinNxRemoved{2}ward", Tuning.kShow1stCousinsAsCousins && distantRelationInfo.Degree == 1 ? "" : "Nth", distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Half" : "", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "Up" : "Down"), GetNthUncleDegreeString(distantRelationInfo.Degree), greats);
                     }
                     return "";
                 }
-                return Localization.LocalizeString(isFemale, distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? "Destrospean/ExpandedGenealogy/RelationNames:NthHalfCousin" : "Destrospean/ExpandedGenealogy/RelationNames:NthCousin", GetNthUncleDegreeString(distantRelationInfo.Degree));
+                return Localization.LocalizeString(isFemale, distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? Common.kLocalizationPath + "/RelationNames:NthHalfCousin" : Common.kLocalizationPath + "/RelationNames:NthCousin", GetNthUncleDegreeString(distantRelationInfo.Degree));
             }
             return "";
         }
 
         public override string GetNthUncleDegreeString(int degree)
         {
-            return degree == 10 ? Localization.LocalizeString("Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun0") : degree < 13 ? Localization.LocalizeString("Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun" + degree) : degree < 20 ? Localization.LocalizeString("Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixAdj" + (degree - 13)) : degree.ToString() + "-";
+            return degree == 10 ? Localization.LocalizeString(Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun0") : degree < 13 ? Localization.LocalizeString(Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun" + degree) : degree < 20 ? Localization.LocalizeString(Common.kLocalizationPath + "/RelationNames:OrdinalSuffixAdj" + (degree - 13)) : degree.ToString() + "-";
         }
     }
 }

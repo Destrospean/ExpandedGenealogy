@@ -8,7 +8,9 @@ namespace Destrospean.ExpandedGenealogy
 {
     public static class Common
     {
-        public static PlayerLanguage PlayerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/ExpandedGenealogy:LanguageCode"))) as PlayerLanguage;
+        public const string kLocalizationPath = "Destrospean/ExpandedGenealogy";
+
+        public static PlayerLanguage PlayerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString(kLocalizationPath + ":LanguageCode"))) as PlayerLanguage;
 
         [Obsolete("This remains here because it's a persistable property, and moving it would make players lose data. Use its proxy in `Destrospean.ExpandedGenealogy.GenealogyExtended` instead.")]
         internal static List<Dictionary<string, object>> RelationAssignments

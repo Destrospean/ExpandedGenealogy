@@ -21,9 +21,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public const int kWinExportID = 4096;
 
-            public Button mOkButton;
-
-            public Button mCancelButton;
+            public Button mCancelButton, mOkButton;
 
             public ComboBox mCombo;
 
@@ -55,8 +53,7 @@ namespace Destrospean.ExpandedGenealogy
                 return defaultEntry;
             }
 
-            public ComboSelectionDialog(string titleText, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode)
-                : base("ComboSelectionDialog", 4096, true, pauseMode, null)
+            public ComboSelectionDialog(string titleText, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode) : base("ComboSelectionDialog", 4096, true, pauseMode, null)
             {
                 if (mModalDialogWindow == null)
                 {
@@ -77,7 +74,7 @@ namespace Destrospean.ExpandedGenealogy
                     }
                 }
                 Rect area = mModalDialogWindow.Area;
-                float width = area.BottomRight.x - area.TopLeft.x, height = area.BottomRight.y - area.TopLeft.y, x = position.x, y = position.y;
+                float height = area.BottomRight.y - area.TopLeft.y, width = area.BottomRight.x - area.TopLeft.x, x = position.x, y = position.y;
                 if (x < 0f && y < 0f)
                 {
                     Rect parentArea = mModalDialogWindow.Parent.Area;

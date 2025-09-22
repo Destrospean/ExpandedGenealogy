@@ -219,7 +219,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static GenealogyPlaceholder GetGenealogyPlaceholder(Genealogy sim)
         {
-            ulong id = sim.SimDescription == null ? sim.mMiniSim.SimDescriptionId : sim.SimDescription.SimDescriptionId;
+            ulong id = (sim.SimDescription ?? sim.mMiniSim).SimDescriptionId;
             if (!GenealogyPlaceholders.ContainsKey(id))
             {
                 GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder(sim);
@@ -289,7 +289,7 @@ namespace Destrospean.ExpandedGenealogy
                     return;
                 }
             }
-            Id = genealogy.SimDescription == null ? genealogy.mMiniSim.SimDescriptionId : genealogy.SimDescription.SimDescriptionId;
+            Id = (genealogy.SimDescription ?? genealogy.mMiniSim).SimDescriptionId;
         }
     }
 }

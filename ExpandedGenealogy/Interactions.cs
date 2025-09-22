@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Autonomy;
 using Sims3.Gameplay.Interactions;
@@ -15,9 +16,9 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/AssignRelation";
+            public const string sLocalizationKey = Common.kLocalizationPath + "/Interactions/AssignRelation";
 
-            enum RelationTypes : uint
+            enum RelationTypes
             {
                 Ancestor,
                 Descendant,
@@ -61,6 +62,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool Run()
             {
+                string localizationKey = sLocalizationKey + "/Dialogs";
                 RelationTypes? relationType;
                 if (!TryGetRelationType(Target, out relationType))
                 {
@@ -102,15 +104,15 @@ namespace Destrospean.ExpandedGenealogy
                 if (relationType.ToString().Contains("Cousin"))
                 {
                     int? degree, timesRemoved = null;
-                    if (!TryGetInteger(out degree, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/DegreeDialog:Title"), Localization.LocalizeString(new bool[]
+                    if (!TryGetInteger(out degree, Localization.LocalizeString(isFemale, localizationKey + "/DegreeDialog:Title"), Localization.LocalizeString(new bool[]
                         {
                             isFemale[1],
                             isFemale[0]
-                        }, sLocalizationKey + "/Dialogs/DegreeDialog:Prompt", sims[1], sims[0]), 1))
+                        }, localizationKey + "/DegreeDialog:Prompt", sims[1], sims[0]), 1))
                     {
                         return false;
                     }
-                    if (relationType != RelationTypes.Cousin && !TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/TimesRemovedDialog:Prompt", sims[0], sims[1], Common.PlayerLanguage.GetNthUncleDegreeString(degree ?? 0)), 1))
+                    if (relationType != RelationTypes.Cousin && !TryGetInteger(out timesRemoved, Localization.LocalizeString(isFemale, localizationKey + "/TimesRemovedDialog:Title"), Localization.LocalizeString(isFemale, localizationKey + "/TimesRemovedDialog:Prompt", sims[0], sims[1], Common.PlayerLanguage.GetNthUncleDegreeString(degree ?? 0)), 1))
                     {
                         return false;
                     }
@@ -118,7 +120,7 @@ namespace Destrospean.ExpandedGenealogy
                     return true;
                 }
                 int? generationalDistance;
-                if (!TryGetInteger(out generationalDistance, Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Title"), Localization.LocalizeString(isFemale, sLocalizationKey + "/Dialogs/GenerationalDistanceDialog:Prompt" + (relationType == RelationTypes.Ancestor || relationType == RelationTypes.Descendant ? "Lineal" : "Collateral"), sims[0], sims[1])))
+                if (!TryGetInteger(out generationalDistance, Localization.LocalizeString(isFemale, localizationKey + "/GenerationalDistanceDialog:Title"), Localization.LocalizeString(isFemale, localizationKey + "/GenerationalDistanceDialog:Prompt" + (relationType == RelationTypes.Ancestor || relationType == RelationTypes.Descendant ? "Lineal" : "Collateral"), sims[0], sims[1])))
                 {
                     return false;
                 }
@@ -165,47 +167,47 @@ namespace Destrospean.ExpandedGenealogy
 
             static bool TryGetRelationType(Sim target, out RelationTypes? relationType)
             {
-                string text = Dialogs.ComboSelectionDialog.Show(entries: new SortedDictionary<string, object>(new DummyComparer())
+                string localizationKey = sLocalizationKey + "/Dialogs/RelationTypeDialog", text = Dialogs.ComboSelectionDialog.Show(entries: new SortedDictionary<string, object>(new DummyComparer())
                     {
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Ancestor"),
-                            ((uint)RelationTypes.Ancestor).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:Ancestor"),
+                            RelationTypes.Ancestor.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Descendant"),
-                            ((uint)RelationTypes.Descendant).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:Descendant"),
+                            RelationTypes.Descendant.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Sibling"),
-                            ((uint)RelationTypes.Sibling).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:Sibling"),
+                            RelationTypes.Sibling.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:SiblingOfAncestor"),
-                            ((uint)RelationTypes.SiblingOfAncestor).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:SiblingOfAncestor"),
+                            RelationTypes.SiblingOfAncestor.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:DescendantOfSibling"),
-                            ((uint)RelationTypes.DescendantOfSibling).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:DescendantOfSibling"),
+                            RelationTypes.DescendantOfSibling.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:Cousin"),
-                            ((uint)RelationTypes.Cousin).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:Cousin"),
+                            RelationTypes.Cousin.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:CousinOfAncestor"),
-                            ((uint)RelationTypes.CousinOfAncestor).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:CousinOfAncestor"),
+                            RelationTypes.CousinOfAncestor.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog/Options:DescendantOfCousin"),
-                            ((uint)RelationTypes.DescendantOfCousin).ToString()
+                            Localization.LocalizeString(target.IsFemale, localizationKey +  "/Options:DescendantOfCousin"),
+                            RelationTypes.DescendantOfCousin.ToString()
                         }
-                    }, titleText: Localization.LocalizeString(target.IsFemale, sLocalizationKey + "/Dialogs/RelationTypeDialog:Title"), defaultEntry: ((uint)RelationTypes.Ancestor).ToString()) as string;
+                    }, titleText: Localization.LocalizeString(target.IsFemale, localizationKey + ":Title"), defaultEntry: RelationTypes.Ancestor.ToString()) as string;
                 if (text == null)
                 {
                     relationType = null;
                     return false;
                 }
-                relationType = (RelationTypes)uint.Parse(text);
+                relationType = (RelationTypes)Enum.Parse(typeof(RelationTypes), text);
                 return true;
             }
         }
@@ -214,21 +216,21 @@ namespace Destrospean.ExpandedGenealogy
         {
             public static InteractionDefinition Singleton = new Definition();
 
-            const string sLocalizationKey = "Destrospean/ExpandedGenealogy/Interactions/ClearRelations:";
+            public const string sLocalizationKey = Common.kLocalizationPath + "/Interactions/ClearRelations";
 
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, ClearRelations>
             {
                 public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
                 {
-                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + "Name", actor.FirstName, target.FirstName);
+                    return Localization.LocalizeString(target.IsFemale, sLocalizationKey + ":Name", actor.FirstName, target.FirstName);
                 }
 
                 public override string[] GetPath(bool isFemale)
                 {
                     return new string[]
                     {
-                        Localization.LocalizeString(isFemale, sLocalizationKey + "Path")
+                        Localization.LocalizeString(isFemale, sLocalizationKey + ":Path")
                     };
                 }
 
