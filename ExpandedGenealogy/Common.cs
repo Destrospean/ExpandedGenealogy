@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Destrospean.Lang.ExpandedGenealogy;
+using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 
 namespace Destrospean.ExpandedGenealogy
 {
     public static class Common
     {
+        public static PlayerLanguage PlayerLanguage = Activator.CreateInstance(Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Localization.LocalizeString("Destrospean/ExpandedGenealogy:LanguageCode"))) as PlayerLanguage;
+
         [Obsolete("This remains here because it's a persistable property, and moving it would make players lose data. Use its proxy in `Destrospean.ExpandedGenealogy.GenealogyExtended` instead.")]
         internal static List<Dictionary<string, object>> RelationAssignments
         {

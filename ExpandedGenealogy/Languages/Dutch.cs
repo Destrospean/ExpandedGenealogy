@@ -106,5 +106,15 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
             return "";
         }
+
+        public override string GetNthUncleDegreeString(int degree)
+        {
+            string text = "";
+            for (int i = 0; i < degree; i++)
+            {
+                text += Localization.LocalizeString("Destrospean/ExpandedGenealogy/RelationNames:OrdinalSuffixNoun0");
+            }
+            return text;
+        }
     }
 }

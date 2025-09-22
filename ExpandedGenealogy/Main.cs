@@ -67,14 +67,10 @@ namespace Destrospean.ExpandedGenealogy
 
         static void AddInteractions(Sim sim)
         {
-            if (!sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == Interactions.DEBUG_AddCousin.Singleton.GetType()))
+            if (!sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == Interactions.AssignRelation.Singleton.GetType()))
             {
-                sim.AddInteraction(Interactions.DEBUG_AddCousin.Singleton);
-                sim.AddInteraction(Interactions.DEBUG_AddGrandchild.Singleton);
-                sim.AddInteraction(Interactions.DEBUG_AddGrandparent.Singleton);
-                sim.AddInteraction(Interactions.DEBUG_AddNephew.Singleton);
-                sim.AddInteraction(Interactions.DEBUG_AddUncle.Singleton);
-                sim.AddInteraction(Interactions.DEBUG_ClearRelations.Singleton);
+                sim.AddInteraction(Interactions.AssignRelation.Singleton);
+                sim.AddInteraction(Interactions.ClearRelations.Singleton);
             }
         }
     }
