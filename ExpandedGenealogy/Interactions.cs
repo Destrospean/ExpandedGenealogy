@@ -198,7 +198,7 @@ namespace Destrospean.ExpandedGenealogy
                             RelationTypes.CousinOfAncestor.ToString()
                         },
                         {
-                            Localization.LocalizeString(target.IsFemale, localizationKey +  "/Options:DescendantOfCousin"),
+                            Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:DescendantOfCousin"),
                             RelationTypes.DescendantOfCousin.ToString()
                         }
                     }, titleText: Localization.LocalizeString(target.IsFemale, localizationKey + ":Title"), defaultEntry: RelationTypes.Ancestor.ToString()) as string;
