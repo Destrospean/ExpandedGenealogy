@@ -7,6 +7,16 @@ namespace Destrospean.ExpandedGenealogy
 {
     public static class GenealogyExtended
     {
+        static class RelationAssignmentFieldNames
+        {
+            public const string Degree = "Degree", GenerationalDistance = "Generational Distance", IsHigherUpFamilyTree = "Sim A Is Higher Up Family Tree", RelationType = "Relation Type", SimA = "Sim A", SimB = "Sim B";
+        }
+
+        static class RelationTypeNames
+        {
+            public const string Cousin = "Cousin", Descendant = "Descendant", DescendantOfSibling = "Descendant Of Sibling";
+        }
+
         static List<Dictionary<string, object>> RelationAssignments
         {
             get
@@ -29,19 +39,19 @@ namespace Destrospean.ExpandedGenealogy
                 RelationAssignments.Add(new Dictionary<string, object>()
                     {
                         {
-                            "Relation Type",
-                            "Descendant"
+                            RelationAssignmentFieldNames.RelationType,
+                            RelationTypeNames.Descendant
                         },
                         {
-                            "Generational Distance",
+                            RelationAssignmentFieldNames.GenerationalDistance,
                             generationalDistance
                         },
                         {
-                            "Sim A",
+                            RelationAssignmentFieldNames.SimA,
                             descendant
                         },
                         {
-                            "Sim B",
+                            RelationAssignmentFieldNames.SimB,
                             ancestor
                         }
                     });
@@ -77,27 +87,27 @@ namespace Destrospean.ExpandedGenealogy
                 RelationAssignments.Add(new Dictionary<string, object>()
                     {
                         {
-                            "Relation Type",
-                            "Cousin"
+                            RelationAssignmentFieldNames.RelationType,
+                            RelationTypeNames.Cousin
                         },
                         {
-                            "Generational Distance",
+                            RelationAssignmentFieldNames.GenerationalDistance,
                             timesRemoved
                         },
                         {
-                            "Degree",
+                            RelationAssignmentFieldNames.Degree,
                             degree
                         },
                         {
-                            "Sim A",
+                            RelationAssignmentFieldNames.SimA,
                             self
                         },
                         {
-                            "Sim B",
+                            RelationAssignmentFieldNames.SimB,
                             other
                         },
                         {
-                            "Sim A Is Higher Up Family Tree",
+                            RelationAssignmentFieldNames.IsHigherUpFamilyTree,
                             isHigherUpFamilyTree
                         }
                     });
@@ -161,23 +171,23 @@ namespace Destrospean.ExpandedGenealogy
             int relationAssignmentIndex = -1;
             if (addRelationAssignment)
             {
-                relationAssignmentIndex = RelationAssignments.FindIndex(relationAssignment => (string)relationAssignment["Relation Type"] == "Descendant Of Sibling" && relationAssignment["Sim B"] == descendantOfSibling);
+                relationAssignmentIndex = RelationAssignments.FindIndex(relationAssignment => (string)relationAssignment[RelationAssignmentFieldNames.RelationType] == RelationTypeNames.DescendantOfSibling && relationAssignment[RelationAssignmentFieldNames.SimB] == descendantOfSibling);
                 RelationAssignments.Insert(relationAssignmentIndex == -1 ? RelationAssignments.Count : relationAssignmentIndex, new Dictionary<string, object>()
                     {
                         {
-                            "Relation Type",
-                            "Descendant Of Sibling"
+                            RelationAssignmentFieldNames.RelationType,
+                            RelationTypeNames.DescendantOfSibling
                         },
                         {
-                            "Generational Distance",
+                            RelationAssignmentFieldNames.GenerationalDistance,
                             generationalDistance
                         },
                         {
-                            "Sim A",
+                            RelationAssignmentFieldNames.SimA,
                             descendantOfSibling
                         },
                         {
-                            "Sim B",
+                            RelationAssignmentFieldNames.SimB,
                             siblingOfAncestor
                         }
                     });
@@ -205,7 +215,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static void ClearRelationsWith(this Genealogy self, Genealogy other)
         {
-            RelationAssignments.RemoveAll(relationAssignment => relationAssignment["Sim A"] == self && relationAssignment["Sim B"] == other || relationAssignment["Sim A"] == other && relationAssignment["Sim B"] == self);
+            RelationAssignments.RemoveAll(relationAssignment => relationAssignment[RelationAssignmentFieldNames.SimA] == self && relationAssignment[RelationAssignmentFieldNames.SimB] == other || relationAssignment[RelationAssignmentFieldNames.SimA] == other && relationAssignment[RelationAssignmentFieldNames.SimB] == self);
             RebuildRelationAssignments();
         }
 
@@ -479,24 +489,19 @@ namespace Destrospean.ExpandedGenealogy
             GenealogyPlaceholder.GenealogyPlaceholders.Clear();
             foreach (Dictionary<string, object> relationAssignment in RelationAssignments)
             {
-                object degree, generationalDistance, isHigherUpFamilyTree, relationType, sim1, sim2;
-                relationAssignment.TryGetValue("Relation Type", out relationType);
-                relationAssignment.TryGetValue("Generational Distance", out generationalDistance);
-                relationAssignment.TryGetValue("Degree", out degree);
-                relationAssignment.TryGetValue("Sim A", out sim1);
-                relationAssignment.TryGetValue("Sim B", out sim2);
-                relationAssignment.TryGetValue("Sim A Is Higher Up Family Tree", out isHigherUpFamilyTree);
-                if ((string)relationType == "Cousin")
+                int generationalDistance = (int)relationAssignment[RelationAssignmentFieldNames.GenerationalDistance];
+                Genealogy sim1 = (Genealogy)relationAssignment[RelationAssignmentFieldNames.SimA], sim2 = (Genealogy)relationAssignment[RelationAssignmentFieldNames.SimB];
+                switch ((string)relationAssignment[RelationAssignmentFieldNames.RelationType])
                 {
-                    ((Genealogy)sim1).AddCousin((Genealogy)sim2, (int)degree, (int)generationalDistance, (bool)isHigherUpFamilyTree, false);
-                }
-                if ((string)relationType == "Descendant")
-                {
-                    ((Genealogy)sim1).AddAncestor((Genealogy)sim2, (int)generationalDistance, false);
-                }
-                if ((string)relationType == "Descendant Of Sibling")
-                {
-                    ((Genealogy)sim1).AddSiblingOfAncestor((Genealogy)sim2, (int)generationalDistance, false);
+                    case RelationTypeNames.Cousin:
+                        sim1.AddCousin(sim2, (int)relationAssignment[RelationAssignmentFieldNames.Degree], generationalDistance, (bool)relationAssignment[RelationAssignmentFieldNames.IsHigherUpFamilyTree], false);
+                        break;
+                    case RelationTypeNames.Descendant:
+                        sim1.AddAncestor(sim2, generationalDistance, false);
+                        break;
+                    case RelationTypeNames.DescendantOfSibling:
+                        sim1.AddSiblingOfAncestor(sim2, generationalDistance, false);
+                        break;
                 }
             }
         }
