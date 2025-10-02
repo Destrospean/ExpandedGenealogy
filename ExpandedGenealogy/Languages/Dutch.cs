@@ -50,7 +50,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             }
             for (int i = 0; i < ancestorPrefixes.Length; i++)
             {
-                text += Localization.LocalizeString(isFemale, i == 0 ? Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent" : Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun12", ancestorPrefixes[i], isInLaw && i == ancestorPrefixes.Length - 1 ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+                text += Localization.LocalizeString(isFemale, i == 0 ? Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent" + (isInLaw && i == ancestorPrefixes.Length - 1 ? "InLaw" : "") : Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun12", ancestorPrefixes[i]);
                 if (i < ancestorPrefixes.Length - 1)
                 {
                     text += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun11");
@@ -66,7 +66,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 greats += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun0");
             }
-            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild" + (isInLaw ? "InLaw" : ""), greats);
         }
 
         public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)

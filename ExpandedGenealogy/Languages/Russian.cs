@@ -18,7 +18,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 if (distantRelationInfo.TimesRemoved == 1)
                 {
-                    return Localization.LocalizeString(isFemale, string.Format(Common.kLocalizationPath + "/RelationNames:GGG{0}", distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"), GetNthUncleDegreeString(distantRelationInfo.Degree), distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Grand") : "");
+                    return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GGG" + (distantRelationInfo.ClosestDescendant.Genealogy == sim ? "P" : "C"), GetNthUncleDegreeString(distantRelationInfo.Degree), distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelativesAsFullRelatives ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Grand") : "");
                 }
                 if (distantRelationInfo.TimesRemoved > 1)
                 {

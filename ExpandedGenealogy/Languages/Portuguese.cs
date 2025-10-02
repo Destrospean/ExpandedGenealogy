@@ -20,11 +20,11 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance.ToString();
             if (generationalDistance == "3")
             {
-                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GGGP", isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GGGP" + (isInLaw ? "InLaw" : ""));
             }
             else if (int.Parse(generationalDistance) > 3)
             {
-                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent", generationalDistance, Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)), isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent" + (isInLaw ? "InLaw" : ""), generationalDistance, Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
             }
             return "";
         }
@@ -60,11 +60,11 @@ namespace Destrospean.Lang.ExpandedGenealogy
             string generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance.ToString();
             if (generationalDistance == "3")
             {
-                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GGGC", isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GGGC" + (isInLaw ? "InLaw" : ""));
             }
             else if (int.Parse(generationalDistance) > 3)
             {
-                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild", generationalDistance, Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)), isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+                return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild" + (isInLaw ? "InLaw" : ""), generationalDistance, Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixAdj" + GetOrdinalSuffix(generationalDistance)));
             }
             return "";
         }

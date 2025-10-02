@@ -29,7 +29,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 greats += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Great");
             }
-            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent", greats, isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandparent" + (isInLaw ? "InLaw" : ""), greats);
         }
 
         public virtual string GetDescendantOfSiblingString(bool isFemale, Genealogy descendantOfSibling, Genealogy siblingOfAncestor)
@@ -59,7 +59,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 greats += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Great");
             }
-            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild", greats, isInLaw ? Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:InLaw") : "");
+            return Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:GreatNxGrandchild" + (isInLaw ? "InLaw" : ""), greats);
         }
 
         public abstract string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo);
