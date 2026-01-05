@@ -148,7 +148,7 @@ namespace Destrospean.ExpandedGenealogy
                     }
                     relationshipCoefficient += (float)Math.Pow(2, -siblingOfAncestorInfo.GenerationalDistance - (siblingOfAncestorInfo.IsHalfRelative ? 3 : 2));
                 }
-                // Check if the selected Sim is a sibling of one of the target's ancestors
+                // Check if the selected Sim is a sibling of one of the target's ancestors.
                 foreach (SiblingOfAncestorInfo siblingOfAncestorInfo in other.GetSiblingOfAncestorInfoList(self))
                 {
                     if (Tuning.kDenyRomanceWithSiblingsOfAncestors && !(siblingOfAncestorInfo.IsHalfRelative && Tuning.kAllowRomanceForHalfRelatives))
