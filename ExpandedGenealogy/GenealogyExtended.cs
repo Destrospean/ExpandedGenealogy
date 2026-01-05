@@ -172,7 +172,7 @@ namespace Destrospean.ExpandedGenealogy
             if (addRelationAssignment)
             {
                 relationAssignmentIndex = RelationAssignments.FindIndex(relationAssignment => (string)relationAssignment[RelationAssignmentFieldNames.RelationType] == RelationTypeNames.DescendantOfSibling && relationAssignment[RelationAssignmentFieldNames.SimB] == descendantOfSibling);
-                RelationAssignments.Insert(relationAssignmentIndex == -1 ? RelationAssignments.Count : relationAssignmentIndex, new Dictionary<string, object>()
+                RelationAssignments.Insert(relationAssignmentIndex == -1 ? RelationAssignments.Count : relationAssignmentIndex, new Dictionary<string, object>
                     {
                         {
                             RelationAssignmentFieldNames.RelationType,
