@@ -86,7 +86,7 @@ namespace Destrospean.ExpandedGenealogy
 
             public void ClearDerivedData()
             {
-                List<Genealogy> descendants = new List<Genealogy>()
+                List<Genealogy> descendants = new List<Genealogy>
                     {
                         (Genealogy)(object)this
                     };

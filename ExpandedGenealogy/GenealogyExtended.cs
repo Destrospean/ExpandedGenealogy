@@ -36,7 +36,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             if (addRelationAssignment)
             {
-                RelationAssignments.Add(new Dictionary<string, object>()
+                RelationAssignments.Add(new Dictionary<string, object>
                     {
                         {
                             RelationAssignmentFieldNames.RelationType,
@@ -56,7 +56,7 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     });
             }
-            List<GenealogyPlaceholder> ancestry = new List<GenealogyPlaceholder>()
+            List<GenealogyPlaceholder> ancestry = new List<GenealogyPlaceholder>
                 {
                     descendant.GetGenealogyPlaceholder()
                 };
@@ -84,7 +84,7 @@ namespace Destrospean.ExpandedGenealogy
         {
             if (addRelationAssignment)
             {
-                RelationAssignments.Add(new Dictionary<string, object>()
+                RelationAssignments.Add(new Dictionary<string, object>
                     {
                         {
                             RelationAssignmentFieldNames.RelationType,
@@ -114,14 +114,14 @@ namespace Destrospean.ExpandedGenealogy
             }
             List<GenealogyPlaceholder>[] ancestries = new List<GenealogyPlaceholder>[]
             {
-                new List<GenealogyPlaceholder>()
-                {
-                    self.GetGenealogyPlaceholder()
-                },
-                new List<GenealogyPlaceholder>()
-                {
-                    other.GetGenealogyPlaceholder()
-                }
+                new List<GenealogyPlaceholder>
+                    {
+                        self.GetGenealogyPlaceholder()
+                    },
+                new List<GenealogyPlaceholder>
+                    {
+                        other.GetGenealogyPlaceholder()
+                    }
             };
             GenealogyPlaceholder sharedFakeAncestor = new GenealogyPlaceholder();
             GenealogyPlaceholder.GenealogyPlaceholders.Add(sharedFakeAncestor.Id, sharedFakeAncestor);
