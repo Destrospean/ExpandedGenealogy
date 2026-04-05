@@ -1,5 +1,4 @@
 ﻿using Destrospean.ExpandedGenealogy;
-using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.Utilities;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
@@ -7,7 +6,7 @@ namespace Destrospean.Lang.ExpandedGenealogy
 {
     public class ALT : ENG
     {
-        public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)
+        public override string GetDistantRelationString(bool isFemale, Sims3.Gameplay.Socializing.Genealogy sim, DistantRelationInfo distantRelationInfo)
         {
             if (distantRelationInfo == null || distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelatives)
             {

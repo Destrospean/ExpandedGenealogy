@@ -1,22 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Sims3.Gameplay.CAS;
-using Sims3.Gameplay.Core;
-using Sims3.Gameplay.Objects;
 using Sims3.Gameplay.Socializing;
-using Sims3.SimIFace.CustomContent;
 
 namespace Destrospean.ExpandedGenealogy
 {
     public class GenealogyPlaceholder
     {
+        List<GenealogyPlaceholder> mAncestors,
+        mParents,
+        mParentsRaw = new List<GenealogyPlaceholder>(),
+        mSiblings;
+
+        readonly Dictionary<GenealogyPlaceholder, List<AncestorInfo>> mCachedAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<AncestorInfo>>();
+
+        readonly Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>> mCachedDistantRelationInfoLists = new Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>>();
+
+        readonly Dictionary<GenealogyPlaceholder, List<SiblingOfAncestorInfo>> mCachedSiblingOfAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<SiblingOfAncestorInfo>>();
+
+        static Dictionary<ulong, GenealogyPlaceholder> sGenealogyPlaceholders = new Dictionary<ulong, GenealogyPlaceholder>();
+
         public List<GenealogyPlaceholder> Ancestors
         {
             get
             {
                 if (mAncestors == null)
                 {
-                    List<GenealogyPlaceholder> ancestors = new List<GenealogyPlaceholder>(), tempAncestors = new List<GenealogyPlaceholder>();
+                    List<GenealogyPlaceholder> ancestors = new List<GenealogyPlaceholder>(),
+                    tempAncestors = new List<GenealogyPlaceholder>();
                     tempAncestors.AddRange(Parents);
                     while (tempAncestors.Count > 0)
                     {
@@ -91,9 +101,9 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     }
                 }
-                if (Bin.Singleton != null)
+                if (Sims3.Gameplay.Core.Bin.Singleton != null)
                 {
-                    foreach (HouseholdContents household in Bin.Singleton.Households)
+                    foreach (Sims3.Gameplay.Core.HouseholdContents household in Sims3.Gameplay.Core.Bin.Singleton.Households)
                     {
                         foreach (SimDescription simDescription in household.Household.AllSimDescriptions)
                         {
@@ -104,7 +114,7 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     }
                 }
-                foreach (Urnstone urnstone in Sims3.Gameplay.Queries.GetObjects<Urnstone>())
+                foreach (Sims3.Gameplay.Objects.Urnstone urnstone in Sims3.Gameplay.Queries.GetObjects<Sims3.Gameplay.Objects.Urnstone>())
                 {
                     SimDescription deadSimDescription = urnstone.DeadSimsDescription;
                     if (deadSimDescription != null && deadSimDescription.SimDescriptionId == Id)
@@ -121,14 +131,6 @@ namespace Destrospean.ExpandedGenealogy
             get;
             private set;
         }
-
-        List<GenealogyPlaceholder> mAncestors = null, mParents = null, mParentsRaw = new List<GenealogyPlaceholder>(), mSiblings = null;
-
-        Dictionary<GenealogyPlaceholder, List<AncestorInfo>> mCachedAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<AncestorInfo>>();
-
-        Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>> mCachedDistantRelationInfoLists = new Dictionary<GenealogyPlaceholder, List<DistantRelationInfo>>();
-
-        Dictionary<GenealogyPlaceholder, List<SiblingOfAncestorInfo>> mCachedSiblingOfAncestorInfoLists = new Dictionary<GenealogyPlaceholder, List<SiblingOfAncestorInfo>>();
 
         public List<GenealogyPlaceholder> Parents
         {
@@ -151,8 +153,6 @@ namespace Destrospean.ExpandedGenealogy
                 mParents = value;
             }
         }
-
-        static Dictionary<ulong, GenealogyPlaceholder> sGenealogyPlaceholders = new Dictionary<ulong, GenealogyPlaceholder>();
 
         public List<GenealogyPlaceholder> Siblings
         {
@@ -283,7 +283,7 @@ namespace Destrospean.ExpandedGenealogy
             Genealogy = genealogy;
             while (genealogy == null)
             {
-                Id = DownloadContent.GenerateGUID();
+                Id = Sims3.SimIFace.CustomContent.DownloadContent.GenerateGUID();
                 if (HasUniqueId)
                 {
                     return;

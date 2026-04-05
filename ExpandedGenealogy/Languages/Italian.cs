@@ -27,7 +27,8 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 return "";
             }
-            string degree = distantRelationInfo.Degree.ToString(), greats = "";
+            string degree = distantRelationInfo.Degree.ToString(),
+            greats = "";
             if (distantRelationInfo.Degree > 0 && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
             {
                 if (distantRelationInfo.TimesRemoved > 0)

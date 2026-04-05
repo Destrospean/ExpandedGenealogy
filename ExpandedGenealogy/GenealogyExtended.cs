@@ -7,24 +7,44 @@ namespace Destrospean.ExpandedGenealogy
 {
     public static class GenealogyExtended
     {
-        static class RelationAssignmentFieldNames
-        {
-            public const string Degree = "Degree", GenerationalDistance = "Generational Distance", IsHigherUpFamilyTree = "Sim A Is Higher Up Family Tree", RelationType = "Relation Type", SimA = "Sim A", SimB = "Sim B";
-        }
-
-        static class RelationTypeNames
-        {
-            public const string Cousin = "Cousin", Descendant = "Descendant", DescendantOfSibling = "Descendant Of Sibling";
-        }
-
         static List<Dictionary<string, object>> RelationAssignments
         {
             get
             {
-#pragma warning disable 0618
-                return Common.RelationAssignments;
-#pragma warning restore 0618
+                return (List<Dictionary<string, object>>)typeof(Common).GetField("sRelationAssignments", (System.Reflection.BindingFlags)0x28).GetValue(null);
             }
+        }
+
+        static bool TryAddDistantRelationInfo(this List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
+        {
+            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new GenealogyPlaceholder[]
+                {
+                    throughWhichChild1,
+                    throughWhichChild2
+                });
+            if (!distantRelationInfoList.Exists(tempDistantRelationInfo => System.Array.Exists(tempDistantRelationInfo.ThroughWhichChildren, x => !System.Array.Exists(distantRelationInfo.ThroughWhichChildren, x.Equals)) && tempDistantRelationInfo.ClosestDescendant == distantRelationInfo.ClosestDescendant && tempDistantRelationInfo.Degree == distantRelationInfo.Degree && tempDistantRelationInfo.TimesRemoved == distantRelationInfo.TimesRemoved) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
+            {
+                distantRelationInfoList.Add(distantRelationInfo);
+                return true;
+            }
+            return false;
+        }
+
+        static class RelationAssignmentFieldNames
+        {
+            public const string Degree = "Degree",
+            GenerationalDistance = "Generational Distance",
+            IsHigherUpFamilyTree = "Sim A Is Higher Up Family Tree",
+            RelationType = "Relation Type",
+            SimA = "Sim A",
+            SimB = "Sim B";
+        }
+
+        static class RelationTypeNames
+        {
+            public const string Cousin = "Cousin",
+            Descendant = "Descendant",
+            DescendantOfSibling = "Descendant Of Sibling";
         }
 
         /// <summary>Assigns an ancestor to a Sim without knowing the Sims between the Sim and said ancestor.</summary>
@@ -113,16 +133,16 @@ namespace Destrospean.ExpandedGenealogy
                     });
             }
             List<GenealogyPlaceholder>[] ancestries = new List<GenealogyPlaceholder>[]
-            {
-                new List<GenealogyPlaceholder>
+                {
+                    new List<GenealogyPlaceholder>
                     {
                         self.GetGenealogyPlaceholder()
                     },
-                new List<GenealogyPlaceholder>
+                    new List<GenealogyPlaceholder>
                     {
                         other.GetGenealogyPlaceholder()
                     }
-            };
+                };
             GenealogyPlaceholder sharedFakeAncestor = new GenealogyPlaceholder();
             GenealogyPlaceholder.GenealogyPlaceholders.Add(sharedFakeAncestor.Id, sharedFakeAncestor);
             for (int i = 0; i < 2; i++)
@@ -241,7 +261,8 @@ namespace Destrospean.ExpandedGenealogy
 
         public static List<AncestorInfo> GetAncestorInfoList(this GenealogyPlaceholder descendant, GenealogyPlaceholder ancestor)
         {
-            List<AncestorInfo> ancestorInfoList = new List<AncestorInfo>(), cachedAncestorInfoList;
+            List<AncestorInfo> ancestorInfoList = new List<AncestorInfo>(),
+            cachedAncestorInfoList;
             if (descendant.CachedAncestorInfoLists.TryGetValue(ancestor, out cachedAncestorInfoList))
             {
                 return cachedAncestorInfoList;
@@ -303,7 +324,8 @@ namespace Destrospean.ExpandedGenealogy
 
         public static List<DistantRelationInfo> GetDistantRelationInfoList(this GenealogyPlaceholder self, GenealogyPlaceholder other)
         {
-            List<DistantRelationInfo> cachedDistantRelationInfoList, distantRelationInfoList = new List<DistantRelationInfo>();
+            List<DistantRelationInfo> cachedDistantRelationInfoList,
+            distantRelationInfoList = new List<DistantRelationInfo>();
             if (self.IsAncestor(other) || other.IsAncestor(self))
             {
                 return distantRelationInfoList;
@@ -316,7 +338,8 @@ namespace Destrospean.ExpandedGenealogy
             {
                 foreach (GenealogyPlaceholder ancestor2 in other.Ancestors)
                 {
-                    AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1), ancestor2Info = other.GetAncestorInfo(ancestor2);
+                    AncestorInfo ancestor1Info = self.GetAncestorInfo(ancestor1),
+                    ancestor2Info = other.GetAncestorInfo(ancestor2);
                     if (ancestor1.IsSibling(ancestor2))
                     {
                         if (ancestor1Info.GenerationalDistance < ancestor2Info.GenerationalDistance)
@@ -332,7 +355,8 @@ namespace Destrospean.ExpandedGenealogy
             }
             distantRelationInfoList.Sort((a, b) =>
                 {
-                    int aCoRelPowAbs = 2 * a.Degree + a.TimesRemoved + (a.IsHalfRelative ? 2 : 1), bCoRelPowAbs = 2 * b.Degree + b.TimesRemoved + (b.IsHalfRelative ? 2 : 1);
+                    int aCoRelPowAbs = 2 * a.Degree + a.TimesRemoved + (a.IsHalfRelative ? 2 : 1),
+                    bCoRelPowAbs = 2 * b.Degree + b.TimesRemoved + (b.IsHalfRelative ? 2 : 1);
                     if (aCoRelPowAbs == bCoRelPowAbs && a.Degree == b.Degree && a.TimesRemoved == b.TimesRemoved)
                     {
                         return 0;
@@ -374,7 +398,8 @@ namespace Destrospean.ExpandedGenealogy
 
         public static List<SiblingOfAncestorInfo> GetSiblingOfAncestorInfoList(this GenealogyPlaceholder descendantOfSibling, GenealogyPlaceholder siblingOfAncestor)
         {
-            List<SiblingOfAncestorInfo> cachedSiblingOfAncestorInfoList, siblingOfAncestorInfoList = new List<SiblingOfAncestorInfo>();
+            List<SiblingOfAncestorInfo> cachedSiblingOfAncestorInfoList,
+            siblingOfAncestorInfoList = new List<SiblingOfAncestorInfo>();
             if (descendantOfSibling.CachedSiblingOfAncestorInfoLists.TryGetValue(siblingOfAncestor, out cachedSiblingOfAncestorInfoList))
             {
                 return cachedSiblingOfAncestorInfoList;
@@ -490,7 +515,8 @@ namespace Destrospean.ExpandedGenealogy
             foreach (Dictionary<string, object> relationAssignment in RelationAssignments)
             {
                 int generationalDistance = (int)relationAssignment[RelationAssignmentFieldNames.GenerationalDistance];
-                Genealogy sim1 = (Genealogy)relationAssignment[RelationAssignmentFieldNames.SimA], sim2 = (Genealogy)relationAssignment[RelationAssignmentFieldNames.SimB];
+                Genealogy sim1 = (Genealogy)relationAssignment[RelationAssignmentFieldNames.SimA],
+                sim2 = (Genealogy)relationAssignment[RelationAssignmentFieldNames.SimB];
                 switch ((string)relationAssignment[RelationAssignmentFieldNames.RelationType])
                 {
                     case RelationTypeNames.Cousin:
@@ -504,21 +530,6 @@ namespace Destrospean.ExpandedGenealogy
                         break;
                 }
             }
-        }
-
-        static bool TryAddDistantRelationInfo(this List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
-        {
-            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new GenealogyPlaceholder[]
-                {
-                    throughWhichChild1,
-                    throughWhichChild2
-                });
-            if (!distantRelationInfoList.Exists(tempDistantRelationInfo => !new List<GenealogyPlaceholder>(tempDistantRelationInfo.ThroughWhichChildren).Exists(child => !new List<GenealogyPlaceholder>(distantRelationInfo.ThroughWhichChildren).Contains(child)) && tempDistantRelationInfo.ClosestDescendant == distantRelationInfo.ClosestDescendant && tempDistantRelationInfo.Degree == distantRelationInfo.Degree && tempDistantRelationInfo.TimesRemoved == distantRelationInfo.TimesRemoved) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
-            {
-                distantRelationInfoList.Add(distantRelationInfo);
-                return true;
-            }
-            return false;
         }
     }
 }

@@ -36,7 +36,8 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 return "";
             }
-            string descendantTitle, generationalDistance = siblingOfAncestorInfo.GenerationalDistance.ToString();
+            string descendantTitle,
+            generationalDistance = siblingOfAncestorInfo.GenerationalDistance.ToString();
             switch (generationalDistance)
             {
                 case "1":
@@ -75,7 +76,8 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 return "";
             }
-            string ancestorTitle = "", degree = (distantRelationInfo.Degree + 1).ToString();
+            string ancestorTitle = "",
+            degree = (distantRelationInfo.Degree + 1).ToString();
             if (distantRelationInfo.Degree > 0 && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
             {
                 if (distantRelationInfo.TimesRemoved > 0)
@@ -116,7 +118,8 @@ namespace Destrospean.Lang.ExpandedGenealogy
             {
                 return "";
             }
-            string ancestorTitle, generationalDistance = siblingOfAncestorInfo.GenerationalDistance.ToString();
+            string ancestorTitle,
+            generationalDistance = siblingOfAncestorInfo.GenerationalDistance.ToString();
             switch (generationalDistance)
             {
                 case "1":

@@ -66,6 +66,7 @@
     <Compile Include="GenealogyExtended.cs" />
     <Compile Include="Dialogs.cs" />
     <Compile Include="Languages\Generic.cs" />
+    <Compile Include="ExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">

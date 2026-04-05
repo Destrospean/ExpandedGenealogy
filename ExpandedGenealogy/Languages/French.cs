@@ -1,5 +1,4 @@
 ﻿using Destrospean.ExpandedGenealogy;
-using Sims3.Gameplay.Socializing;
 using Sims3.Gameplay.Utilities;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
 
@@ -7,13 +6,14 @@ namespace Destrospean.Lang.ExpandedGenealogy
 {
     public class FRE : PlayerLanguage
     {
-        public override string GetDistantRelationString(bool isFemale, Genealogy sim, DistantRelationInfo distantRelationInfo)
+        public override string GetDistantRelationString(bool isFemale, Sims3.Gameplay.Socializing.Genealogy sim, DistantRelationInfo distantRelationInfo)
         {
             if (distantRelationInfo == null || distantRelationInfo.IsHalfRelative && !Tuning.kShowHalfRelatives)
             {
                 return "";
             }
-            string degree = distantRelationInfo.Degree.ToString(), greats = "";
+            string degree = distantRelationInfo.Degree.ToString(),
+            greats = "";
             if (distantRelationInfo.Degree > 0 && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow)
             {
                 if (distantRelationInfo.TimesRemoved > 0)

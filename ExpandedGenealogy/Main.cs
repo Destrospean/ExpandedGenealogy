@@ -1,40 +1,27 @@
 ﻿using System;
-using System.Reflection;
-using MonoPatcherLib;
 using Sims3.Gameplay.Actors;
-using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.EventSystem;
 using Sims3.SimIFace;
 
-namespace System.Runtime.CompilerServices
-{
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class ExtensionAttribute : Attribute
-    {
-    }
-}
-
 namespace Destrospean.ExpandedGenealogy
 {
-    [Plugin]
+    [MonoPatcherLib.Plugin]
     public class Main
     {
-        static EventListener sSimInstantiatedListener;
-
-        public Main()
+        static Main()
         {
-            sSimInstantiatedListener = null;
+            EventListener simInstantiatedListener = null;
             World.sOnWorldLoadFinishedEventHandler += (sender, e) =>
                 {
                     foreach (Sim sim in Sims3.Gameplay.Queries.GetObjects<Sim>())
                     {
                         AddInteractions(sim);
                     }
-                    if (Household.ActiveHousehold != null)
+                    if (Sims3.Gameplay.CAS.Household.ActiveHousehold != null)
                     {
                         GenealogyExtended.RebuildRelationAssignments();
                     }
-                    sSimInstantiatedListener = EventTracker.AddListener(EventTypeId.kSimInstantiated, evt =>
+                    simInstantiatedListener = EventTracker.AddListener(EventTypeId.kSimInstantiated, evt =>
                         {
                             try
                             {
@@ -55,22 +42,22 @@ namespace Destrospean.ExpandedGenealogy
             World.sOnWorldQuitEventHandler += (sender, e) =>
                 {
                     GenealogyPlaceholder.GenealogyPlaceholders.Clear();
-                    EventTracker.RemoveListener(sSimInstantiatedListener);
-                    sSimInstantiatedListener = null;
+                    EventTracker.RemoveListener(simInstantiatedListener);
+                    simInstantiatedListener = null;
                 };
-            Type nraasWoohooerType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
-            if (nraasWoohooerType != null)
+            Type nraasWoohooerRelationshipsType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
+            if (nraasWoohooerRelationshipsType != null)
             {
-                MonoPatcher.ReplaceMethod(nraasWoohooerType.GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static), Type.GetType("Destrospean.ExpandedGenealogy.Replacements").GetMethod("IsCloselyRelated", BindingFlags.Public | BindingFlags.Static));
+                MonoPatcherLib.MonoPatcher.ReplaceMethod(nraasWoohooerRelationshipsType.GetMethod("IsCloselyRelated", (System.Reflection.BindingFlags)0x18), Type.GetType("Destrospean.ExpandedGenealogy.Replacements").GetMethod("IsCloselyRelated", (System.Reflection.BindingFlags)0x18));
             }
         }
 
         static void AddInteractions(Sim sim)
         {
-            if (!sim.Interactions.Exists(interaction => interaction.InteractionDefinition.GetType() == Interactions.AssignRelation.Singleton.GetType()))
+            if (sim != null)
             {
-                sim.AddInteraction(Interactions.AssignRelation.Singleton);
-                sim.AddInteraction(Interactions.ClearRelations.Singleton);
+                sim.AddInteraction(Interactions.AssignRelation.Singleton, true);
+                sim.AddInteraction(Interactions.ClearRelations.Singleton, true);
             }
         }
     }
