@@ -110,7 +110,7 @@ namespace Destrospean.ExpandedGenealogy
             public bool IsBloodRelated(Genealogy other)
             {
                 Genealogy self = (Genealogy)(object)this;
-                float relationshipCoefficient = 0f;
+                float relationshipCoefficient = 0;
                 // Check if the target is an ancestor of the selected Sim.
                 foreach (AncestorInfo ancestorInfo in self.GetAncestorInfoList(other))
                 {
@@ -172,7 +172,7 @@ namespace Destrospean.ExpandedGenealogy
                 /* Check if the coefficient of relationship for the two Sims is higher than the minimum to disallow romance.
                  * If the minimum value is less than 0, then the coefficient of relationship does not determine whether romance between two Sims is allowed.
                  */
-                return relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0f;
+                return relationshipCoefficient >= Tuning.kMinRelationshipCoefficientToDenyRomance && Tuning.kMinRelationshipCoefficientToDenyRomance >= 0;
             }
 
             public static bool IsCousin(Genealogy sim1, Genealogy sim2)
@@ -302,7 +302,8 @@ namespace Destrospean.ExpandedGenealogy
         {
             public string GetMyFamilialDescriptionFor(SimDescription other)
             {
-                string localizationKey = Common.kLocalizationPath + "/RelationNames", text = "";
+                string localizationKey = Common.kLocalizationPath + "/RelationNames",
+                text = "";
                 SimDescription self = (SimDescription)(object)this;
                 if (other.Genealogy == self.Genealogy)
                 {
