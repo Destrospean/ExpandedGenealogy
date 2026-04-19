@@ -12,38 +12,34 @@ namespace Destrospean.Lang.ExpandedGenealogy
         public override string GetAncestorString(bool isFemale, Genealogy ancestor, Genealogy descendant, bool isInLaw)
         {
             string text = "";
-            List<string> binaryGroups = new List<string>();
+            List<int> maxGenerationGroups = new List<int>();
             int generationalDistance = descendant.GetAncestorInfo(ancestor).GenerationalDistance;
             while (generationalDistance > 511)
             {
-                binaryGroups.Insert(0, "111111111");
+                maxGenerationGroups.Insert(0, 511);
                 generationalDistance -= 511;
             }
-            binaryGroups.Insert(0, Convert.ToString(generationalDistance - (binaryGroups.Count == 0 ? 0 : 1), 2));
-            while (binaryGroups[0].Length < 9)
-            {
-                binaryGroups[0] = "0" + binaryGroups[0];
-            }
-            string[] ancestorPrefixes = new string[binaryGroups.Count];
+            maxGenerationGroups.Insert(0, generationalDistance - Convert.ToInt32(maxGenerationGroups.Count > 0));
+            string[] ancestorPrefixes = new string[maxGenerationGroups.Count];
             for (int i = 0; i < ancestorPrefixes.Length; i++)
             {
                 ancestorPrefixes[i] = "";
-                for (int j = 0; j < 7; j++)
+                for (int j = 2; j < 9; j++)
                 {
-                    if (binaryGroups[i][j] == '1')
+                    if ((1 << j & maxGenerationGroups[i]) > 0)
                     {
-                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun" + (9 - j).ToString());
+                        ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun" + (j + 1));
                     }
                 }
-                switch (binaryGroups[i].Substring(binaryGroups[i].Length - 2))
+                switch (maxGenerationGroups[i] & 3)
                 {
-                    case "01":
+                    case 1:
                         ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:Grand");
                         break;
-                    case "10":
+                    case 2:
                         ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun1");
                         break;
-                    case "11":
+                    case 3:
                         ancestorPrefixes[i] += Localization.LocalizeString(isFemale, Common.kLocalizationPath + "/RelationNames:OrdinalSuffixNoun2");
                         break;
                 }

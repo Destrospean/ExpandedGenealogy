@@ -9,15 +9,15 @@ namespace Destrospean.ExpandedGenealogy
     {
         public class ComboSelectionDialog : ModalDialog
         {
-            public const string kLayoutName = "ComboSelectionDialog";
+            const string kLayoutName = "ComboSelectionDialog";
 
-            public const int kWinExportID = 4096;
+            const int kWinExportID = 4096;
 
-            public Button mCancelButton, mOkButton;
+            Button mCancelButton, mOkButton;
 
-            public ComboBox mCombo;
+            ComboBox mCombo;
 
-            public object mResult;
+            object mResult;
 
             public object Result
             {
@@ -35,7 +35,7 @@ namespace Destrospean.ExpandedGenealogy
                 kTitleTextID
             }
 
-            public ComboSelectionDialog(string titleText, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode) : base(kLayoutName, kWinExportID, true, pauseMode, null)
+            public ComboSelectionDialog(string title, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode) : base(kLayoutName, kWinExportID, true, pauseMode, null)
             {
                 if (mModalDialogWindow == null)
                 {
@@ -44,30 +44,25 @@ namespace Destrospean.ExpandedGenealogy
                 Text text = mModalDialogWindow.GetChildByID(5, true) as Text;
                 if (text != null)
                 {
-                    text.Caption = titleText;
+                    text.Caption = title;
                 }
-                mCombo = mModalDialogWindow.GetChildByID(2, true) as ComboBox;
+                mCombo = (ComboBox)mModalDialogWindow.GetChildByID(2, true);
                 foreach (KeyValuePair<string, object> entry in entries)
                 {
                     mCombo.ValueList.Add(entry.Key, entry.Value);
-                    if (entry.Value as string == defaultEntry as string)
+                    if (entry.Value == defaultEntry)
                     {
                         mCombo.CurrentSelection = (uint)(mCombo.ValueList.Count - 1);
                     }
                 }
-                Rect area = mModalDialogWindow.Area;
-                float height = area.BottomRight.y - area.TopLeft.y,
-                width = area.BottomRight.x - area.TopLeft.x,
-                x = position.x,
+                float x = position.x,
                 y = position.y;
                 if (x < 0 && y < 0)
                 {
-                    Rect parentArea = mModalDialogWindow.Parent.Area;
-                    x = (float)Math.Round((parentArea.BottomRight.x - parentArea.TopLeft.x - width) / 2);
-                    y = (float)Math.Round((parentArea.BottomRight.y - parentArea.TopLeft.y - height) / 2);
+                    x = (float)Math.Round((mModalDialogWindow.Parent.Area.Width - mModalDialogWindow.Area.Width) / 2);
+                    y = (float)Math.Round((mModalDialogWindow.Parent.Area.Height - mModalDialogWindow.Area.Height) / 2);
                 }
-                area.Set(x, y, x + width, y + height);
-                mModalDialogWindow.Area = area;
+                mModalDialogWindow.Area = new Rect(x, y, x + mModalDialogWindow.Area.Width, y + mModalDialogWindow.Area.Height);
                 mOkButton = mModalDialogWindow.GetChildByID(3, false) as Button;
                 if (mOkButton != null)
                 {
@@ -91,27 +86,20 @@ namespace Destrospean.ExpandedGenealogy
 
             public override bool OnEnd(uint buttonID)
             {
-                if (buttonID == 3)
-                {
-                    mResult = mCombo.EntryTags[(int)mCombo.CurrentSelection];
-                }
-                else
-                {
-                    mResult = null;
-                }
+                mResult = buttonID == 3 ? mCombo.EntryTags[(int)mCombo.CurrentSelection] : null;
                 return true;
             }
 
-            public static object Show(string titleText, IDictionary<string, object> entries, object defaultEntry)
+            public static object Show(string title, IDictionary<string, object> entries, object defaultEntry)
             {
-                return Show(titleText, entries, defaultEntry, new Vector2(-1, -1), PauseMode.PauseSimulator);
+                return Show(title, entries, defaultEntry, new Vector2(-1, -1), PauseMode.PauseSimulator);
             }
 
-            public static object Show(string titleText, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode)
+            public static object Show(string title, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode)
             {
                 if (EnableModalDialogs)
                 {
-                    using (ComboSelectionDialog comboSelectionDialog = new ComboSelectionDialog(titleText, entries, defaultEntry, position, pauseMode))
+                    using (ComboSelectionDialog comboSelectionDialog = new ComboSelectionDialog(title, entries, defaultEntry, position, pauseMode))
                     {
                         comboSelectionDialog.StartModal();
                         return comboSelectionDialog.Result;

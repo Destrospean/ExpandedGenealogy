@@ -41,7 +41,8 @@ namespace Destrospean.ExpandedGenealogy
         {
             public void AddChild(IGenealogy iChild)
             {
-                Genealogy other = (Genealogy)iChild, self = (Genealogy)(object)this;
+                Genealogy other = (Genealogy)iChild,
+                self = (Genealogy)(object)this;
                 if (other.mNaturalParents.Count == 2)
                 {
                     return;

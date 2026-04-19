@@ -45,7 +45,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override string[] GetPath(bool isFemale)
                 {
-                    return new string[]
+                    return new[]
                     {
                         Localization.LocalizeString(isFemale, sLocalizationKey + ":Path")
                     };
@@ -57,10 +57,10 @@ namespace Destrospean.ExpandedGenealogy
                 }
             }
 
-            static bool TryGetInteger(out int? integer, string titleText, string promptText, int minimum = 0)
+            static bool TryGetInteger(out int? integer, string title, string promptText, int minimum = 0)
             {
                 integer = null;
-                string text = Sims3.UI.StringInputDialog.Show(titleText, promptText, minimum.ToString(), true);
+                string text = Sims3.UI.StringInputDialog.Show(title, promptText, minimum.ToString(), true);
                 if (!string.IsNullOrEmpty(text))
                 {
                     integer = int.Parse(text);
@@ -74,7 +74,8 @@ namespace Destrospean.ExpandedGenealogy
 
             static bool TryGetRelationType(Sim target, out RelationTypes? relationType)
             {
-                string localizationKey = sLocalizationKey + "/Dialogs/RelationTypeDialog", text = Dialogs.ComboSelectionDialog.Show(entries: new SortedDictionary<string, object>(new DummyComparer())
+                string localizationKey = sLocalizationKey + "/Dialogs/RelationTypeDialog",
+                text = Dialogs.ComboSelectionDialog.Show(Localization.LocalizeString(target.IsFemale, localizationKey + ":Title"), new SortedDictionary<string, object>(new DummyComparer())
                     {
                         {
                             Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:Ancestor"),
@@ -108,7 +109,7 @@ namespace Destrospean.ExpandedGenealogy
                             Localization.LocalizeString(target.IsFemale, localizationKey + "/Options:DescendantOfCousin"),
                             RelationTypes.DescendantOfCousin.ToString()
                         }
-                    }, titleText: Localization.LocalizeString(target.IsFemale, localizationKey + ":Title"), defaultEntry: RelationTypes.Ancestor.ToString()) as string;
+                    }, RelationTypes.Ancestor.ToString()) as string;
                 if (text == null)
                 {
                     relationType = null;
@@ -135,12 +136,12 @@ namespace Destrospean.ExpandedGenealogy
                 Sim[] sims;
                 if (relationType.ToString().Contains("Descendant"))
                 {
-                    isFemale = new bool[]
+                    isFemale = new[]
                         {
                             Target.IsFemale,
                             Actor.IsFemale
                         };
-                    sims = new Sim[]
+                    sims = new[]
                         {
                             Target,
                             Actor
@@ -148,12 +149,12 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 else
                 {
-                    isFemale = new bool[]
+                    isFemale = new[]
                         {
                             Actor.IsFemale,
                             Target.IsFemale
                         };
-                    sims = new Sim[]
+                    sims = new[]
                         {
                             Actor,
                             Target
@@ -161,8 +162,9 @@ namespace Destrospean.ExpandedGenealogy
                 }
                 if (relationType.ToString().Contains("Cousin"))
                 {
-                    int? degree, timesRemoved = null;
-                    if (!TryGetInteger(out degree, Localization.LocalizeString(isFemale, localizationKey + "/DegreeDialog:Title"), Localization.LocalizeString(new bool[]
+                    int? degree,
+                    timesRemoved = null;
+                    if (!TryGetInteger(out degree, Localization.LocalizeString(isFemale, localizationKey + "/DegreeDialog:Title"), Localization.LocalizeString(new[]
                         {
                             isFemale[1],
                             isFemale[0]
@@ -225,7 +227,7 @@ namespace Destrospean.ExpandedGenealogy
 
                 public override string[] GetPath(bool isFemale)
                 {
-                    return new string[]
+                    return new[]
                     {
                         Localization.LocalizeString(isFemale, sLocalizationKey + ":Path")
                     };

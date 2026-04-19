@@ -7,7 +7,7 @@
         static System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> sRelationAssignments = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
         #pragma warning restore 0414
 
-        public const string kLocalizationPath = "Destrospean/ExpandedGenealogy";
+        internal const string kLocalizationPath = "Destrospean/ExpandedGenealogy";
 
         public static readonly Lang.ExpandedGenealogy.PlayerLanguage PlayerLanguage = System.Activator.CreateInstance(System.Type.GetType("Destrospean.Lang.ExpandedGenealogy." + Sims3.Gameplay.Utilities.Localization.LocalizeString(kLocalizationPath + ":LanguageCode"))) as Lang.ExpandedGenealogy.PlayerLanguage;
 

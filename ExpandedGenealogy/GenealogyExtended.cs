@@ -17,7 +17,7 @@ namespace Destrospean.ExpandedGenealogy
 
         static bool TryAddDistantRelationInfo(this List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
         {
-            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new GenealogyPlaceholder[]
+            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new[]
                 {
                     throughWhichChild1,
                     throughWhichChild2
@@ -132,7 +132,7 @@ namespace Destrospean.ExpandedGenealogy
                         }
                     });
             }
-            List<GenealogyPlaceholder>[] ancestries = new List<GenealogyPlaceholder>[]
+            List<GenealogyPlaceholder>[] ancestries = new[]
                 {
                     new List<GenealogyPlaceholder>
                     {
