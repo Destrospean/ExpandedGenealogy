@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Reflection;
 using Sims3.Gameplay.Actors;
+using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.EventSystem;
+using Sims3.Gameplay.Socializing;
 using Sims3.SimIFace;
 
 namespace Destrospean.ExpandedGenealogy
 {
-    [MonoPatcherLib.Plugin]
     public class Main
     {
+        [Tunable]
+        protected static bool kInstantiator;
+
         static Main()
         {
             EventListener simInstantiatedListener = null;
@@ -17,7 +22,7 @@ namespace Destrospean.ExpandedGenealogy
                     {
                         AddInteractions(sim);
                     }
-                    if (Sims3.Gameplay.CAS.Household.ActiveHousehold != null)
+                    if (Household.ActiveHousehold != null)
                     {
                         GenealogyExtended.RebuildRelationAssignments();
                     }
@@ -45,10 +50,28 @@ namespace Destrospean.ExpandedGenealogy
                     EventTracker.RemoveListener(simInstantiatedListener);
                     simInstantiatedListener = null;
                 };
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("AddChild"), typeof(Replacements).GetMethod("AddChild"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("ClearDerivedData", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Replacements).GetMethod("ClearDerivedData"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsBloodRelated", BindingFlags.Public | BindingFlags.Instance), typeof(Replacements).GetMethod("IsBloodRelated"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsCousin"), typeof(Replacements).GetMethod("IsCousin"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsFutureBloodRelated"), typeof(Replacements).GetMethod("IsFutureBloodRelated"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsGrandparent"), typeof(Replacements).GetMethod("IsGrandparent"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsGreatGrandparent"), typeof(Replacements).GetMethod("IsGreatGrandparent"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsHalfSibling", BindingFlags.Public | BindingFlags.Static), typeof(Replacements).GetMethod("IsHalfSibling"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsSiblingInLaw"), typeof(Replacements).GetMethod("IsSiblingInLaw"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsStepRelated"), typeof(Replacements).GetMethod("IsStepRelated"));
+            Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsUncle"), typeof(Replacements).GetMethod("IsUncle"));
+            Common.ReplaceMethod(typeof(SimDescription).GetMethod("GetMyFamilialDescriptionFor"), typeof(Replacements).GetMethod("GetMyFamilialDescriptionFor"));
+            Common.ReplaceMethod(typeof(SimDescription).GetMethod("MakeUniqueId"), typeof(Replacements).GetMethod("MakeUniqueId"));
             Type nraasWoohooerRelationshipsType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
             if (nraasWoohooerRelationshipsType != null)
             {
-                MonoPatcherLib.MonoPatcher.ReplaceMethod(nraasWoohooerRelationshipsType.GetMethod("IsCloselyRelated", (System.Reflection.BindingFlags)0x18), Type.GetType("Destrospean.ExpandedGenealogy.Replacements").GetMethod("IsCloselyRelated", (System.Reflection.BindingFlags)0x18));
+                Common.ReplaceMethod(nraasWoohooerRelationshipsType.GetMethod("IsCloselyRelated", new[]
+                    {
+                        typeof(SimDescription),
+                        typeof(SimDescription),
+                        typeof(bool)
+                    }), typeof(Replacements).GetMethod("IsCloselyRelated"));
             }
         }
 

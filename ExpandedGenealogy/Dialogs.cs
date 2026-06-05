@@ -9,11 +9,7 @@ namespace Destrospean.ExpandedGenealogy
     {
         public class ComboSelectionDialog : ModalDialog
         {
-            const string kLayoutName = "ComboSelectionDialog";
-
-            const int kWinExportID = 4096;
-
-            Button mCancelButton, mOkButton;
+            Button mCancelButton, mOKButton;
 
             ComboBox mCombo;
 
@@ -27,15 +23,7 @@ namespace Destrospean.ExpandedGenealogy
                 }
             }
 
-            public enum ControlID : uint
-            {
-                kComboBoxId = 2,
-                kOKButtonID,
-                kCancelButtonID,
-                kTitleTextID
-            }
-
-            public ComboSelectionDialog(string title, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode) : base(kLayoutName, kWinExportID, true, pauseMode, null)
+            public ComboSelectionDialog(string title, IDictionary<string, object> entries, object defaultEntry, Vector2 position, PauseMode pauseMode) : base("ComboSelectionDialog", 4096, true, pauseMode, null)
             {
                 if (mModalDialogWindow == null)
                 {
@@ -63,10 +51,10 @@ namespace Destrospean.ExpandedGenealogy
                     y = (float)Math.Round((mModalDialogWindow.Parent.Area.Height - mModalDialogWindow.Area.Height) / 2);
                 }
                 mModalDialogWindow.Area = new Rect(x, y, x + mModalDialogWindow.Area.Width, y + mModalDialogWindow.Area.Height);
-                mOkButton = mModalDialogWindow.GetChildByID(3, false) as Button;
-                if (mOkButton != null)
+                mOKButton = mModalDialogWindow.GetChildByID(3, false) as Button;
+                if (mOKButton != null)
                 {
-                    mOkButton.Click += OnButtonClick;
+                    mOKButton.Click += OnButtonClick;
                 }
                 mCancelButton = mModalDialogWindow.GetChildByID(4, false) as Button;
                 if (mCancelButton != null)

@@ -15,21 +15,6 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
-        static bool TryAddDistantRelationInfo(this List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
-        {
-            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new[]
-                {
-                    throughWhichChild1,
-                    throughWhichChild2
-                });
-            if (!distantRelationInfoList.Exists(tempDistantRelationInfo => System.Array.Exists(tempDistantRelationInfo.ThroughWhichChildren, x => !System.Array.Exists(distantRelationInfo.ThroughWhichChildren, x.Equals)) && tempDistantRelationInfo.ClosestDescendant == distantRelationInfo.ClosestDescendant && tempDistantRelationInfo.Degree == distantRelationInfo.Degree && tempDistantRelationInfo.TimesRemoved == distantRelationInfo.TimesRemoved) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
-            {
-                distantRelationInfoList.Add(distantRelationInfo);
-                return true;
-            }
-            return false;
-        }
-
         static class RelationAssignmentFieldNames
         {
             public const string Degree = "Degree",
@@ -45,6 +30,21 @@ namespace Destrospean.ExpandedGenealogy
             public const string Cousin = "Cousin",
             Descendant = "Descendant",
             DescendantOfSibling = "Descendant Of Sibling";
+        }
+
+        static bool TryAddDistantRelationInfo(this List<DistantRelationInfo> distantRelationInfoList, int degree, int timesRemoved, GenealogyPlaceholder throughWhichChild1, GenealogyPlaceholder throughWhichChild2, GenealogyPlaceholder closestDescendant)
+        {
+            DistantRelationInfo distantRelationInfo = new DistantRelationInfo(degree, timesRemoved, closestDescendant, new[]
+                {
+                    throughWhichChild1,
+                    throughWhichChild2
+                });
+            if (!distantRelationInfoList.Exists(tempDistantRelationInfo => System.Array.Exists(tempDistantRelationInfo.ThroughWhichChildren, x => !System.Array.Exists(distantRelationInfo.ThroughWhichChildren, x.Equals)) && tempDistantRelationInfo.ClosestDescendant == distantRelationInfo.ClosestDescendant && tempDistantRelationInfo.Degree == distantRelationInfo.Degree && tempDistantRelationInfo.TimesRemoved == distantRelationInfo.TimesRemoved) && distantRelationInfo.Degree <= (uint)Tuning.kMaxDegreeCousinsToShow && distantRelationInfo.TimesRemoved <= (uint)Tuning.kMaxTimesRemovedCousinsToShow)
+            {
+                distantRelationInfoList.Add(distantRelationInfo);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>Assigns an ancestor to a Sim without knowing the Sims between the Sim and said ancestor.</summary>
