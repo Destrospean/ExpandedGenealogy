@@ -179,6 +179,20 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
+        public GenealogyPlaceholder(Genealogy genealogy = null)
+        {
+            Genealogy = genealogy;
+            while (genealogy == null)
+            {
+                Id = Sims3.SimIFace.CustomContent.DownloadContent.GenerateGUID();
+                if (HasUniqueId)
+                {
+                    return;
+                }
+            }
+            Id = genealogy.IMiniSimDescription.SimDescriptionId;
+        }
+
         public void AddChild(Genealogy child)
         {
             AddChild(GetGenealogyPlaceholder(child));
@@ -219,7 +233,7 @@ namespace Destrospean.ExpandedGenealogy
 
         public static GenealogyPlaceholder GetGenealogyPlaceholder(Genealogy sim)
         {
-            ulong id = (sim.SimDescription ?? sim.mMiniSim).SimDescriptionId;
+            ulong id = sim.IMiniSimDescription.SimDescriptionId;
             if (!GenealogyPlaceholders.ContainsKey(id))
             {
                 GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder(sim);
@@ -276,20 +290,6 @@ namespace Destrospean.ExpandedGenealogy
         public bool IsSibling(GenealogyPlaceholder sibling)
         {
             return Siblings.Contains(sibling);
-        }
-
-        public GenealogyPlaceholder(Genealogy genealogy = null)
-        {
-            Genealogy = genealogy;
-            while (genealogy == null)
-            {
-                Id = Sims3.SimIFace.CustomContent.DownloadContent.GenerateGUID();
-                if (HasUniqueId)
-                {
-                    return;
-                }
-            }
-            Id = (genealogy.SimDescription ?? genealogy.mMiniSim).SimDescriptionId;
         }
     }
 }
