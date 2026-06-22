@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sims3.Gameplay.CAS;
+using Sims3.UI;
 
 namespace Destrospean.ExpandedGenealogy
 {
@@ -20,6 +22,43 @@ namespace Destrospean.ExpandedGenealogy
         public static string Capitalize(this string text)
         {
             return text.Length > 1 ? text.Substring(0, 1).ToUpper() + text.Substring(1) : text.ToUpper();
+        }
+
+        public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>
+        {
+            return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
+        }
+
+        public static void Notify(string message, SimDescription simDescription, StyledNotification.NotificationStyle style)
+        {
+            Notify(message, simDescription, style, true);
+        }
+
+        public static void Notify(string message, SimDescription fakeSimDescription, StyledNotification.NotificationStyle style, bool checkForFake)
+        {
+            SimDescription simDescription = fakeSimDescription;
+            if (simDescription == null)
+            {
+                StyledNotification.Show(new StyledNotification.Format(message, style));
+                return;
+            }
+            if (checkForFake)
+            {
+                simDescription = SimDescription.Find(fakeSimDescription.SimDescriptionId);
+                if (simDescription == null)
+                {
+                    StyledNotification.Show(new StyledNotification.Format(message, style));
+                    return;
+                }
+            }
+            if (simDescription.CreatedSim != null)
+            {
+                StyledNotification.Show(new StyledNotification.Format(message, Sims3.SimIFace.ObjectGuid.InvalidObjectGuid, simDescription.CreatedSim.ObjectId, style));
+            }
+            else
+            {
+                StyledNotification.Show(new StyledNotification.Format(message, style));
+            }
         }
 
         /// <summary>This method was borrowed from Lazy Duchess' Mono Patcher</summary>

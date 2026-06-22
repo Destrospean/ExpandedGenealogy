@@ -50,6 +50,7 @@ namespace Destrospean.ExpandedGenealogy
                     EventTracker.RemoveListener(simInstantiatedListener);
                     simInstantiatedListener = null;
                 };
+            Common.ReplaceMethod(typeof(Sims3.UI.FamilyTreeDialog).GetMethod("RecurseLayoutParents", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Replacements).GetMethod("RecurseLayoutParents"));
             Common.ReplaceMethod(typeof(Genealogy).GetMethod("AddChild"), typeof(Replacements).GetMethod("AddChild"));
             Common.ReplaceMethod(typeof(Genealogy).GetMethod("ClearDerivedData", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Replacements).GetMethod("ClearDerivedData"));
             Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsBloodRelated", BindingFlags.Public | BindingFlags.Instance), typeof(Replacements).GetMethod("IsBloodRelated"));
@@ -63,7 +64,13 @@ namespace Destrospean.ExpandedGenealogy
             Common.ReplaceMethod(typeof(Genealogy).GetMethod("IsUncle"), typeof(Replacements).GetMethod("IsUncle"));
             Common.ReplaceMethod(typeof(SimDescription).GetMethod("GetMyFamilialDescriptionFor"), typeof(Replacements).GetMethod("GetMyFamilialDescriptionFor"));
             Common.ReplaceMethod(typeof(SimDescription).GetMethod("MakeUniqueId"), typeof(Replacements).GetMethod("MakeUniqueId"));
-            Type nraasWoohooerRelationshipsType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
+            Type nraasMasterControllerFamilyTreeDialogType = Type.GetType("NRaas.MasterControllerSpace.Dialogs.FamilyTreeDialog, NRaasMasterController"),
+            nraasWoohooerRelationshipsType = Type.GetType("NRaas.CommonSpace.Helpers.Relationships, NRaasWoohooer");
+            if (nraasMasterControllerFamilyTreeDialogType != null)
+            {
+                Common.ReplaceMethod(nraasMasterControllerFamilyTreeDialogType.GetMethod("RecurseLayoutChildren", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Replacements).GetMethod("RecurseLayoutChildrenMasterController"));
+                Common.ReplaceMethod(nraasMasterControllerFamilyTreeDialogType.GetMethod("RecurseLayoutParents", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Replacements).GetMethod("RecurseLayoutParentsMasterController"));
+            }
             if (nraasWoohooerRelationshipsType != null)
             {
                 Common.ReplaceMethod(nraasWoohooerRelationshipsType.GetMethod("IsCloselyRelated", new[]
