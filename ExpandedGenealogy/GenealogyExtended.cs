@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sims3.Gameplay.Socializing;
 using Sims3.UI.CAS;
 using Tuning = Sims3.Gameplay.Destrospean.ExpandedGenealogy;
-using System;
 
 namespace Destrospean.ExpandedGenealogy
 {
