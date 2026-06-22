@@ -142,7 +142,7 @@ namespace Destrospean.ExpandedGenealogy
                     parents.AddRange(mParentsRaw);
                     if (Genealogy != null)
                     {
-                        parents.AddRange(Genealogy.Parents.ConvertAll(GetGenealogyPlaceholder));
+                        parents.AddRange(Genealogy.Parents.FindAll(x => x.IMiniSimDescription != null).ConvertAll(GetGenealogyPlaceholder));
                     }
                     mParents = parents;
                 }
@@ -163,7 +163,7 @@ namespace Destrospean.ExpandedGenealogy
                     List<GenealogyPlaceholder> siblings = new List<GenealogyPlaceholder>();
                     if (Genealogy != null)
                     {
-                        siblings.AddRange(Genealogy.Siblings.ConvertAll(GetGenealogyPlaceholder));
+                        siblings.AddRange(Genealogy.Siblings.FindAll(x => x.IMiniSimDescription != null).ConvertAll(GetGenealogyPlaceholder));
                     }
                     foreach (GenealogyPlaceholder parent in Parents)
                     {
@@ -231,12 +231,12 @@ namespace Destrospean.ExpandedGenealogy
             }
         }
 
-        public static GenealogyPlaceholder GetGenealogyPlaceholder(Genealogy sim)
+        public static GenealogyPlaceholder GetGenealogyPlaceholder(Genealogy genealogy)
         {
-            ulong id = sim.IMiniSimDescription.SimDescriptionId;
+            ulong id = genealogy.IMiniSimDescription.SimDescriptionId;
             if (!GenealogyPlaceholders.ContainsKey(id))
             {
-                GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder(sim);
+                GenealogyPlaceholder genealogyPlaceholder = new GenealogyPlaceholder(genealogy);
                 GenealogyPlaceholders.Add(id, genealogyPlaceholder);
             }
             return GenealogyPlaceholders[id];
