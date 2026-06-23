@@ -34,7 +34,10 @@ namespace Destrospean.ExpandedGenealogy
                                 if (sim != null)
                                 {
                                     AddInteractions(sim);
-                                    sim.Genealogy.GetGenealogyPlaceholder();
+                                    if (sim.Genealogy != null)
+                                    {
+                                        sim.Genealogy.GetGenealogyPlaceholder();
+                                    }
                                 }
                             }
                             catch (Exception ex)
