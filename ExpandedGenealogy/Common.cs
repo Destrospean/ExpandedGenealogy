@@ -51,14 +51,7 @@ namespace Destrospean.ExpandedGenealogy
                     return;
                 }
             }
-            if (simDescription.CreatedSim != null)
-            {
-                StyledNotification.Show(new StyledNotification.Format(message, Sims3.SimIFace.ObjectGuid.InvalidObjectGuid, simDescription.CreatedSim.ObjectId, style));
-            }
-            else
-            {
-                StyledNotification.Show(new StyledNotification.Format(message, style));
-            }
+            StyledNotification.Show(simDescription.CreatedSim == null ? new StyledNotification.Format(message, style) : new StyledNotification.Format(message, Sims3.SimIFace.ObjectGuid.InvalidObjectGuid, simDescription.CreatedSim.ObjectId, style));
         }
 
         /// <summary>This method was borrowed from Lazy Duchess' Mono Patcher</summary>
